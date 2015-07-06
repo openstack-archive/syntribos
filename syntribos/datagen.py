@@ -9,16 +9,19 @@ class DynamicDataGen(DatasetList):
 
     def __init__(self, name, data):
         for stri in self.strings:
+            ctr = 0
             if isinstance(data, dict):
                 for dic in self._build_combinations(name, stri, data):
                     self.append_new_dataset(
-                        "{0}-{1}".format(self.test_name, name), {
+                        "{0}-{1}-{2}".format(self.test_name, name, ctr), {
                             "model": json.dumps(dic)})
+                    ctr += 1
             elif isinstance(data, ElementTree.Element):
                 for element in self._build_xml_combinations(name, stri, data):
                     self.append_new_dataset(
-                        "{0}-{1}".format(self.test_name, name), {
+                        "{0}-{1}-{2}".format(self.test_name, name, ctr), {
                             "model": ElementTree.tostring(element)})
+                    ctr += 1
             else:
                 raise TypeError("Format not recognized!")
 
