@@ -31,20 +31,24 @@ class DynamicDataGen(DatasetList):
 
     def _build_combinations(self, name, stri, dic, ignore_var):
         for key, val in dic.iteritems():
-            if isinstance(val, dict):
-                for ret in self._build_combinations(name, stri, val):
+            if ignore_var in key:
+                continue
+            elif isinstance(val, dict):
+                for ret in self._build_combinations(
+                        name, stri, val, ignore_var):
                     yield self._merge_dictionaries(dic, {key: ret})
             elif isinstance(val, list):
                 for i, v in enumerate(val):
                     list_ = [_ for _ in val]
                     if isinstance(v, dict):
-                        for ret in self._build_combinations(name, stri, v):
+                        for ret in self._build_combinations(
+                                name, stri, v, ignore_var):
                             list_[i] = ret.copy()
                             yield self._merge_dictionaries(dic, {key: list_})
-                    elif ignore_var not in list_[i]:
+                    else:
                         list_[i] = stri
                         yield self._merge_dictionaries(dic, {key: list_})
-            elif ignore_var not in val:
+            else:
                 yield self._merge_dictionaries(dic, {key: stri})
 
     def _merge_dictionaries(self, x, y):
@@ -53,17 +57,27 @@ class DynamicDataGen(DatasetList):
         return z
 
     def _build_xml_combinations(self, name, stri, ele, ignore_var):
-        if ele.text is not None and ignore_var not in ele.text:
-            yield self._update_element(ele, stri)
-        for i, element in enumerate(list(ele)):
-            for ret in self._build_xml_combinations(name, stri, element):
-                list_ = [_ for _ in ele.getchildren()]
-                list_[i] = ret.copy()
-                yield self._update_inner_element(ele, list_)
+        if ignore_var not in ele.tag:
+            if ele.text is not None:
+                yield self._update_element(ele, stri)
+            for attr in self._build_combinations(
+                    name, stri, ele.attrib, ignore_var):
+                yield self._update_attribs(ele, attr)
+            for i, element in enumerate(list(ele)):
+                for ret in self._build_xml_combinations(
+                        name, stri, element, ignore_var):
+                    list_ = [_ for _ in ele.getchildren()]
+                    list_[i] = ret.copy()
+                    yield self._update_inner_element(ele, list_)
 
     def _update_element(self, ele, stri):
         ret = ele.copy()
         ret.text = stri
+        return ret
+
+    def _update_attribs(self, ele, attribs):
+        ret = ele.copy()
+        ret.attrib = attribs
         return ret
 
     def _update_inner_element(self, ele, list_):
