@@ -1,11 +1,11 @@
-from syntribos.tests.base import BaseTest, BaseConfig
+from syntribos.tests.base import BaseTest, BaseTestConfig
 
 
 class SQLInjectionBody(BaseTest):
     test_name = "SQL_INJECTION_BODY"
     test_type = "BODY"
     filename = "sql-injection.txt"
-    config = BaseConfig(section_name=test_name)
+    config = BaseTestConfig(section_name=test_name)
 
 
 class SQLInjectionParams(SQLInjectionBody):

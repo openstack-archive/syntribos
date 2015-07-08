@@ -1,6 +1,6 @@
 import json
 from xml.etree import ElementTree
-from collections import Iterable
+import types
 
 
 class FuzzBehavior(object):
@@ -14,7 +14,7 @@ class FuzzBehavior(object):
             else:
                 raise TypeError("Format not recognized!")
             for model_num, model in enumerate(model_iter, 1):
-                name = "{0}_str{1}_model{2}".format(name, str_num, model_num)
+                name = "{0}str{1}_model{2}".format(name, str_num, model_num)
                 if isinstance(model, dict):
                     string = json.dumps(cls._run_iters(model))
                 else:
@@ -22,27 +22,29 @@ class FuzzBehavior(object):
                 string = string.replace(skip_var, "")
                 yield (name, string)
 
-    @classmethod
-    def _iterable(cls, val):
-        return not isinstance(val, str) and isinstance(val, Iterable)
+    def run_iters(cls, data):
+        if isinstance(data, dict):
+            cls._run_iters(data)
+        else:
+            cls._run_iters_xml(data)
 
     @classmethod
     def _run_iters(cls, dic):
         for key, val in dic.iteritems():
-            if cls._iterable(val):
+            if isinstance(val, types.GeneratorType):
                 dic.update({key: val.next()})
             elif isinstance(val, dict):
-                dic.update({key: cls._run_iters(val)})
+                cls._run_iters(val)
             elif isinstance(val, list):
                 for i, v in enumerate(val):
-                    if cls._iterable(v):
+                    if isinstance(val, types.GeneratorType):
                         val[i] = v.next()
                     elif isinstance(v, dict):
                         val[i] = cls._run_iters(v)
 
     @classmethod
     def _run_iters_xml(cls, ele):
-        if cls._iterable(ele.text):
+        if isinstance(ele.text, types.GeneratorType):
             ele.text = ele.text.next()
         cls._run_iters(ele.attrib)
         for i, v in enumerate(list(ele)):

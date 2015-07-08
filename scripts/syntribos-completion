@@ -12,7 +12,8 @@ _syntribos()
     elif [[ ${cur} == -* ]]; then
         opts="--help --test-types"
     else
-        opts=$(python -c "from syntribos.runner import Runner;Runner.populate_tests();from syntribos.tests.base import test_table;from pprint import pprint;[pprint(i) for i in test_table.keys()]" 2>/dev/null)
+        opts=$(python -c "from syntribos.runner import Runner;Runner.populate_tests();from syntribos.tests.base import test_table
+for i in test_table.keys():print i" 2>/dev/null)
     fi
 
     if [[ ${COMP_CWORD} -ne 2 ]]; then

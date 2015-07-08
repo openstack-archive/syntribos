@@ -21,7 +21,7 @@ class TestType(type):
         return new_class
 
 
-class BaseConfig(ConfigSectionInterface):
+class BaseTestConfig(ConfigSectionInterface):
     SECTION_NAME = None
 
     @property

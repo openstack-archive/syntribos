@@ -11,7 +11,7 @@ from cafe.drivers.unittest.arguments import ConfigAction
 from cafe.drivers.base import print_exception
 
 from syntribos import tests as package
-#from syntribos.request_parser import RequestParser
+from syntribos.request_creator import RequestCreator
 
 
 class InputType(object):
@@ -55,7 +55,7 @@ class SyntribosCLI(argparse.ArgumentParser):
             "Example: compute/dev.environ")
 
         self.add_argument(
-            "input", metavar="<input_file>", type=InputType('rb', 0),
+            "input", metavar="<input_file>", type=InputType('r', 0),
             help="<input file|directory of files|-(for stdin)>")
 
         self.add_argument(

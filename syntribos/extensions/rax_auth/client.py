@@ -68,6 +68,7 @@ class TokensBehavior(BaseBehavior):
         return r
 
 
-def get_access(section_name):
-    return TokensBehavior.get_access_data_config(
+def get_token(section_name):
+    access_data = TokensBehavior.get_access_data_config(
         UserConfig(section_name=section_name), UserAuthConfig())
+    return access_data.token.id_
