@@ -15,18 +15,23 @@ class FuzzBehavior(object):
                 raise TypeError("Format not recognized!")
             for model_num, model in enumerate(model_iter, 1):
                 name = "{0}str{1}_model{2}".format(name, str_num, model_num)
-                if isinstance(model, dict):
-                    string = json.dumps(cls._run_iters(model))
-                else:
-                    string = ElementTree.tostring(cls._run_iters_xml(model))
+                string = cls.string_data(cls.run_iters(model))
                 string = string.replace(skip_var, "")
                 yield (name, string)
 
+    @classmethod
+    def string_data(cls, data):
+        if isinstance(data, dict):
+            return json.dumps(data)
+        else:
+            return ElementTree.tostring(data)
+
+    @classmethod
     def run_iters(cls, data):
         if isinstance(data, dict):
-            cls._run_iters(data)
+            return cls._run_iters(data)
         else:
-            cls._run_iters_xml(data)
+            return cls._run_iters_xml(data)
 
     @classmethod
     def _run_iters(cls, dic):
@@ -41,6 +46,7 @@ class FuzzBehavior(object):
                         val[i] = v.next()
                     elif isinstance(v, dict):
                         val[i] = cls._run_iters(v)
+        return dic
 
     @classmethod
     def _run_iters_xml(cls, ele):
