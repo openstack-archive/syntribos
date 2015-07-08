@@ -1,12 +1,11 @@
 import json
 from xml.etree import ElementTree
+from collections import Iterable
 
-from cafe.engine.behaviors import BaseBehavior
 
-
-class FuzzBehavior(BaseBehavior):
+class FuzzBehavior(object):
     @classmethod
-    def fuzz_body(cls, strings, data, skip_var, name):
+    def fuzz_data(cls, strings, data, skip_var, name):
         for str_num, stri in enumerate(strings, 1):
             if isinstance(data, dict):
                 model_iter = cls._build_combinations(stri, data, skip_var)
@@ -17,11 +16,38 @@ class FuzzBehavior(BaseBehavior):
             for model_num, model in enumerate(model_iter, 1):
                 name = "{0}_str{1}_model{2}".format(name, str_num, model_num)
                 if isinstance(dict):
-                    string = json.dumps(model)
+                    string = json.dumps(cls._run_iters(model))
                 else:
-                    string = ElementTree.tostring(model)
+                    string = ElementTree.tostring(cls._run_iters_xml(model))
                 string = string.replace(skip_var, "")
                 yield (name, string)
+
+    @classmethod
+    def _iterable(cls, val):
+        return not isinstance(val, str) and isinstance(val, Iterable)
+
+    @classmethod
+    def _run_iters(cls, dic):
+        for key, val in dic.iteritems():
+            if cls._iterable(val):
+                dic.update({key: val.next()})
+            elif isinstance(val, dict):
+                dic.update({key: cls._run_iters(val)})
+            elif isinstance(val, list):
+                for i, v in enumerate(val):
+                    if cls._iterable(v):
+                        val[i] = v.next()
+                    elif isinstance(v, dict):
+                        val[i] = cls._run_iters(v)
+
+    @classmethod
+    def _run_iters_xml(cls, ele):
+        if cls._iterable(ele.text):
+            ele.text = ele.text.next()
+        cls._run_iters(ele.attrib)
+        for i, v in enumerate(list(ele)):
+            ele[i] = cls._run_iters_xml(v)
+        return ele
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
