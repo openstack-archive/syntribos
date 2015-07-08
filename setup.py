@@ -1,5 +1,5 @@
 """
-Copyright 2013 Rackspace
+Copyright 2015 Rackspace
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ from setuptools import setup, find_packages
 
 requires = open('pip-requires').readlines()
 setup(
-    name='apiscan',
+    name='syntribos',
     version='0.0.1',
     description=('API Security Scanner'),
     long_description='{0}\n\n{1}'.format(
@@ -31,6 +31,8 @@ setup(
     install_requires=requires,
     license=open('LICENSE').read(),
     zip_safe=False,
+    entry_points={'console_scripts': [
+        'syntribos = syntribos.runner:entry_point']},
     classifiers=(
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',

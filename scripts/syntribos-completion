@@ -1,0 +1,28 @@
+_syntribos()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur=$(echo "${COMP_WORDS[COMP_CWORD]}"|sed 's/\\/\\\\/g')
+    prev=$(echo "${COMP_WORDS[COMP_CWORD-1]}"|sed 's/\\/\\\\/g')
+
+    if [[ ${COMP_CWORD} == 1 ]]; then
+        opts=$(python -c "from cafe.drivers.unittest.autocomplete import print_configs;print_configs()" 2>/dev/null)
+    elif [[ ${COMP_CWORD} == 2 ]]; then
+        COMPREPLY=( $(compgen -o filenames -A file  "$cur") )
+    elif [[ ${cur} == -* ]]; then
+        opts="--help --test-types"
+    else
+        opts=$(python -c "from syntribos.runner import Runner;Runner.populate_tests();from syntribos.tests.base import test_table;from pprint import pprint;[pprint(i) for i in test_table.keys()]" 2>/dev/null)
+    fi
+
+    if [[ ${COMP_CWORD} -ne 2 ]]; then
+        opts=$(echo $opts|sed 's/\\/\\\\/g')
+        COMPREPLY=( $(compgen -W '${opts}' -- ${cur}) )
+        COMPREPLY="${COMPREPLY} "
+    fi
+    #sed for windows backslash
+
+    return 0
+}
+
+complete -o nospace -F _syntribos syntribos
