@@ -5,7 +5,7 @@ import types
 
 class FuzzBehavior(object):
     @classmethod
-    def fuzz_data(cls, strings, data, skip_var, name):
+    def fuzz_data(cls, strings, data, skip_var, name_prefix):
         for str_num, stri in enumerate(strings, 1):
             if isinstance(data, dict):
                 model_iter = cls._build_combinations(stri, data, skip_var)
@@ -14,17 +14,16 @@ class FuzzBehavior(object):
             else:
                 raise TypeError("Format not recognized!")
             for model_num, model in enumerate(model_iter, 1):
-                name = "{0}str{1}_model{2}".format(name, str_num, model_num)
-                string = cls.string_data(cls.run_iters(model))
-                string = string.replace(skip_var, "")
-                yield (name, string)
+                name = "{0}str{1}_model{2}".format(
+                    name_prefix, str_num, model_num)
+                yield (name, model)
 
     @classmethod
-    def string_data(cls, data):
+    def string_data(cls, data, skip_var=""):
         if isinstance(data, dict):
-            return json.dumps(data)
+            return json.dumps(data).replace(skip_var, "")
         else:
-            return ElementTree.tostring(data)
+            return ElementTree.tostring(data).replace(skip_var, "")
 
     @classmethod
     def run_iters(cls, data):

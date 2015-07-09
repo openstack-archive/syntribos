@@ -10,8 +10,10 @@ from cafe.configurator.managers import TestEnvManager
 from cafe.drivers.unittest.arguments import ConfigAction
 from cafe.drivers.base import print_exception
 
-from syntribos import tests as package
+from syntribos import tests
+from syntribos.tests.base import test_table
 from syntribos.request_creator import RequestCreator
+
 
 
 class InputType(object):
@@ -59,15 +61,15 @@ class SyntribosCLI(argparse.ArgumentParser):
             help="<input file|directory of files|-(for stdin)>")
 
         self.add_argument(
-            "-t", "--test_types", metavar="TEST_TYPES", nargs="*", default=[],
+            "-t", "--test-types", metavar="TEST_TYPES", nargs="*", default=[],
             help="Test types to run against api")
 
 
 class Runner(object):
     @classmethod
-    def populate_tests(cls):
+    def load_modules(cls, package):
         if not os.environ.get("CAFE_CONFIG_FILE_PATH"):
-            os.environ["CAFE_CONFIG_FILE_PATH"] = "/dev/null"
+            os.environ["CAFE_CONFIG_FILE_PATH"] = "./"
         for importer, modname, ispkg in pkgutil.walk_packages(
             path=package.__path__,
             prefix=package.__name__ + '.',
@@ -126,7 +128,14 @@ class Runner(object):
             test_env_manager.finalize()
             cls.print_log()
             init_root_log_handler()
-            cls.populate_tests()
+            cls.load_modules(tests)
+            if args.test_types:
+                run_tests = {
+                    k: v for k, v in test_table.iteritems()
+                    if k in args.test_types}
+            else:
+                run_tests = test_table
+
 
         except Exception as e:
             print_exception(

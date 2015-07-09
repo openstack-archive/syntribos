@@ -1,23 +1,16 @@
-from syntribos.tests.base import BaseTest, BaseTestConfig
+from syntribos.tests import base_fuzz
 
 
-class SQLInjectionBody(BaseTest):
+class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
     test_name = "SQL_INJECTION_BODY"
     test_type = "BODY"
-    filename = "sql-injection.txt"
-    config = BaseTestConfig(section_name=test_name)
+    data_key = "sql-injection.txt"
 
-
-class SQLInjectionParams(SQLInjectionBody):
+class SQLInjectionParams(base_fuzz.BaseFuzzTestCase):
     test_name = "SQL_INJECTION_PARAMS"
     test_type = "PARAMS"
 
 
-class SQLInjectionHeaders(SQLInjectionBody):
+class SQLInjectionHeaders(base_fuzz.BaseFuzzTestCase):
     test_name = "SQL_INJECTION_HEADERS"
     test_type = "HEADERS"
-
-
-class SQLInjectionURL(SQLInjectionBody):
-    test_name = "SQL_INJECTION_URL"
-    test_type = "URL"
