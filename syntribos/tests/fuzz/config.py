@@ -6,7 +6,7 @@ class BaseFuzzConfig(ConfigSectionInterface):
 
     @property
     def percent(self):
-        return float(self.get("percent", 5))
+        return float(self.get("percent", 5.0))
 
     @property
     def string_fuzz_name(self):

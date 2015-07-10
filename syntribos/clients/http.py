@@ -90,7 +90,7 @@ class RequestObject(RequestHelperMixin):
         self.url = url
         self.headers = headers or {}
         self.params = params or {}
-        self.data = data or ""
+        self.data = data
         self.action_field = action_field
 
     def prepare_request(self):

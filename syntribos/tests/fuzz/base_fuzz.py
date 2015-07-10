@@ -19,8 +19,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
             raise NotImplemented
         init_req_len = len(cls.init_response.request.body or "")
         init_resp_len = len(cls.init_response.content or "")
-        req_len = len(cls.resp.content or "")
-        resp_len = len(cls.resp.request.body or "")
+        req_len = len(cls.resp.request.body or "")
+        resp_len = len(cls.resp.content or "")
 
         request_diff = req_len - init_req_len
         response_diff = resp_len - init_resp_len
@@ -44,7 +44,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def setUpClass(cls):
         """being used as a setup test not"""
         super(BaseFuzzTestCase, cls).setUpClass()
-        print cls.request.url
         cls.resp = cls.client.request(
             method=cls.request.method, url=cls.request.url,
             headers=cls.request.headers, params=cls.request.params,
@@ -59,9 +58,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         # maybe move this block to base.py
         request_obj = RequestCreator.create_request(
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
-
         prepared_copy = request_obj.get_prepared_copy()
-        print prepared_copy.data
         cls.init_response = cls.client.send_request(prepared_copy)
         # end block
 

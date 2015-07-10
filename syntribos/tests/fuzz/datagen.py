@@ -59,7 +59,7 @@ class FuzzBehavior(object):
     @classmethod
     def _build_xml_combinations(cls, stri, ele, skip_var):
         if skip_var not in ele.tag:
-            if skip_var not in ele.text:
+            if not ele.text or (skip_var not in ele.text):
                 yield cls._update_element(ele, stri)
             for attr in cls._build_combinations(stri, ele.attrib, skip_var):
                 yield cls._update_attribs(ele, attr)
