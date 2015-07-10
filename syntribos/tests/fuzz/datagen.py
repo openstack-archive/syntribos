@@ -1,6 +1,8 @@
-import json
 from xml.etree import ElementTree
-import types
+
+from syntribos.tests.fuzz.base_fuzz import BaseFuzzConfig
+
+config = BaseFuzzConfig()
 
 
 class FuzzBehavior(object):
@@ -11,6 +13,8 @@ class FuzzBehavior(object):
                 model_iter = cls._build_combinations(stri, data, skip_var)
             elif isinstance(data, ElementTree.Element):
                 model_iter = cls._build_xml_combinations(stri, data, skip_var)
+            elif isinstance(data, basestring):
+                model_iter = cls._build_str_combinations(stri, data)
             else:
                 raise TypeError("Format not recognized!")
             for model_num, model in enumerate(model_iter, 1):
@@ -19,42 +23,9 @@ class FuzzBehavior(object):
                 yield (name, model)
 
     @classmethod
-    def string_data(cls, data, skip_var=""):
-        if isinstance(data, dict):
-            return json.dumps(data).replace(skip_var, "")
-        else:
-            return ElementTree.tostring(data).replace(skip_var, "")
-
-    @classmethod
-    def run_iters(cls, data):
-        if isinstance(data, dict):
-            return cls._run_iters(data)
-        else:
-            return cls._run_iters_xml(data)
-
-    @classmethod
-    def _run_iters(cls, dic):
-        for key, val in dic.iteritems():
-            if isinstance(val, types.GeneratorType):
-                dic.update({key: val.next()})
-            elif isinstance(val, dict):
-                cls._run_iters(val)
-            elif isinstance(val, list):
-                for i, v in enumerate(val):
-                    if isinstance(val, types.GeneratorType):
-                        val[i] = v.next()
-                    elif isinstance(v, dict):
-                        val[i] = cls._run_iters(v)
-        return dic
-
-    @classmethod
-    def _run_iters_xml(cls, ele):
-        if isinstance(ele.text, types.GeneratorType):
-            ele.text = ele.text.next()
-        cls._run_iters(ele.attrib)
-        for i, v in enumerate(list(ele)):
-            ele[i] = cls._run_iters_xml(v)
-        return ele
+    def _build_str_combinations(cls, string, url):
+        if "{{{0}}}".format(config.string_fuzz_name) in url:
+            yield url.format(**{config.string_fuzz_name: string})
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
@@ -86,7 +57,7 @@ class FuzzBehavior(object):
     @classmethod
     def _build_xml_combinations(cls, stri, ele, skip_var):
         if skip_var not in ele.tag:
-            if ele.text is not None:
+            if skip_var not in ele.text:
                 yield cls._update_element(ele, stri)
             for attr in cls._build_combinations(stri, ele.attrib, skip_var):
                 yield cls._update_attribs(ele, attr)

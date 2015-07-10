@@ -1,19 +1,21 @@
 from __future__ import print_function
+
+from unittest.runner import _WritelnDecorator
 import argparse
 import os
 import pkgutil
 import requests
 import sys
+import unittest
+from unittest.suite import TestSuite
 
 from cafe.common.reporting.cclogging import init_root_log_handler
 from cafe.configurator.managers import TestEnvManager
-from cafe.drivers.unittest.arguments import ConfigAction
 from cafe.drivers.base import print_exception
+from cafe.drivers.unittest.arguments import ConfigAction
 
 from syntribos import tests
 from syntribos.tests.base import test_table
-from syntribos.request_creator import RequestCreator
-
 
 
 class InputType(object):
@@ -30,12 +32,12 @@ class InputType(object):
                 for file_ in files:
                     file_path = os.path.join(path, file_)
                     fp = open(file_path, self._mode, self._bufsize)
-                    yield file_path, fp.read()
+                    yield file_, fp.read()
                     fp.close()
         elif os.path.isfile(string):
             try:
                 fp = open(string, self._mode, self._bufsize)
-                yield fp.name, fp.read()
+                yield os.path.split(fp.name)[1], fp.read()
                 fp.close()
             except Exception as e:
                 message = "can't open {}:{}"
@@ -135,12 +137,30 @@ class Runner(object):
                     if k in args.test_types}
             else:
                 run_tests = test_table
-
-
-        except Exception as e:
-            print_exception(
-                file_="runner.py", method="entry_point", exception=e)
+            result = cls._make_result()
+            for file_path, req_str in args.input:
+                for test_class in run_tests.values():
+                    for test in test_class.get_test_cases(file_path, req_str):
+                        cls.run_test(test, result)
+            result.printErrors()
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt")
             exit(1)
+
+    @staticmethod
+    def _make_result():
+        """Creates a TextTestResult object that writes stream to a StringIO"""
+        stream = _WritelnDecorator(sys.stdout)
+        result = unittest.TextTestResult(stream, True, 2)
+        result.buffer = False
+        result.failfast = False
+        return result
+
+    @classmethod
+    def run_test(cls, test, result):
+        suite = TestSuite()
+        suite.addTest(test("test_case"))
+        suite(result)
 
 
 def entry_point():

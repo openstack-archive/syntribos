@@ -71,4 +71,5 @@ class TokensBehavior(BaseBehavior):
 def get_token(section_name):
     access_data = TokensBehavior.get_access_data_config(
         UserConfig(section_name=section_name), UserAuthConfig())
-    return access_data.token.id_
+    while True:
+        yield access_data.token.id_
