@@ -17,18 +17,19 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def validate_length(cls):
         if getattr(cls, "init_response", False) is False:
             raise NotImplemented
-        resp_len = len(cls.resp.content)
-        req_len = len(cls.resp.request.body)
-        iresp_len = len(cls.init_response.content)
-        ireq_len = len(cls.init_response.request.body)
-        request_diff = req_len - ireq_len
-        response_diff = resp_len - iresp_len
+        init_req_len = len(cls.init_response.request.body or "")
+        init_resp_len = len(cls.init_response.content or "")
+        req_len = len(cls.resp.content or "")
+        resp_len = len(cls.resp.request.body or "")
+
+        request_diff = req_len - init_req_len
+        response_diff = resp_len - init_resp_len
         if request_diff == response_diff:
             return True
-        elif resp_len == iresp_len:
+        elif resp_len == init_resp_len:
             return True
         elif cls.config.percent:
-            if abs(float(response_diff) / iresp_len) <= (
+            if abs(float(response_diff) / init_resp_len) <= (
                     cls.config.percent / 100.0):
                 return True
         return False
