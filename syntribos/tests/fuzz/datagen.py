@@ -24,8 +24,10 @@ class FuzzBehavior(object):
 
     @classmethod
     def _build_str_combinations(cls, string, url):
-        if "{{{0}}}".format(config.string_fuzz_name) in url:
-            yield url.format(**{config.string_fuzz_name: string})
+        rep_str = "{{{0}}}".format(config.string_fuzz_name)
+        if rep_str in url:
+            string = url.format(**{config.string_fuzz_name: string})
+            yield string
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):

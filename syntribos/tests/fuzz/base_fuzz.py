@@ -1,7 +1,6 @@
 import os
 
 from syntribos.clients.http import SynHTTPClient, RequestCreator
-from syntribos.config import MainConfig
 from syntribos.tests import base
 from syntribos.tests.fuzz.config import BaseFuzzConfig
 from syntribos.tests.fuzz.datagen import FuzzBehavior
@@ -44,6 +43,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def setUpClass(cls):
         """being used as a setup test not"""
         super(BaseFuzzTestCase, cls).setUpClass()
+        print cls.request.url
         cls.resp = cls.client.request(
             method=cls.request.method, url=cls.request.url,
             headers=cls.request.headers, params=cls.request.params,
@@ -57,8 +57,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def get_test_cases(cls, filename, file_content):
         # maybe move this block to base.py
         request_obj = RequestCreator.create_request(
-            file_content, MainConfig().endpoint)
+            file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
+
         prepared_copy = request_obj.get_prepared_copy()
+        print prepared_copy.data
         cls.init_response = cls.client.send_request(prepared_copy)
         # end block
 

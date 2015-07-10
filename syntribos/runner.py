@@ -16,6 +16,7 @@ from cafe.drivers.unittest.arguments import ConfigAction
 
 from syntribos import tests
 from syntribos.tests.base import test_table
+from syntribos.config import MainConfig
 
 
 class InputType(object):
@@ -63,8 +64,8 @@ class SyntribosCLI(argparse.ArgumentParser):
             help="<input file|directory of files|-(for stdin)>")
 
         self.add_argument(
-            "-t", "--test-types", metavar="TEST_TYPES", nargs="*", default=[],
-            help="Test types to run against api")
+            "-t", "--test-types", metavar="TEST_TYPES", nargs="*",
+            default=[""], help="Test types to run against api")
 
 
 class Runner(object):
@@ -128,22 +129,21 @@ class Runner(object):
             test_env_manager = TestEnvManager(
                 "", args.config, test_repo_package_name="os")
             test_env_manager.finalize()
+            cls.set_env()
             cls.print_log()
             init_root_log_handler()
             cls.load_modules(tests)
-            if args.test_types:
-                run_tests = {
-                    k: v for k, v in test_table.iteritems()
-                    if k in args.test_types}
-            else:
-                run_tests = test_table
             result = cls._make_result()
             for file_path, req_str in args.input:
-                for test_class in run_tests.values():
-                    for test in test_class.get_test_cases(file_path, req_str):
-                        cls.run_test(test, result)
+                for test_name, test_class in test_table.items():
+                    if any([True for t in args.test_types if t in test_name]):
+                        for test in test_class.get_test_cases(
+                                file_path, req_str):
+                            cls.run_test(test, result)
             result.printErrors()
-        except KeyboardInterrupt:
+        except Exception as e:
+            print_exception(
+                file_="runner.py", method="run", value=None, exception=e)
             print("KeyboardInterrupt")
             exit(1)
 
@@ -162,6 +162,10 @@ class Runner(object):
         suite.addTest(test("test_case"))
         suite(result)
 
+    @classmethod
+    def set_env(cls):
+        config = MainConfig()
+        os.environ["SYNTRIBOS_ENDPOINT"] = config.endpoint
 
 def entry_point():
     return Runner.run()
