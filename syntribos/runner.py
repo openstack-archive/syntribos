@@ -6,13 +6,14 @@ import os
 import pkgutil
 import requests
 import sys
+import time
 import unittest
-from unittest.suite import TestSuite
 
 from cafe.common.reporting.cclogging import init_root_log_handler
 from cafe.configurator.managers import TestEnvManager
 from cafe.drivers.base import print_exception
 from cafe.drivers.unittest.arguments import ConfigAction
+from cafe.drivers.unittest.suite import OpenCafeUnittestTestSuite as TestSuite
 
 from syntribos import tests
 from syntribos.tests.base import test_table
@@ -67,6 +68,11 @@ class SyntribosCLI(argparse.ArgumentParser):
             "-t", "--test-types", metavar="TEST_TYPES", nargs="*",
             default=[""], help="Test types to run against api")
 
+        self.add_argument(
+            "-v", "--verbose",
+            action="store_true",
+            help="unittest verbose pass through")
+
 
 class Runner(object):
     @classmethod
@@ -83,25 +89,24 @@ class Runner(object):
     def print_symbol():
         """ Syntribos radiation symbol """
         border = '-' * 40
-        symbol = """
-                   Syntribos
-                    xxxxxxx
-               x xxxxxxxxxxxxx x
-            x     xxxxxxxxxxx     x
-                   xxxxxxxxx
-         x          xxxxxxx          x
-                     xxxxx
-        x             xxx             x
-                       x
-       xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
-        xxxxxxxxxxxxx     xxxxxxxxxxxxx
-         xxxxxxxxxxx       xxxxxxxxxxx
-          xxxxxxxxx         xxxxxxxxx
-            xxxxxx           xxxxxx
-              xxx             xxx
-                  x         x
-                       x
-          === Automated API Scanning  ==="""
+        symbol = """               Syntribos
+                xxxxxxx
+           x xxxxxxxxxxxxx x
+        x     xxxxxxxxxxx     x
+               xxxxxxxxx
+     x          xxxxxxx          x
+                 xxxxx
+    x             xxx             x
+                   x
+   xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
+    xxxxxxxxxxxxx     xxxxxxxxxxxxx
+     xxxxxxxxxxx       xxxxxxxxxxx
+      xxxxxxxxx         xxxxxxxxx
+        xxxxxx           xxxxxx
+          xxx             xxx
+              x         x
+                   x
+      === Automated API Scanning  ==="""
 
         print(border)
         print(symbol)
@@ -111,9 +116,9 @@ class Runner(object):
     def print_log():
         test_log = os.environ.get("CAFE_TEST_LOG_PATH")
         if test_log:
-            print("=" * 150)
+            print("=" * 70)
             print("LOG PATH..........: {0}".format(test_log))
-            print("=" * 150)
+            print("=" * 70)
 
     @classmethod
     def run(cls):
@@ -133,28 +138,19 @@ class Runner(object):
             cls.print_log()
             init_root_log_handler()
             cls.load_modules(tests)
-            result = cls._make_result()
+            result = unittest.TextTestResult(
+                _WritelnDecorator(sys.stdout), True, 2 if args.verbose else 1)
+            start_time = time.time()
             for file_path, req_str in args.input:
                 for test_name, test_class in test_table.items():
                     if any([True for t in args.test_types if t in test_name]):
                         for test in test_class.get_test_cases(
                                 file_path, req_str):
                             cls.run_test(test, result)
-            result.printErrors()
-        except Exception as e:
-            print_exception(
-                file_="runner.py", method="run", value=None, exception=e)
-            print("KeyboardInterrupt")
-            exit(1)
-
-    @staticmethod
-    def _make_result():
-        """Creates a TextTestResult object that writes stream to a StringIO"""
-        stream = _WritelnDecorator(sys.stdout)
-        result = unittest.TextTestResult(stream, True, 2)
-        result.buffer = False
-        result.failfast = False
-        return result
+            cls.print_result(result, start_time)
+        except KeyboardInterrupt:
+            print_exception("Runner", "run", "Keyboard Interrupt, exiting...")
+            exit(0)
 
     @classmethod
     def run_test(cls, test, result):
@@ -167,8 +163,30 @@ class Runner(object):
         config = MainConfig()
         os.environ["SYNTRIBOS_ENDPOINT"] = config.endpoint
 
+    @classmethod
+    def print_result(cls, result, start_time):
+        """Prints results summerized"""
+        result.printErrors()
+        run_time = time.time() - start_time
+        tests = result.testsRun
+        failures = len(result.failures)
+        errors = len(result.errors)
+
+        print("{0}".format("-" * 70))
+        print("Ran {0} test{1} in {2:.3f}s".format(
+            tests, "s" * bool(tests - 1), run_time))
+        if failures or errors:
+            print("\nFAILED ({0}{1}{2})".format(
+                "failures={0}".format(failures) if failures else "",
+                ", " if failures and errors else "",
+                "errors={0}".format(errors) if errors else ""))
+        cls.print_log()
+        return tests, errors, failures
+
+
 def entry_point():
-    return Runner.run()
+    Runner.run()
+    return 0
 
 if __name__ == '__main__':
     entry_point()

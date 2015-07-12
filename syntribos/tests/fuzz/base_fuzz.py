@@ -21,16 +21,28 @@ class BaseFuzzTestCase(base.BaseTestCase):
         init_resp_len = len(cls.init_response.content or "")
         req_len = len(cls.resp.request.body or "")
         resp_len = len(cls.resp.content or "")
-
         request_diff = req_len - init_req_len
         response_diff = resp_len - init_resp_len
+        percent_diff = abs(float(response_diff) / init_resp_len) * 100
+        msg = (
+            "Validate Length:\n"
+            "\tInitial request length: {0}\n"
+            "\tInitial response length: {1}\n"
+            "\tRequest length: {2}\n"
+            "\tResponse length: {3}\n"
+            "\tRequest difference: {4}\n"
+            "\tResponse difference: {5}\n"
+            "\tPrecent difference: {6}\n"
+            "\tConfig percent: {7}\n").format(
+            init_req_len, init_resp_len, req_len, resp_len, request_diff,
+            response_diff, percent_diff, cls.config.percent)
+        cls.fixture_log.debug(msg)
         if request_diff == response_diff:
             return True
         elif resp_len == init_resp_len:
             return True
         elif cls.config.percent:
-            if abs(float(response_diff) / init_resp_len) <= (
-                    cls.config.percent / 100.0):
+            if percent_diff <= cls.config.percent:
                 return True
         return False
 
@@ -64,13 +76,13 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
         for fuzz_name, request in cls._get_fuzz_requests(
                 request_obj, cls._get_strings()):
-            full_name = "{filename}_{fuzz_name}".format(
+            full_name = "({filename})_{fuzz_name}".format(
                 filename=filename, fuzz_name=fuzz_name)
             yield cls.extend_class(full_name, {"request": request})
 
     @classmethod
     def _get_fuzz_requests(cls, request, strings):
-        prefix_name = "{test_name}_{fuzz_file}_".format(
+        prefix_name = "({test_name})_({fuzz_file})_".format(
             test_name=cls.test_name,
             fuzz_file=cls.data_key)
         for name, data in FuzzBehavior.fuzz_data(

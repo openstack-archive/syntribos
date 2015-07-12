@@ -1,6 +1,28 @@
+from string import ascii_letters, digits
+
 from cafe.drivers.unittest.fixtures import BaseTestFixture
 
+ALLOWED_CHARS = "().-_{0}{1}".format(ascii_letters, digits)
 test_table = {}
+
+
+def replace_invalid_characters(string, new_char="_"):
+    """This functions corrects string so the following is true
+    Identifiers (also referred to as names) are described by the
+    following lexical definitions:
+    identifier ::=  (letter|"_") (letter | digit | "_")*
+    letter     ::=  lowercase | uppercase
+    lowercase  ::=  "a"..."z"
+    uppercase  ::=  "A"..."Z"
+    digit      ::=  "0"..."9"
+    """
+    if not string:
+        return string
+    for char in set(string) - set(ALLOWED_CHARS):
+        string = string.replace(char, new_char)
+    if string[0] in digits:
+        string = string.replace(string[0], new_char, 1)
+    return string
 
 
 class TestType(type):
@@ -27,6 +49,7 @@ class BaseTestCase(BaseTestFixture):
 
     @classmethod
     def extend_class(cls, new_name, kwargs):
+        new_name = replace_invalid_characters(new_name)
         if not isinstance(kwargs, dict):
             raise Exception("kwargs must be a dictionary")
         new_cls = type(new_name, (cls, ), kwargs)

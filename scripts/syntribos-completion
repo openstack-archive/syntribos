@@ -10,7 +10,7 @@ _syntribos()
     elif [[ ${COMP_CWORD} == 2 ]]; then
         COMPREPLY=( $(compgen -o filenames -A file  "$cur") )
     elif [[ ${cur} == -* ]]; then
-        opts="--help --test-types"
+        opts="--help --test-types --verbose"
     else
         opts=$(python -c "from syntribos.runner import Runner;Runner.populate_tests();from syntribos.tests.base import test_table
 for i in test_table.keys():print i" 2>/dev/null)
