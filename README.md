@@ -1,37 +1,44 @@
-CloudCAFE, An Open CAFE Implementation for OpenStack
+Syntribos, An automated API scanner
 ====================================================
 
 <pre>
-   _ _ _
-  ( `   )_
- (    )   `)  _
-(____(__.___`)__)
+----------------------------------------
 
-    ( (
-       ) )
-    .........
-    |       |___
-    |       |_  |
-    |  :-)  |_| |
-    |       |___|
-    |_______|
-=== CloudCAFE ===
-= An Open CAFE Implementation =
+                   Syntribos
+                    xxxxxxx
+               x xxxxxxxxxxxxx x
+            x     xxxxxxxxxxx     x
+                   xxxxxxxxx
+         x          xxxxxxx          x
+                     xxxxx
+        x             xxx             x
+                       x
+       xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
+        xxxxxxxxxxxxx     xxxxxxxxxxxxx
+         xxxxxxxxxxx       xxxxxxxxxxx
+          xxxxxxxxx         xxxxxxxxx
+            xxxxxx           xxxxxx
+              xxx             xxx
+                  x         x
+                       x
+          === Automated API Scanning  ===
+----------------------------------------
 </pre>
 
-CloudCAFE is an implementation of the [Open CAFE Framework](https://github.com/stackforge/opencafe) specifically
-designed to test deployed versions of [OpenStack](http://http://www.openstack.org/). It is built using the
-[Open CAFE Core](https://github.com/stackforge/opencafe).
+Syntribos is an automated API scanner/fuzzer utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe) 
+Syntribos has the capability to test any API, but is designed with [OpenStack](http://http://www.openstack.org/) applications in mind. 
+It is built using the [Open CAFE Core](https://github.com/stackforge/opencafe).
 
 
 Supported Operating Systems
 ---------------------------
-CloudCAFE has been developed primarily in Linux and Mac environments, however it supports installation and
+Syntribos has been developed primarily in Linux and Mac environments, however it supports installation and
 execution on Windows.
 
 
 Installation
 ------------
+CloudCafe (required)
 CloudCAFE can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository after it is cloned to
 a local machine.
 
@@ -40,62 +47,105 @@ a local machine.
 * CD to the cloned cloudcafe repository directory.
 * Run `pip install . --upgrade` so that pip will auto-install all other dependencies.
 
+Syntribos
+Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository after it is cloned to
+a local machine.
+
+* Clone [Syntribos](https://github.com/rackerlabs/syntribos) to the same local directory as CloudCafe.
+* CD to the cloned Syntribos repository directory.
+* Run `pip install . --upgrade` so that pip will auto-install all other dependencies.
+* To enable autocomplete for Syntribos, run the following command `. scripts/syntribos-completion`
+
 
 Configuration
 --------------
-CloudCAFE works in tandem with the [Open CAFE Core](https://github.com/stackforge/opencafe) cafe-runner. This
-installation of CloudCAFE includes a reference configuration for each of the CloudCAFE supported OpenStack products.
-Configurations will be installed to `<USER_HOME>/.cloudcafe/configs/<PRODUCT>`.
+Copy the Syntribos data directory to CloudCafe 
 
-To use CloudCAFE you **will need to create/install your own configurations** based on the reference configs pointing
-to your deployment of OpenStack.
+```
+$ cp syntribos/data/* .opencafe/data/`
+```
 
-At this stage you will have the Open CAFE Core engine and the CloudCAFE Framework implementation. From this point you
-are ready to:
+Create a configuration file for the API being tested 
 
-1. Write entirely new tests using the CloudCAFE Framework,
+```
+mkdir .opencafe/configs/API_NAME.conf
+```
 
-   *or...*
+Example configuration file:
 
-2. Install the [CloudRoast Test Repository](https://github.com/stackforge/cloudroast), an open source body of
-   OpenStack automated tests written with CloudCAFE that can be executed or extended.
+```
+[syntribos]
+endpoint=https://TESTING.API.ENDPOINT.com
+
+[user]
+username=USERNAME
+password=PASSWORD
+
+[user2]
+username=USERNAME2
+password=PASSWORD2
+
+[auth]
+endpoint=https://AUTH.API.ENDPOINT.com/v2.0
+```
+
+Create a directory to store payloads for API being tested.
+Create a directory to store the payloads for the resources being tested. 
+
+```
+$ mkdir payloads
+$ mkdir payload/API_NAME
+```
+
+Create a payload file for the resource being tested 
+* Note the extension specified to retrieve the X-Auth-Token using Rackspace Cloud Auth
+
+```
+$ vi payloads/API_NAME/list_users.txt`
+```
+
+```
+GET /v2.0/users?name=&email= HTTP/1.1
+Host: TESTING.API.ENDPOINT.com
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.rax_auth.client:get_token:["user"]|
+Content-type: application/json
 
 
-Logging
+```
+
+```
+$ vi payloads/API_NAME/create_user.txt
+```
+
+```
+POST /v2.0/users HTTP/1.1
+Host: TESTING.API.ENDPOINT.com
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.rax_auth.client:get_token:["user"]|
+Content-type: application/json
+
+{
+  "user": {
+    "username": "newUser",
+    "email": "newUser@example.com",
+    "enabled": true
+    }
+}
+
+
+```
+
+Running Syntribos
 -------
-CloudCAFE leverages the logging capabilities of the CAFE Core engine. If tests are executed with the built-in
-cafe-runner, runtime logs will be output to `<USER_HOME>/.cloudcafe/logs/<PRODUCT>/<CONFIGURATION>/<TIME_STAMP>`.
-In addition, tests built from the built-in CAFE unittest driver will generate csv statistics files in
-`<USER_HOME>/.cloudcafe/logs/<PRODUCT>/<CONFIGURATION>/statistics` for each and ever execution of each and every test
-case that provides metrics of execution over time for elapsed time, pass/fail rates, etc.
+To execute a Syntribos test, 
+run syntribos specifying the configuration file and payload file(s) you want to use.
+```
+$ syntribos identity.config payloads/API_NAME/list_users.txt
+```
 
-
-Basic CloudCAFE Package Anatomy
+Basic Syntribos Package Anatomy
 -------------------------------
-Below is a short description of the top level CloudCAFE Packages.
+Below is a short description of the top level Syntribos Packages.
 
-* **cloudcafe**
-  This is the root package for all things CloudCAFE.
-
-* **common**
-  Contains modules that extend the CAFE Core engine specific to OpenStack. This is the primary namespace for tools,
-  data generators, common reporting classes, etc.
-
-* **identity**
-  OpenStack Identity Service plug-in based on CAFE Core extensions.
-
-* **compute**
-  OpenStack Compute plug-in based on CAFE Core extensions.
-
-* **blockstorage**
-  OpenStack Block Storage plug-in based on CAFE Core extensions.
-
-* **objectstorage**
-  OpenStack Object Storage plug-in based on CAFE Core extensions.
-
-
-Join us
--------
-
-* IRC: #cafehub on irc.freenode.net
-* Mailing list: openstack-dev@lists.openstack.org
+TBD
