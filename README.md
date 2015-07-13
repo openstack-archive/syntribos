@@ -25,7 +25,7 @@ Syntribos, An automated API scanner
 ----------------------------------------
 </pre>
 
-Syntribos is an automated API scanner/fuzzer utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe) 
+Syntribos is an automated API scanner/fuzzer utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe).
 Syntribos has the capability to test any API, but is designed with [OpenStack](http://http://www.openstack.org/) applications in mind. 
 It is built using the [Open CAFE Core](https://github.com/stackforge/opencafe).
 
@@ -38,7 +38,8 @@ execution on Windows.
 
 Installation
 ------------
-CloudCafe (required)
+**CloudCafe** (required)
+
 CloudCAFE can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository after it is cloned to
 a local machine.
 
@@ -47,7 +48,8 @@ a local machine.
 * CD to the cloned cloudcafe repository directory.
 * Run `pip install . --upgrade` so that pip will auto-install all other dependencies.
 
-Syntribos
+**Syntribos**
+
 Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository after it is cloned to
 a local machine.
 
@@ -68,7 +70,7 @@ $ cp syntribos/data/* .opencafe/data/`
 Create a configuration file for the API being tested 
 
 ```
-mkdir .opencafe/configs/API_NAME.conf
+mkdir .opencafe/configs/API_NAME.config
 ```
 
 Example configuration file:
@@ -90,6 +92,7 @@ endpoint=https://AUTH.API.ENDPOINT.com/v2.0
 ```
 
 Create a directory to store payloads for API being tested.
+
 Create a directory to store the payloads for the resources being tested. 
 
 ```
@@ -98,7 +101,7 @@ $ mkdir payload/API_NAME
 ```
 
 Create a payload file for the resource being tested 
-* Note the extension specified to retrieve the X-Auth-Token using Rackspace Cloud Auth
+* Note the extension specified. This retrieves the X-Auth-Token using Rackspace Cloud Auth. The [auth] endpoint is specified in the the configuration file above.
 
 ```
 $ vi payloads/API_NAME/list_users.txt`
@@ -141,7 +144,7 @@ Running Syntribos
 To execute a Syntribos test, 
 run syntribos specifying the configuration file and payload file(s) you want to use.
 ```
-$ syntribos identity.config payloads/API_NAME/list_users.txt
+$ syntribosAPI_NAMEE.config payloads/API_NAME/list_users.txt
 ```
 
 Basic Syntribos Package Anatomy
