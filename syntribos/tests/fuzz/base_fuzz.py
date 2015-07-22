@@ -47,8 +47,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
         return False
 
     @classmethod
-    def _get_strings(cls):
-        path = os.path.join(data_dir, cls.data_key)
+    def _get_strings(cls, file_name=None):
+        path = os.path.join(data_dir, file_name or cls.data_key)
         with open(path, "rb") as fp:
             return fp.read().splitlines()
 
@@ -92,3 +92,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
             setattr(request_copy, cls.test_type, data)
             request_copy.prepare_request()
             yield name, request_copy
+
+
+class BaseFuzzDataDrivenValidatorTestCase(BaseFuzzTestCase):
+    def test_case(self):
+        super(BaseFuzzDataDrivenValidatorTestCase, self).test_case()
+        for line in self._get_strings(self.detect_key):
+            self.assertNotIn(line, self.resp.content)
