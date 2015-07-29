@@ -24,15 +24,18 @@ class RequestHelperMixin(object):
     def _run_iters_dict(cls, dic, action_field=""):
         for key, val in dic.iteritems():
             dic[key] = val = cls._replace_iter(val)
+            if isinstance(val, basestring):
+                val = val.replace(action_field, "")
+            elif isinstance(val, dict):
+                cls._run_iters_dict(val, action_field)
+            elif isinstance(val, list):
+                cls._run_iters_list(val, action_field)
+
             if isinstance(key, basestring):
                 new_key = cls._replace_iter(key).replace(action_field, "")
                 if new_key != key:
                     del dic[key]
                     dic[new_key] = val
-            if isinstance(val, dict):
-                cls._run_iters_dict(val, action_field)
-            elif isinstance(val, list):
-                cls._run_iters_list(val, action_field)
         return dic
 
     @classmethod
