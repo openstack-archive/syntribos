@@ -95,6 +95,7 @@ class RequestObject(RequestHelperMixin):
         self.headers = self._run_iters(self.headers, self.action_field)
         self.params = self._run_iters(self.params, self.action_field)
         self.data = self._string_data(self.data)
+        self.url = self._replace_iter(self.url)
 
     def get_prepared_copy(self):
         copy = deepcopy(self)

@@ -343,8 +343,8 @@ class Auth(BaseIdentityModel):
     xmlns = V2_0Constants.XML_NS
 
     def __init__(
-            self, password_creds=None, rsa_creds=None, token_creds=None,
-            api_key_creds=None, domain=None, tenant_name=None, tenant_id=None):
+            self, password_creds=None, token_creds=None,
+            api_key_creds=None, tenant_name=None, tenant_id=None):
         password_creds = password_creds or EmptyModel()
         token_creds = token_creds or EmptyModel()
         api_key_creds = api_key_creds or EmptyModel()
@@ -365,10 +365,8 @@ class Auth(BaseIdentityModel):
             element, {"tenantName": self.tenant_name, "xmlns": self.xmlns,
                       "tenantId": self.tenant_id})
         element.append(self.password_creds._obj_to_xml_ele())
-        element.append(self.rsa_creds._obj_to_xml_ele())
         element.append(self.token_creds._obj_to_xml_ele())
         element.append(self.api_key_creds._obj_to_xml_ele())
-        element.append(self.domain._obj_to_xml_ele())
         return element
 
 
@@ -415,38 +413,4 @@ class APIKeyCredentials(BaseIdentityModel):
         attrs = {
             "username": self.username, "apiKey": self.api_key,
             "xmlns": self.xmlns}
-        return self._set_xml_etree_element(element, attrs)
-
-
-class RSACredentials(BaseIdentityModel):
-    xmlns = V2_0Constants.XML_NS_RAX_AUTH
-
-    def __init__(self, username=None, rsa_key=None):
-        super(RSACredentials, self).__init__(locals())
-
-    def _obj_to_dict(self):
-        attrs = {"username": self.username, "tokenKey": self.rsa_key}
-        return self._remove_empty_values(attrs)
-
-    def _obj_to_xml_ele(self):
-        element = ET.Element('RAX-AUTH:rsaCredentials')
-        attrs = {
-            "username": self.username, "tokenKey": self.rsa_key,
-            "xmlns:RAX-AUTH": self.xmlns}
-        return self._set_xml_etree_element(element, attrs)
-
-
-class Domain(BaseIdentityModel):
-    xmlns = V2_0Constants.XML_NS_RAX_AUTH
-
-    def __init__(self, name=None):
-        super(Domain, self).__init__(locals())
-
-    def _obj_to_dict(self):
-        attrs = {"name": self.name}
-        return self._remove_empty_values(attrs)
-
-    def _obj_to_xml_ele(self):
-        element = ET.Element("RAX-AUTH:domain")
-        attrs = {"name": self.name, "xmlns:RAX-AUTH": self.xmlns}
         return self._set_xml_etree_element(element, attrs)
