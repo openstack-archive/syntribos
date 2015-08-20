@@ -16,10 +16,6 @@ limitations under the License.
 
 from xml.etree import ElementTree
 
-from syntribos.tests.fuzz.base_fuzz import BaseFuzzConfig
-
-config = BaseFuzzConfig()
-
 
 class FuzzBehavior(object):
     """
@@ -29,7 +25,7 @@ class FuzzBehavior(object):
     """
 
     @classmethod
-    def fuzz_data(cls, strings, data, skip_var, name_prefix):
+    def fuzz_data(cls, strings, data, skip_var, name_prefix, string_fuzz_name):
         for str_num, stri in enumerate(strings, 1):
             if isinstance(data, dict):
                 model_iter = cls._build_combinations(stri, data, skip_var)
@@ -45,10 +41,10 @@ class FuzzBehavior(object):
                 yield (name, model)
 
     @classmethod
-    def _build_str_combinations(cls, string, url):
-        rep_str = "{{{0}}}".format(config.string_fuzz_name)
+    def _build_str_combinations(cls, name, string, url):
+        rep_str = "{{{0}}}".format(name)
         if rep_str in url:
-            string = url.format(**{config.string_fuzz_name: string})
+            string = url.format(**{name: string})
             yield string
 
     @classmethod

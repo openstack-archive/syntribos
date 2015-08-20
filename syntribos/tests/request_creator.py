@@ -27,6 +27,11 @@ _iterators = {}
 
 
 class RequestHelperMixin(object):
+    """
+    Provides functionality to dynamically update iterator objects with the next
+    returned object.
+    """
+
     @classmethod
     def _run_iters(cls, data, action_field):
         if isinstance(data, dict):

@@ -103,7 +103,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
             fuzz_file=cls.data_key)
         for name, data in FuzzBehavior.fuzz_data(
                 strings, getattr(request, cls.test_type),
-                request.action_field, prefix_name):
+                request.action_field, prefix_name,
+                cls.config.string_fuzz_name):
             request_copy = request.get_copy()
             setattr(request_copy, cls.test_type, data)
             request_copy.prepare_request()
