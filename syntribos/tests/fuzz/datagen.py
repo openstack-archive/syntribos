@@ -22,6 +22,12 @@ config = BaseFuzzConfig()
 
 
 class FuzzBehavior(object):
+    """
+    FuzzBehavior provides the fuzz_data function which yields a test name and
+    all iterations of a given piece of data (currently supports dict,
+    ElementTree.Element, and basestring formats) with each string provided.
+    """
+
     @classmethod
     def fuzz_data(cls, strings, data, skip_var, name_prefix):
         for str_num, stri in enumerate(strings, 1):
@@ -68,6 +74,10 @@ class FuzzBehavior(object):
 
     @staticmethod
     def _merge_dictionaries(x, y):
+        """
+        Uses the copy function to create a merged dictionary without squashing
+        the passed in objects
+        """
         z = x.copy()
         z.update(y)
         return z
@@ -88,18 +98,27 @@ class FuzzBehavior(object):
 
     @staticmethod
     def _update_element(ele, stri):
+        """
+        Returns a copy of the element with the element text replaced by stri
+        """
         ret = ele.copy()
         ret.text = stri
         return ret
 
     @staticmethod
     def _update_attribs(ele, attribs):
+        """
+        Returns a copy of the element with the attributes replaced by attribs
+        """
         ret = ele.copy()
         ret.attrib = attribs
         return ret
 
     @staticmethod
     def _update_inner_element(ele, list_):
+        """
+        Returns a copy of the element with the subelements given via list_
+        """
         ret = ele.copy()
         for i, v in enumerate(list_):
             ret[i] = v
