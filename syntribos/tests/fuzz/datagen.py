@@ -32,7 +32,8 @@ class FuzzBehavior(object):
             elif isinstance(data, ElementTree.Element):
                 model_iter = cls._build_xml_combinations(stri, data, skip_var)
             elif isinstance(data, basestring):
-                model_iter = cls._build_str_combinations(stri, data)
+                model_iter = cls._build_str_combinations(
+                    string_fuzz_name, stri, data)
             else:
                 raise TypeError("Format not recognized!")
             for model_num, model in enumerate(model_iter, 1):
