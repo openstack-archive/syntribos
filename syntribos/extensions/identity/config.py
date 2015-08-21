@@ -17,7 +17,7 @@ limitations under the License.
 from cafe.engine.models.data_interfaces import ConfigSectionInterface
 
 
-class UserAuthConfig(ConfigSectionInterface):
+class EndpointConfig(ConfigSectionInterface):
     SECTION_NAME = 'auth'
 
     @property
@@ -45,6 +45,10 @@ class UserConfig(ConfigSectionInterface):
         return self.get_raw("password")
 
     @property
+    def user_id(self):
+        return self.get("user_id")
+
+    @property
     def tenant_id(self):
         return self.get("tenant_id")
 
@@ -62,3 +66,11 @@ class UserConfig(ConfigSectionInterface):
         example the admin user needs to use an internal endpoint.
         """
         return self.get("endpoint")
+
+    @property
+    def domain_id(self):
+        return self.get("domain_id")
+
+    @property
+    def domain_name(self):
+        return self.get("domain_name")
