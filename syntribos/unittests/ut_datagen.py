@@ -10,7 +10,7 @@ class FuzzBehaviorUnittest(unittest.TestCase):
         strings = ["test"]
 
         for i, d in enumerate(FuzzBehavior.fuzz_data(
-                strings, data, "ACTION_FIELD:", "unittest"), 1):
+                strings, data, "ACTION_FIELD:", "unittest", "FUZZ"), 1):
             name, model = d
             assert model.get("a").get("ACTION_FIELD:d") == "e"
             assert model.get("a").get("b") == "test"
@@ -27,8 +27,18 @@ class FuzzBehaviorUnittest(unittest.TestCase):
         strings = ["test"]
 
         for i, d in enumerate(FuzzBehavior.fuzz_data(
-                strings, data, "ACTION_FIELD:", "unittest"), 1):
+                strings, data, "ACTION_FIELD:", "unittest", "FUZZ"), 1):
             name, model = d
             assert model[1].tag == "ACTION_FIELD:d" and model[1].text == "e"
             assert model.text == "test" or model[0].text == "test"
+            assert name == "unitteststr1_model{0}".format(i)
+
+    def test_fuzz_data_string(self):
+        data = "THIS_IS_MY_STRING_THERE_ARE_MANY_LIKE_IT_BUT_THIS_IS_MINE/FUZZ"
+        strings = ["test"]
+
+        for i, d in enumerate(FuzzBehavior.fuzz_data(
+                strings, data, "ACTION_FIELD:", "unittest", "FUZZ"), 1):
+            name, model = d
+            assert "test" in model
             assert name == "unitteststr1_model{0}".format(i)
