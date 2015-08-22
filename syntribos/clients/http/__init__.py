@@ -13,13 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-from cafe.engine.models.data_interfaces import ConfigSectionInterface
-
-
-class BaseFuzzConfig(ConfigSectionInterface):
-    SECTION_NAME = "fuzz"
-
-    @property
-    def percent(self):
-        return float(self.get("percent", 200.0))
+# flake8: noqa
+from syntribos.clients.http.parser import RequestCreator as parser
+from syntribos.clients.http.client import SynHTTPClient as client

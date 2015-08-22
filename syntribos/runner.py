@@ -34,6 +34,8 @@ from syntribos.tests.base import test_table
 from syntribos.config import MainConfig
 from syntribos.arguments import SyntribosCLI
 
+result = None
+
 
 class Runner(object):
     @classmethod
@@ -53,11 +55,6 @@ class Runner(object):
         for k, v in sorted(test_table.items()):
             if any([True for t in test_types if t in k]):
                 yield k, v
-
-    @classmethod
-    def print_tests(cls):
-        for name, test in cls.get_tests():
-            print(name)
 
     @staticmethod
     def print_symbol():
@@ -96,6 +93,7 @@ class Runner(object):
 
     @classmethod
     def run(cls):
+        global result
         requests.packages.urllib3.disable_warnings()
         try:
             cls.print_symbol()

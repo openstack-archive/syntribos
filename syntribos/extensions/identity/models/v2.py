@@ -91,10 +91,12 @@ class Token(BaseIdentityModel):
 
     @classmethod
     def _dict_to_obj(cls, data):
+        if data is None:
+            return None
         return cls(id_=data.get('id'),
                    expires=data.get('expires'),
                    issued_at=data.get('issued_at'),
-                   tenant=Tenant._dict_to_obj(data.get('tenant')))
+                   tenant=Tenant._dict_to_obj(data.get('tenant', {})))
 
     @classmethod
     def _xml_ele_to_obj(cls, data):

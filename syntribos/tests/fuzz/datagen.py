@@ -13,11 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import re
 from xml.etree import ElementTree
 
+from syntribos.clients.http import parser
+from syntribos.clients.http.models import RequestObject, RequestHelperMixin
 
-class FuzzBehavior(object):
+
+class FuzzMixin(object):
     """
     FuzzBehavior provides the fuzz_data function which yields a test name and
     all iterations of a given piece of data (currently supports dict,
@@ -25,7 +28,7 @@ class FuzzBehavior(object):
     """
 
     @classmethod
-    def fuzz_data(cls, strings, data, skip_var, name_prefix, string_fuzz_name):
+    def _fuzz_data(cls, strings, data, skip_var, name_prefix):
         for str_num, stri in enumerate(strings, 1):
             if isinstance(data, dict):
                 model_iter = cls._build_combinations(stri, data, skip_var)
@@ -41,11 +44,12 @@ class FuzzBehavior(object):
                 yield (name, model)
 
     @classmethod
-    def _build_str_combinations(cls, name, string, url):
-        rep_str = "{{{0}}}".format(name)
-        if rep_str in url:
-            string = url.format(**{name: string})
-            yield string
+    def _build_str_combinations(cls, string, data):
+        for match in re.finditer(r"{[^}]*}", data):
+            start, stop = match.span()
+            yield "{0}{1}{2}".format(
+                cls.remove_braces(data[:start]),
+                string, cls.remove_braces(data[stop+1:]))
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
@@ -119,3 +123,27 @@ class FuzzBehavior(object):
         for i, v in enumerate(list_):
             ret[i] = v
         return ret
+
+    @staticmethod
+    def remove_braces(string):
+        return string.replace("}", "").replace("{", "")
+
+
+class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
+    def fuzz_request(self, strings, fuzz_type, name_prefix):
+        for name, data in self._fuzz_data(
+            strings, getattr(self, fuzz_type), self.action_field,
+                name_prefix):
+            request_copy = self.get_copy()
+            setattr(request_copy, fuzz_type, data)
+            request_copy.prepare_request(fuzz_type)
+            yield name, request_copy
+
+    def prepare_request(self, fuzz_type=None):
+        super(FuzzRequest, self).prepare_request()
+        if fuzz_type != "url":
+            self.url = self.remove_braces(self.url)
+
+
+class FuzzParser(parser):
+    request_model_type = FuzzRequest

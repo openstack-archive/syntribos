@@ -16,10 +16,10 @@ limitations under the License.
 
 import os
 
-from syntribos.clients.http import SynHTTPClient, RequestCreator
+from syntribos.clients.http import client
 from syntribos.tests import base
 from syntribos.tests.fuzz.config import BaseFuzzConfig
-from syntribos.tests.fuzz.datagen import FuzzBehavior
+from syntribos.tests.fuzz.datagen import FuzzParser
 
 
 data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
@@ -27,7 +27,9 @@ data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
 
 class BaseFuzzTestCase(base.BaseTestCase):
     config = BaseFuzzConfig()
-    client = SynHTTPClient()
+    client = client()
+    failure_keys = None
+    success_keys = None
 
     @classmethod
     def validate_length(cls):
@@ -39,7 +41,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         resp_len = len(cls.resp.content or "")
         request_diff = req_len - init_req_len
         response_diff = resp_len - init_resp_len
-        percent_diff = abs(float(response_diff) / init_resp_len) * 100
+        percent_diff = abs(float(response_diff) / (init_resp_len + 1)) * 100
         msg = (
             "Validate Length:\n"
             "\tInitial request length: {0}\n"
@@ -69,6 +71,19 @@ class BaseFuzzTestCase(base.BaseTestCase):
             return fp.read().splitlines()
 
     @classmethod
+    def data_driven_failure_cases(cls):
+        if cls.failure_keys is None:
+            return
+        for line in cls.failure_keys:
+            cls.assertNotIn(line, cls.resp.content)
+
+    @classmethod
+    def data_driven_pass_cases(cls):
+        if cls.success_keys is None:
+            return True
+        assert any(True for s in cls.success_keys if s in cls.resp.content)
+
+    @classmethod
     def setUpClass(cls):
         """being used as a setup test not"""
         super(BaseFuzzTestCase, cls).setUpClass()
@@ -80,39 +95,20 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def test_case(self):
         self.assertTrue(self.resp.status_code < 500)
         self.assertTrue(self.validate_length())
+        self.data_driven_failure_cases()
+        self.data_driven_pass_cases()
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
         # maybe move this block to base.py
-        request_obj = RequestCreator.create_request(
+        request_obj = FuzzParser.create_request(
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_response = cls.client.send_request(prepared_copy)
         # end block
 
-        for fuzz_name, request in cls._get_fuzz_requests(
-                request_obj, cls._get_strings()):
-            full_name = "({filename})_{fuzz_name}".format(
-                filename=filename, fuzz_name=fuzz_name)
-            yield cls.extend_class(full_name, {"request": request})
-
-    @classmethod
-    def _get_fuzz_requests(cls, request, strings):
-        prefix_name = "({test_name})_({fuzz_file})_".format(
-            test_name=cls.test_name,
-            fuzz_file=cls.data_key)
-        for name, data in FuzzBehavior.fuzz_data(
-                strings, getattr(request, cls.test_type),
-                request.action_field, prefix_name,
-                cls.config.string_fuzz_name):
-            request_copy = request.get_copy()
-            setattr(request_copy, cls.test_type, data)
-            request_copy.prepare_request()
-            yield name, request_copy
-
-
-class BaseFuzzDataDrivenValidatorTestCase(BaseFuzzTestCase):
-    def test_case(self):
-        super(BaseFuzzDataDrivenValidatorTestCase, self).test_case()
-        for line in self._get_strings(self.detect_key):
-            self.assertNotIn(line, self.resp.content)
+        prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
+            filename=filename, test_name=cls.test_name, fuzz_file=cls.data_key)
+        for fuzz_name, request in request_obj.fuzz_request(
+                cls._get_strings(), cls.test_type, prefix_name):
+            yield cls.extend_class(fuzz_name, {"request": request})

@@ -13,13 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from cafe.engine.http.client import HTTPClient
 
-from cafe.engine.models.data_interfaces import ConfigSectionInterface
 
-
-class BaseFuzzConfig(ConfigSectionInterface):
-    SECTION_NAME = "fuzz"
-
-    @property
-    def percent(self):
-        return float(self.get("percent", 200.0))
+class SynHTTPClient(HTTPClient):
+    def send_request(self, r):
+        return self.request(
+            method=r.method, url=r.url, headers=r.headers, params=r.params,
+            data=r.data)
