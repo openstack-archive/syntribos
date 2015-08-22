@@ -35,8 +35,7 @@ class FuzzMixin(object):
             elif isinstance(data, ElementTree.Element):
                 model_iter = cls._build_xml_combinations(stri, data, skip_var)
             elif isinstance(data, basestring):
-                model_iter = cls._build_str_combinations(
-                    string_fuzz_name, stri, data)
+                model_iter = cls._build_str_combinations(stri, data)
             else:
                 raise TypeError("Format not recognized!")
             for model_num, model in enumerate(model_iter, 1):
@@ -93,7 +92,7 @@ class FuzzMixin(object):
             for i, element in enumerate(list(ele)):
                 for ret in cls._build_xml_combinations(
                         stri, element, skip_var):
-                    list_ = [_ for _ in ele.getchildren()]
+                    list_ = list(ele)
                     list_[i] = ret.copy()
                     yield cls._update_inner_element(ele, list_)
 

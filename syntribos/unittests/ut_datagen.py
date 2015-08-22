@@ -1,16 +1,16 @@
 from xml.etree import ElementTree
 import unittest2 as unittest
 
-from syntribos.tests.fuzz.datagen import FuzzBehavior
+from syntribos.tests.fuzz.datagen import FuzzMixin
 
 
-class FuzzBehaviorUnittest(unittest.TestCase):
+class FuzzMixinUnittest(unittest.TestCase):
     def test_fuzz_data_dict(self):
         data = {"a": {"b": "c", "ACTION_FIELD:d": "e"}}
         strings = ["test"]
 
-        for i, d in enumerate(FuzzBehavior.fuzz_data(
-                strings, data, "ACTION_FIELD:", "unittest", "FUZZ"), 1):
+        for i, d in enumerate(FuzzMixin._fuzz_data(
+                strings, data, "ACTION_FIELD:", "unittest"), 1):
             name, model = d
             assert model.get("a").get("ACTION_FIELD:d") == "e"
             assert model.get("a").get("b") == "test"
@@ -26,8 +26,8 @@ class FuzzBehaviorUnittest(unittest.TestCase):
         data.append(sub_ele2)
         strings = ["test"]
 
-        for i, d in enumerate(FuzzBehavior.fuzz_data(
-                strings, data, "ACTION_FIELD:", "unittest", "FUZZ"), 1):
+        for i, d in enumerate(FuzzMixin._fuzz_data(
+                strings, data, "ACTION_FIELD:", "unittest"), 1):
             name, model = d
             assert model[1].tag == "ACTION_FIELD:d" and model[1].text == "e"
             assert model.text == "test" or model[0].text == "test"
@@ -37,8 +37,8 @@ class FuzzBehaviorUnittest(unittest.TestCase):
         data = "THIS_IS_MY_STRING_THERE_ARE_MANY_LIKE_IT_BUT_THIS_IS_MINE/FUZZ"
         strings = ["test"]
 
-        for i, d in enumerate(FuzzBehavior.fuzz_data(
-                strings, data, "ACTION_FIELD:", "unittest", "FUZZ"), 1):
+        for i, d in enumerate(FuzzMixin._fuzz_data(
+                strings, data, "ACTION_FIELD:", "unittest"), 1):
             name, model = d
             assert "test" in model
             assert name == "unitteststr1_model{0}".format(i)
