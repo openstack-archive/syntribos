@@ -152,3 +152,10 @@ Basic Syntribos Package Anatomy
 Below is a short description of the top level Syntribos Packages.
 
 TBD
+
+Executing Unittests
+-------------------
+Navigate to the syntribos root directory
+```
+python -m unittest discover syntribos/ -p ut_*.py
+```
