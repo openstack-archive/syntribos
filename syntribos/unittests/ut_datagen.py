@@ -49,7 +49,7 @@ class FuzzMixinUnittest(unittest.TestCase):
             assert name == "unitteststr1_model{0}".format(i)
 
     def test_fuzz_data_string(self):
-        data = "THIS_IS_MY_STRING_THERE_ARE_MANY_LIKE_IT_BUT_THIS_IS_MINE/FUZZ"
+        data = "THIS_IS_MY_STRING_THERE_ARE_MANY_LIKE_IT_BUT_THIS_IS_MINE/{ST}"
         strings = ["test"]
 
         for i, d in enumerate(FuzzMixin._fuzz_data(
