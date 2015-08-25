@@ -1,0 +1,12 @@
+POST /v3/domains HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.rax_auth.client:get_token:["user"]|
+Content-type: application/json
+
+{
+    "domain": {
+        "description": "Domain description",
+        "enabled": true,
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}
