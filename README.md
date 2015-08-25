@@ -26,8 +26,10 @@ Syntribos, An automated API scanner
 </pre>
 
 Syntribos is an automated API scanner/fuzzer utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe).
+
+Given a simple configuration file and an example HTTP request, Syntribos can replace any API URL, URL parameter, HTTP header and request body field with a given set of strings. This is similar to Burp Proxy's Intruder sniper attack, but Syntribos iterates through each position automatically.  
+
 Syntribos has the capability to test any API, but is designed with [OpenStack](http://http://www.openstack.org/) applications in mind. 
-It is built using the [Open CAFE Core](https://github.com/stackforge/opencafe).
 
 
 Supported Operating Systems
@@ -44,18 +46,20 @@ Installation
 Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository.
 
 * Run `pip install git+git://github.com/PATH_TO_REPO/syntribos` so that pip will auto-install all other dependencies.
-* To enable autocomplete for Syntribos, run the following command `. scripts/syntribos-completion`
+* To enable autocomplete for Syntribos, run the command `. scripts/syntribos-completion`
 
 
 Configuration
 --------------
-Copy the Syntribos data directory to OpenCafe 
+Copy the Syntribos data directory to OpenCafe. This directory contains the fuzz string files.
 
 ```
-$ cp syntribos/data/* .opencafe/data/`
+$ cp syntribos/data/* .opencafe/data/
 ```
 
-Create a configuration directory and file for the API being tested 
+*If using the configuration and payload example provided in `syntribos/examples` , skip ahead to "Running Syntribos"*
+
+Create a configuration directory and file for the API being tested. For the examples
 
 ```
 mkdir .opencafe/configs
@@ -145,10 +149,11 @@ Basic Syntribos Test Anatomy
 The tests included at release time include LDAP injection, SQL injection, integer overflow and the generic all_attacks.
 
 
-In order to run a specific test, simply use the `-t, --test-types` option and provide syntribos with a keyword or keywords to match from the test files located in `syntribos/tests/fuzz/`
+In order to run a specific test, simply use the `-t, --test-types` option and provide syntribos with a keyword or keywords to match from the test files located in `syntribos/tests/fuzz/` .
+
 For SQL injection tests, use:
 ```
-$ syntribos API_NAME.config payloads/API_NAME/list_users.txt SQL
+$ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t SQL
 ```
 For SQL injection tests against the payload body only, use:
 ```
@@ -161,7 +166,7 @@ $ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t HEADERS
 
 **Call External**
 
-Syntribos payload files can be supplemented with data that can be variable or retrieved from external sources. This is handled using 'extensions.'
+Syntribos payload files can be supplemented with variable data, or data retrieved from external sources. This is handled using 'extensions.'
 
 Extensions are found in `syntribos/syntribos/extensions/` . 
 
