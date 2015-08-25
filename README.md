@@ -140,7 +140,7 @@ $ syntribos API_NAME.config payloads/API_NAME/
 Basic Syntribos Test Anatomy
 -------------------------------
 
-** Test Types **
+**Test Types**
 
 The tests included at release time include LDAP injection, SQL injection, integer overflow and the generic all_attacks.
 
@@ -159,7 +159,7 @@ For all tests against HTTP headers only, use:
 $ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t HEADERS
 ```
 
-** Call External **
+**Call External**
 
 Syntribos payload files can be supplemented with data that can be variable or retrieved from external sources. This is handled using 'extensions.'
 
@@ -181,7 +181,7 @@ Another example is found in `random_data/client.py` . This returns a UUID when r
 
 The extension function can return one value or be used as a generator if you want it to change for each test.
 
-** Action Field **
+**Action Field**
 
 While Syntribos is designed to test all fields in a request, it can also ignore specific fields through the use of Action Fields.
 If you want to fuzz against a static object ID, use th Action Field indicator as follows:
