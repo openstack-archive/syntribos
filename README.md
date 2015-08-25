@@ -141,10 +141,11 @@ Basic Syntribos Test Anatomy
 -------------------------------
 
 ** Test Types **
+
 The tests included at release time include LDAP injection, SQL injection, integer overflow and the generic all_attacks.
 
 
-In order to run a specific test, simply use the '-t, --test-types' option and provide syntribos with a keyword or keywords to match from the test files located in syntribos/tests/fuzz/
+In order to run a specific test, simply use the `-t, --test-types` option and provide syntribos with a keyword or keywords to match from the test files located in `syntribos/tests/fuzz/`
 For SQL injection tests, use:
 ```
 $ syntribos API_NAME.config payloads/API_NAME/list_users.txt SQL
@@ -159,20 +160,21 @@ $ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t HEADERS
 ```
 
 ** Call External **
+
 Syntribos payload files can be supplemented with data that can be variable or retrieved from external sources. This is handled using 'extensions.'
 
-Extensions are found in syntribos/syntribos/extensions/ . 
+Extensions are found in `syntribos/syntribos/extensions/` . 
 
-One example packaged with Syntribos enables the tester to obtain an auth token from keystone/identity. The code is located in identity/client.py
+One example packaged with Syntribos enables the tester to obtain an auth token from keystone/identity. The code is located in `identity/client.py`
 
 To make use of this extension, add the following to the header of your payload file:
 ```
 X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token:["user"]|
 ```
-The "user" string indicates the data from the configuration file we added in opencafe/configs/API_NAME.config
+The "user" string indicates the data from the configuration file we added in `opencafe/configs/API_NAME.config`
 In the example API_NAME.config, we have user and user2 available.
 
-Another example is found in random_data/client.py . This returns a UUID when random but unique data is needed. This can be used in place of usernames when fuzzing a create user call.
+Another example is found in `random_data/client.py` . This returns a UUID when random but unique data is needed. This can be used in place of usernames when fuzzing a create user call.
 ```
 "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
 ```
@@ -180,6 +182,7 @@ Another example is found in random_data/client.py . This returns a UUID when ran
 The extension function can return one value or be used as a generator if you want it to change for each test.
 
 ** Action Field **
+
 While Syntribos is designed to test all fields in a request, it can also ignore specific fields through the use of Action Fields.
 If you want to fuzz against a static object ID, use th Action Field indicator as follows:
 ```
