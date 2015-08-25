@@ -38,46 +38,35 @@ execution on Windows.
 
 Installation
 ------------
-**CloudCafe** (required)
-
-CloudCAFE can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository after it is cloned to
-a local machine.
-
-* First follow the README instructions to install [Open CAFE Core](https://github.com/stackforge/opencafe).
-* Clone this repository to your local machine.
-* CD to the cloned cloudcafe repository directory.
-* Run `pip install . --upgrade` so that pip will auto-install all other dependencies.
 
 **Syntribos**
 
-Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository after it is cloned to
-a local machine.
+Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository.
 
-* Clone [Syntribos](https://github.com/rackerlabs/syntribos) to the same local directory as CloudCafe.
-* CD to the cloned Syntribos repository directory.
-* Run `pip install . --upgrade` so that pip will auto-install all other dependencies.
+* Run `pip install git+git://github.com/PATH_TO_REPO/syntribos` so that pip will auto-install all other dependencies.
 * To enable autocomplete for Syntribos, run the following command `. scripts/syntribos-completion`
 
 
 Configuration
 --------------
-Copy the Syntribos data directory to CloudCafe 
+Copy the Syntribos data directory to OpenCafe 
 
 ```
 $ cp syntribos/data/* .opencafe/data/`
 ```
 
-Create a configuration file for the API being tested 
+Create a configuration directory and file for the API being tested 
 
 ```
-mkdir .opencafe/configs/API_NAME.config
+mkdir .opencafe/configs
+vi .opencafe/configs/API_NAME.config
 ```
 
 Example configuration file:
 
 ```
 [syntribos]
-endpoint=https://TESTING.API.ENDPOINT.com
+endpoint=https://API.ENDPOINT.TO.BE.TESTED.com
 
 [user]
 username=USERNAME
@@ -97,21 +86,18 @@ Create a directory to store the payloads for the resources being tested.
 
 ```
 $ mkdir payloads
-$ mkdir payload/API_NAME
+$ mkdir payloads/API_NAME
 ```
 
 Create a payload file for the resource being tested 
-* Note the extension specified. This retrieves the X-Auth-Token using Rackspace Cloud Auth. The [auth] endpoint is specified in the the configuration file above.
-
 ```
 $ vi payloads/API_NAME/list_users.txt`
 ```
 
 ```
-GET /v2.0/users?name=&email= HTTP/1.1
+GET /v2.0/users?name=newUser&email=newUser@example.com HTTP/1.1
 Host: TESTING.API.ENDPOINT.com
 Accept: application/json
-X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.rax_auth.client:get_token:["user"]|
 Content-type: application/json
 
 
@@ -144,14 +130,64 @@ Running Syntribos
 To execute a Syntribos test, 
 run syntribos specifying the configuration file and payload file(s) you want to use.
 ```
-$ syntribosAPI_NAMEE.config payloads/API_NAME/list_users.txt
+$ syntribos API_NAME.config payloads/API_NAME/list_users.txt
+```
+To run syntribos against all payload files, just specify the payload directory:
+```
+$ syntribos API_NAME.config payloads/API_NAME/
 ```
 
-Basic Syntribos Package Anatomy
+Basic Syntribos Test Anatomy
 -------------------------------
-Below is a short description of the top level Syntribos Packages.
 
-TBD
+** Test Types **
+The tests included at release time include LDAP injection, SQL injection, integer overflow and the generic all_attacks.
+
+
+In order to run a specific test, simply use the '-t, --test-types' option and provide syntribos with a keyword or keywords to match from the test files located in syntribos/tests/fuzz/
+For SQL injection tests, use:
+```
+$ syntribos API_NAME.config payloads/API_NAME/list_users.txt SQL
+```
+For SQL injection tests against the payload body only, use:
+```
+$ syntribos API_NAME.config payloads/API_NAME/create_user.txt -t SQL_INJECTION_BODY
+```
+For all tests against HTTP headers only, use:
+```
+$ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t HEADERS
+```
+
+** Call External **
+Syntribos payload files can be supplemented with data that can be variable or retrieved from external sources. This is handled using 'extensions.'
+
+Extensions are found in syntribos/syntribos/extensions/ . 
+
+One example packaged with Syntribos enables the tester to obtain an auth token from keystone/identity. The code is located in identity/client.py
+
+To make use of this extension, add the following to the header of your payload file:
+```
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token:["user"]|
+```
+The "user" string indicates the data from the configuration file we added in opencafe/configs/API_NAME.config
+In the example API_NAME.config, we have user and user2 available.
+
+Another example is found in random_data/client.py . This returns a UUID when random but unique data is needed. This can be used in place of usernames when fuzzing a create user call.
+```
+"username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+```
+
+The extension function can return one value or be used as a generator if you want it to change for each test.
+
+** Action Field **
+While Syntribos is designed to test all fields in a request, it can also ignore specific fields through the use of Action Fields.
+If you want to fuzz against a static object ID, use th Action Field indicator as follows:
+```
+"id": "ACTION_FIELD:1a16f348-c8d5-42ec-a474-b1cdf78cf40f",
+```
+The ID provided will remain static for every test.
+
+
 
 Executing Unittests
 -------------------
