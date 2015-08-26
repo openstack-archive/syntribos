@@ -1,4 +1,4 @@
-Syntribos, An automated API scanner
+Syntribos, An Automated API Security Testing Tool 
 ====================================================
 
 <pre>
@@ -25,9 +25,9 @@ Syntribos, An automated API scanner
 ----------------------------------------
 </pre>
 
-Syntribos is an automated API scanner/fuzzer utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe).
+Syntribos is an Automated API Security Testing Tool utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe).
 
-Given a simple configuration file and an example HTTP request, Syntribos can replace any API URL, URL parameter, HTTP header and request body field with a given set of strings. This is similar to Burp Proxy's Intruder sniper attack, but Syntribos iterates through each position automatically.  
+Given a simple configuration file and an example HTTP request, Syntribos can replace any API URL, URL parameter, HTTP header and request body field with a given set of strings. This is similar to Burp Proxy's Intruder sniper attack, but Syntribos iterates through each position automatically. Syntribos aims to automatically detect common security defects such as SQL injection, LDAP injection, buffer overflow, etc. In addtion, Syntribos can be used to help identifying new security defects by fuzzing.   
 
 Syntribos has the capability to test any API, but is designed with [OpenStack](http://http://www.openstack.org/) applications in mind. 
 
@@ -35,13 +35,11 @@ Syntribos has the capability to test any API, but is designed with [OpenStack](h
 Supported Operating Systems
 ---------------------------
 Syntribos has been developed primarily in Linux and Mac environments, however it supports installation and
-execution on Windows.
+execution on Windows. But it has not been tested yet. 
 
 
 Installation
 ------------
-
-**Syntribos**
 
 Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository.
 
@@ -51,81 +49,83 @@ Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the
 
 Configuration
 --------------
-Copy the Syntribos data directory to OpenCafe. This directory contains the fuzz string files.
+Create .opencafe directory. Then, create .opencafe/data and .opencafe/configs directories. Copy the Syntribos data directory to OpenCafe. This directory contains the fuzz string files. Copy the example configuration file to .opencafe/configs directory. 
 
 ```
-$ cp syntribos/data/* .opencafe/data/
-```
-
-*If using the configuration and payload example provided in `syntribos/examples` , skip ahead to "Running Syntribos"*
-
-Create a configuration directory and file for the API being tested. For the examples
-
-```
+$mkdir .opencafe
+$cp syntribos/data/* .opencafe/data/
 mkdir .opencafe/configs
-vi .opencafe/configs/API_NAME.config
+$cp syntribos/examples/configs/keystone.config  .opencafe/configs/.
+```
+
+Modify the configuration files to update your keystone url, API endpoint  and user credentails. 
+
+```
+vi .opencafe/configs/keystone.config
 ```
 
 Example configuration file:
 
 ```
 [syntribos]
-endpoint=https://API.ENDPOINT.TO.BE.TESTED.com
+endpoint=https://YourAPIEndpoint
 
 [user]
-username=USERNAME
-password=PASSWORD
+username=yourusername
+password=yourpassword
+user_id=youruserid
 
-[user2]
-username=USERNAME2
-password=PASSWORD2
 
 [auth]
-endpoint=https://AUTH.API.ENDPOINT.com/v2.0
+endpoint=https://yourkeystoneurl
 ```
 
-Create a directory to store payloads for API being tested.
-
-Create a directory to store the payloads for the resources being tested. 
+Your can create a directory to store the payloads for the resources being tested. The payloads under examples directory can give you quick start. 
 
 ```
 $ mkdir payloads
-$ mkdir payloads/API_NAME
+$ mkdir payloads/keystone
+$ cp syntribos/examples/payloads/keystone/* payloads/keystone/. 
 ```
 
-Create a payload file for the resource being tested 
+Here are some examples for payload files
 ```
-$ vi payloads/API_NAME/list_users.txt`
+$ vi payloads/keystone/domains_post.txt
 ```
 
 ```
-GET /v2.0/users?name=newUser&email=newUser@example.com HTTP/1.1
-Host: TESTING.API.ENDPOINT.com
+POST /v3/domains HTTP/1.1
 Accept: application/json
-Content-type: application/json
-
-
-```
-
-```
-$ vi payloads/API_NAME/create_user.txt
-```
-
-```
-POST /v2.0/users HTTP/1.1
-Host: TESTING.API.ENDPOINT.com
-Accept: application/json
-X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.rax_auth.client:get_token:["user"]|
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 Content-type: application/json
 
 {
-  "user": {
-    "username": "newUser",
-    "email": "newUser@example.com",
-    "enabled": true
+    "domain": {
+        "description": "Domain description",
+        "enabled": true,
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
     }
 }
 
+```
+
+```
+$ vi payloads/keystone/domains_patch.txt
+```
+
+```
+PATCH /v3/domains/c45412aa3cb74824a222c2f051bd62ac HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+{
+    "domain": {
+        "description": "Domain description",
+        "enabled": true,
+        "name": "test name"
+    }
+}
 
 ```
 
@@ -134,11 +134,11 @@ Running Syntribos
 To execute a Syntribos test, 
 run syntribos specifying the configuration file and payload file(s) you want to use.
 ```
-$ syntribos API_NAME.config payloads/API_NAME/list_users.txt
+$ syntribos keystone.config payloads/keystone/domains_post.txt
 ```
 To run syntribos against all payload files, just specify the payload directory:
 ```
-$ syntribos API_NAME.config payloads/API_NAME/
+$ syntribos keystone.config payloads/keystone/
 ```
 
 Basic Syntribos Test Anatomy
@@ -153,15 +153,15 @@ In order to run a specific test, simply use the `-t, --test-types` option and pr
 
 For SQL injection tests, use:
 ```
-$ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t SQL
+$ syntribos keystone.config payloads/keystone/domains_post.txt -t SQL
 ```
 For SQL injection tests against the payload body only, use:
 ```
-$ syntribos API_NAME.config payloads/API_NAME/create_user.txt -t SQL_INJECTION_BODY
+$ syntribos keystone.config payloads/keystone/domains_post.txt -t SQL_INJECTION_BODY
 ```
 For all tests against HTTP headers only, use:
 ```
-$ syntribos API_NAME.config payloads/API_NAME/list_users.txt -t HEADERS
+$ syntribos keystone.config payloads/keystone/domains_post.txt -t HEADERS
 ```
 
 **Call External**
@@ -174,10 +174,10 @@ One example packaged with Syntribos enables the tester to obtain an auth token f
 
 To make use of this extension, add the following to the header of your payload file:
 ```
-X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token:["user"]|
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 ```
-The "user" string indicates the data from the configuration file we added in `opencafe/configs/API_NAME.config`
-In the example API_NAME.config, we have user and user2 available.
+The "user" string indicates the data from the configuration file we added in `opencafe/configs/keystone.config`
+
 
 Another example is found in `random_data/client.py` . This returns a UUID when random but unique data is needed. This can be used in place of usernames when fuzzing a create user call.
 ```
