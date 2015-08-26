@@ -41,8 +41,6 @@ execution on Windows. But it has not been tested yet.
 Installation
 ------------
 
-**Syntribos**
-
 Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository.
 
 * Run `pip install git+git://github.com/PATH_TO_REPO/syntribos` so that pip will auto-install all other dependencies.
