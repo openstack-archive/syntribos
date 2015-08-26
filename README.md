@@ -92,7 +92,7 @@ $ cp syntribos/examples/payloads/keystone/* payloads/keystone/.
 
 Here are some examples for payload files
 ```
-$ vi payloads/keystone/domains_post.txt`
+$ vi payloads/keystone/domains_post.txt
 ```
 
 ```
