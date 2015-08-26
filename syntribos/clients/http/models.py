@@ -29,7 +29,7 @@ class RequestHelperMixin(object):
         elif isinstance(data, ElementTree.Element):
             return cls._run_iters_xml(data, action_field)
         elif isinstance(data, basestring):
-            return cls._run_iters_xml(data, action_field)
+            return cls._replace_iter(data)
         else:
             return data
 
