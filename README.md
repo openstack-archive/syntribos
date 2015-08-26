@@ -43,7 +43,7 @@ Installation
 
 Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the git repository.
 
-* Run `pip install git+git://github.com/PATH_TO_REPO/syntribos` so that pip will auto-install all other dependencies.
+* Run `pip install git+git://github.com/rackerlabs/syntribos` so that pip will auto-install all other dependencies.
 * To enable autocomplete for Syntribos, run the command `. scripts/syntribos-completion`
 
 
@@ -68,16 +68,16 @@ Example configuration file:
 
 ```
 [syntribos]
-endpoint=https://YourAPIEndpoint
+endpoint=<yourapiendpoint>
 
 [user]
-username=yourusername
-password=yourpassword
-user_id=youruserid
+username=<yourusername>
+password=<yourpassword>
+user_id=<youruserid>
 
 
 [auth]
-endpoint=https://yourkeystoneurl
+endpoint=<yourkeystoneurl>
 ```
 
 Your can create a directory to store the payloads for the resources being tested. The payloads under examples directory can give you quick start. 
@@ -126,6 +126,19 @@ Content-type: application/json
         "name": "test name"
     }
 }
+
+```
+
+```
+$ vi payloads/keystone/domains_get.txt
+```
+
+```
+GET /v3/domains/{c45412aa3cb74824a222c2f051bd62ac} HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+
 
 ```
 
@@ -191,7 +204,7 @@ The extension function can return one value or be used as a generator if you wan
 While Syntribos is designed to test all fields in a request, it can also ignore specific fields through the use of Action Fields.
 If you want to fuzz against a static object ID, use th Action Field indicator as follows:
 ```
-"id": "ACTION_FIELD:1a16f348-c8d5-42ec-a474-b1cdf78cf40f",
+"ACTION_FIELD:id": "1a16f348-c8d5-42ec-a474-b1cdf78cf40f",
 ```
 The ID provided will remain static for every test.
 
