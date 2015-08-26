@@ -1,4 +1,4 @@
-Syntribos, An automated API scanner
+Syntribos, An Automated API Security Testing Tool 
 ====================================================
 
 <pre>
@@ -25,7 +25,7 @@ Syntribos, An automated API scanner
 ----------------------------------------
 </pre>
 
-Syntribos is an automated API security scanner/fuzzer utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe).
+Syntribos is an Automated API Security Testing Tool utilizing the [Open CAFE Framework](https://github.com/stackforge/opencafe).
 
 Given a simple configuration file and an example HTTP request, Syntribos can replace any API URL, URL parameter, HTTP header and request body field with a given set of strings. This is similar to Burp Proxy's Intruder sniper attack, but Syntribos iterates through each position automatically. Syntribos aims to automatically detect common security defects such as SQL injection, LDAP injection, buffer overflow, etc. In addtion, Syntribos can be used to help identifying new security defects by fuzzing.   
 
