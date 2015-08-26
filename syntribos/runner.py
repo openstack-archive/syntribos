@@ -39,6 +39,11 @@ result = None
 
 class Runner(object):
     @classmethod
+    def print_tests(cls):
+        for name, test in cls.get_tests():
+            print(name)
+
+    @classmethod
     def load_modules(cls, package):
         if not os.environ.get("CAFE_CONFIG_FILE_PATH"):
             os.environ["CAFE_CONFIG_FILE_PATH"] = "./"
