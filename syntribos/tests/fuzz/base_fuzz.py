@@ -50,7 +50,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
             "\tResponse length: {3}\n"
             "\tRequest difference: {4}\n"
             "\tResponse difference: {5}\n"
-            "\tPrecent difference: {6}\n"
+            "\tPercent difference: {6}\n"
             "\tConfig percent: {7}\n").format(
             init_req_len, init_resp_len, req_len, resp_len, request_diff,
             response_diff, percent_diff, cls.config.percent)
