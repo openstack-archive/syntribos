@@ -206,7 +206,10 @@ response body....: {"message": "The server could not comply with the request sin
         Precent difference: 0.0
         Config percent: 200.0
 ```
-and data related to the test results:
+Note the "Validate Length" section at the end. This is used to help determine whether the test passed or failed.
+If the _Percent difference_ exceeds the _Config percent_ the test has failed. The _Config percent_ is set in `syntribos/syntribos/tests/fuzz/config.py`. The _Percent difference_ is calculated in `syntribos/syntribos/tests/fuzz/base_fuzz.py`. Additional validations, such as looking for SQL strings or stack traces, can be added to individual tests.
+
+The Logs also contain a summary of data related to the test results above:
 ```
 2015-08-18 14:44:12,466: INFO: root: ========================================================
 2015-08-18 14:44:12,466: INFO: root: Test Case......: test_case
