@@ -40,7 +40,7 @@ class RequestCreator(object):
                 break
         method, url, params, version = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
-        data = cls._parse_data(lines[index+1:])
+        data = cls._parse_data(lines[index + 1:])
         return cls.request_model_type(
             method=method, url=url, headers=headers, params=params, data=data,
             action_field=action_field)

@@ -49,7 +49,7 @@ class FuzzMixin(object):
             start, stop = match.span()
             yield "{0}{1}{2}".format(
                 cls.remove_braces(data[:start]),
-                string, cls.remove_braces(data[stop+1:]))
+                string, cls.remove_braces(data[stop + 1:]))
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):

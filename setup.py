@@ -14,22 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from setuptools import setup, find_packages
+import os
 
 
-requires = open('pip-requires').readlines()
+base_path = os.path.dirname(os.path.abspath(__file__))
+requires = open(os.path.join(base_path, 'pip-requires')).readlines()
 setup(
     name='syntribos',
     version='0.0.1',
     description=('API Security Scanner'),
     long_description='{0}\n\n{1}'.format(
-        open('README.md').read(),
-        open('HISTORY.rst').read()),
+        open(os.path.join(base_path, 'README.md')).read(),
+        open(os.path.join(base_path, 'HISTORY.rst')).read()),
     author='Rackspace Cloud QE',
     author_email='nathan.buckner@rackspace.com',
     packages=find_packages(),
     include_package_data=True,
     install_requires=requires,
-    license=open('LICENSE').read(),
+    license=open(os.path.join(base_path, 'LICENSE')).read(),
     zip_safe=False,
     entry_points={'console_scripts': [
         'syntribos = syntribos.runner:entry_point']},
