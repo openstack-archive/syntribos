@@ -19,7 +19,6 @@ import pkgutil
 import sys
 import time
 import unittest
-import unittest.runner
 
 import requests
 
@@ -34,8 +33,10 @@ import cafe.drivers.unittest.suite
 
 import syntribos.arguments
 import syntribos.config
+from syntribos.result import IssueTestResult
 import syntribos.tests as tests
 import syntribos.tests.base
+
 
 result = None
 
@@ -119,7 +120,8 @@ class Runner(object):
             init_root_log_handler()
 
             cls.print_log()
-            result = unittest.TextTestResult(
+
+            result = IssueTestResult(
                 unittest.runner._WritelnDecorator(sys.stdout),
                 True, 2 if args.verbose else 1)
             start_time = time.time()
@@ -143,7 +145,7 @@ class Runner(object):
             for test in suite:
                 print(test)
         else:
-            suite(result)
+            suite.run(result)
 
     @classmethod
     def set_env(cls):
@@ -159,7 +161,7 @@ class Runner(object):
         failures = len(result.failures)
         errors = len(result.errors)
 
-        print("{0}".format("-" * 70))
+        print("\n{0}".format("-" * 70))
         print("Ran {0} test{1} in {2:.3f}s".format(
             tests, "s" * bool(tests - 1), run_time))
         if failures or errors:
