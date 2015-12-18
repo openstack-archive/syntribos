@@ -1,1 +1,1 @@
-include README.md LICENSE pip-requires HISTORY.rst
+include README.md LICENSE requirements.txt HISTORY.rst

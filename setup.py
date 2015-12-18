@@ -1,46 +1,29 @@
-"""
-Copyright 2015 Rackspace
+# Copyright (c) 2013 Hewlett-Packard Development Company, L.P.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+# THIS FILE IS MANAGED BY THE GLOBAL REQUIREMENTS REPO - DO NOT EDIT
+import setuptools
 
-    http://www.apache.org/licenses/LICENSE-2.0
+# In python < 2.7.4, a lazy loading of package `pbr` will break
+# setuptools if some other modules registered functions in `atexit`.
+# solution from: http://bugs.python.org/issue15881#msg170215
+try:
+    import multiprocessing  # noqa
+except ImportError:
+    pass
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-from setuptools import setup, find_packages
-import os
-
-
-base_path = os.path.dirname(os.path.abspath(__file__))
-requires = open(os.path.join(base_path, 'pip-requires')).readlines()
-setup(
-    name='syntribos',
-    version='0.0.1',
-    description=('API Security Scanner'),
-    long_description='{0}\n\n{1}'.format(
-        open(os.path.join(base_path, 'README.md')).read(),
-        open(os.path.join(base_path, 'HISTORY.rst')).read()),
-    author='Rackspace Cloud QE',
-    author_email='nathan.buckner@rackspace.com',
-    packages=find_packages(),
-    include_package_data=True,
-    install_requires=requires,
-    license=open(os.path.join(base_path, 'LICENSE')).read(),
-    zip_safe=False,
-    entry_points={'console_scripts': [
-        'syntribos = syntribos.runner:entry_point']},
-    classifiers=(
-        'Development Status :: 1 - Planning',
-        'Intended Audience :: Developers',
-        'Natural Language :: English',
-        'License :: Other/Proprietary License',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',))
+setuptools.setup(
+    setup_requires=['pbr>=1.8'],
+    pbr=True)
