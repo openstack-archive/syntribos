@@ -17,10 +17,10 @@ limitations under the License.
 import os
 
 from syntribos.clients.http import client
+from syntribos.issue import Issue
 from syntribos.tests import base
 import syntribos.tests.fuzz.config
 import syntribos.tests.fuzz.datagen
-
 
 data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
 
@@ -72,31 +72,93 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def data_driven_failure_cases(cls):
+        failure_assertions = []
         if cls.failure_keys is None:
-            return
+            return []
         for line in cls.failure_keys:
-            cls.assertNotIn(line, cls.resp.content)
+            failure_assertions.append([(cls.assertNotIn,
+                                        line, cls.resp.content)])
+        return failure_assertions
 
     @classmethod
     def data_driven_pass_cases(cls):
         if cls.success_keys is None:
             return True
-        assert any(True for s in cls.success_keys if s in cls.resp.content)
+        for s in cls.success_keys:
+            if s in cls.resp.content:
+                return True
+        return False
 
     @classmethod
     def setUpClass(cls):
         """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()
+        cls.issues = []
+        cls.failures = []
         cls.resp = cls.client.request(
             method=cls.request.method, url=cls.request.url,
             headers=cls.request.headers, params=cls.request.params,
             data=cls.request.data)
 
+    @classmethod
+    def tearDownClass(cls):
+        super(BaseFuzzTestCase, cls).tearDownClass()
+        for issue in cls.issues:
+            if issue.failure:
+                cls.failures.append(issue.as_dict())
+
     def test_case(self):
-        self.assertTrue(self.resp.status_code < 500)
-        self.assertTrue(self.validate_length())
-        self.data_driven_failure_cases()
-        self.data_driven_pass_cases()
+        self.register_issue(
+            Issue(test="500_errors",
+                  severity="Low",
+                  text="This request generates a 500 error",
+                  assertions=[(self.assertTrue, self.resp.status_code < 500)])
+        )
+        self.register_issue(
+            Issue(test="length_diff",
+                  severity="Low",
+                  text=("The difference in length between the response to the"
+                        "baseline request and the request returned when"
+                        "sending an attack string exceeds {0} percent, which"
+                        "could indicate a vulnerability to injection attacks")
+                  .format(self.config.percent),
+                  assertions=[(self.assertTrue, self.validate_length())]))
+        self.register_issue(
+            Issue(test="injection_strings",
+                  severity="Medium",
+                  text=("A known attack string was included in the response."
+                        "This could indicate a vulnerability to injection"
+                        "attacks."),
+                  assertions=self.data_driven_failure_cases()))
+        self.register_issue(
+            Issue(test="success_strings",
+                  severity="Low",
+                  text=("None of the expected strings in [{0}] can be found in"
+                        "the response").format(self.success_keys),
+                  assertions=[(self.assertTrue,
+                              self.data_driven_pass_cases())]))
+        self.test_issues()
+
+    def register_issue(self, issue=None):
+        """Adds an issue to the test's list of issues
+
+        Creates a new issue object, and associates the test's request
+        and response to it. In addition, adds the issue to the test's
+        list of issues
+        """
+
+        if not issue:
+            issue = Issue()
+        issue.request = self.resp.request
+        issue.response = self.resp
+
+        self.issues.append(issue)
+
+        return issue
+
+    def test_issues(self):
+        for issue in self.issues:
+            issue.run_tests()
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
