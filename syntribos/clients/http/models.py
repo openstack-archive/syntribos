@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from copy import deepcopy
-from xml.etree import ElementTree
+import copy
 import json
+import xml.etree.ElementTree as ElementTree
 
 
 _iterators = {}
@@ -86,21 +86,24 @@ class RequestHelperMixin(object):
         return string
 
     def prepare_request(self):
-        """ it should be noted this function does not make a request copy
-            destroying iterators in request.  A copy should be made if making
-            multiple requests"""
+        """prepare a request
+
+        it should be noted this function does not make a request copy
+        destroying iterators in request.  A copy should be made if making
+        multiple requests
+        """
         self.data = self._run_iters(self.data, self.action_field)
         self.headers = self._run_iters(self.headers, self.action_field)
         self.params = self._run_iters(self.params, self.action_field)
         self.data = self._string_data(self.data)
 
     def get_prepared_copy(self):
-        copy = deepcopy(self)
-        copy.prepare_request()
-        return copy
+        local_copy = copy.deepcopy(self)
+        local_copy.prepare_request()
+        return local_copy
 
     def get_copy(self):
-        return deepcopy(self)
+        return copy.deepcopy(self)
 
 
 class RequestObject(object):

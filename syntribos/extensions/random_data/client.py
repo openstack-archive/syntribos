@@ -18,7 +18,9 @@ import uuid
 
 
 def get_uuid():
-    """Simple function for generating random data.
+    """get_uuid
+
+    Simple function for generating random data.
     Use for a unique value for each request when fuzzing.
     """
     while True:

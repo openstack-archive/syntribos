@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import argparse
 import os
 import sys
-import argparse
 
-from cafe.drivers.unittest.arguments import ConfigAction
+import cafe.drivers.unittest.arguments
 
 
 class InputType(object):
@@ -57,7 +57,8 @@ class SyntribosCLI(argparse.ArgumentParser):
 
     def _add_args(self):
         self.add_argument(
-            "config", metavar="<config>", action=ConfigAction,
+            "config", metavar="<config>",
+            action=cafe.drivers.unittest.arguments.ConfigAction,
             help="test config.  Looks in the ~/.opencafe/configs directory"
             "Example: compute/dev.environ")
 

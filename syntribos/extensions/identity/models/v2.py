@@ -16,10 +16,12 @@ limitations under the License.
 import json
 from xml.etree import ElementTree as ET
 
-from syntribos.extensions.identity.models.base import BaseIdentityModel
+import syntribos.extensions.identity.models.base
 
 
-class AuthResponse(BaseIdentityModel):
+class AuthResponse(
+    syntribos.extensions.identity.models.base.BaseIdentityModel
+    ):
     def __init__(
             self, token=None, service_catalog=None, user=None, metadata=None):
             super(AuthResponse, self).__init__(locals())
@@ -53,7 +55,7 @@ class AuthResponse(BaseIdentityModel):
         return None
 
 
-class Metadata(BaseIdentityModel):
+class Metadata(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
     @classmethod
     def _dict_to_obj(cls, data):
@@ -64,7 +66,7 @@ class Metadata(BaseIdentityModel):
         return data.attrib
 
 
-class Tenant(BaseIdentityModel):
+class Tenant(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, enabled=None, description=None, name=None, id_=None):
         super(Tenant, self).__init__(locals())
 
@@ -85,7 +87,7 @@ class Tenant(BaseIdentityModel):
                    name=data_dict.get('name'))
 
 
-class Token(BaseIdentityModel):
+class Token(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, id_=None, issued_at=None, expires=None, tenant=None):
         super(Token, self).__init__(locals())
 
@@ -106,7 +108,7 @@ class Token(BaseIdentityModel):
                    tenant=Tenant._xml_ele_to_obj(data.find('tenant')))
 
 
-class User(BaseIdentityModel):
+class User(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(
             self, id_=None, name=None, username=None, roles=None):
         super(User, self).__init__(locals())
@@ -129,7 +131,7 @@ class User(BaseIdentityModel):
                 cls._find(data, "roles"), "role", Role))
 
 
-class Service(BaseIdentityModel):
+class Service(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(
             self, endpoints=None, name=None, type_=None):
         super(Service, self).__init__(locals())
@@ -147,7 +149,7 @@ class Service(BaseIdentityModel):
             name=data.attrib.get("name"), type_=data.attrib.get("type"))
 
 
-class Endpoint(BaseIdentityModel):
+class Endpoint(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(
             self, region=None, id_=None, public_url=None, admin_url=None,
             internal_url=None, private_url=None, version_id=None,
@@ -179,7 +181,7 @@ class Endpoint(BaseIdentityModel):
                    version_list=ele.attrib.get('versionList'))
 
 
-class Role(BaseIdentityModel):
+class Role(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(
         self, id_=None, name=None, description=None,
             tenant_id=None, service_id=None):
@@ -204,7 +206,7 @@ class Role(BaseIdentityModel):
             description=data.get("description"))
 
 
-class Auth(BaseIdentityModel):
+class Auth(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(
             self, password_creds=None, tenant_id=None, tenant_name=None):
         super(Auth, self).__init__(locals())
@@ -224,7 +226,9 @@ class Auth(BaseIdentityModel):
         return self._remove_empty_values(ele)
 
 
-class PasswordCredentials(BaseIdentityModel):
+class PasswordCredentials(
+    syntribos.extensions.identity.models.base.BaseIdentityModel
+    ):
     def __init__(self, username=None, password=None):
         super(PasswordCredentials, self).__init__(locals())
 

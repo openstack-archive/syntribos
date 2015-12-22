@@ -13,15 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from importlib import import_module
-from uuid import uuid4
-from xml.etree import ElementTree
+import importlib
 import json
 import re
 import types
 import urlparse
+import uuid
+import xml.etree.ElementTree as ElementTree
 
-from syntribos.clients.http.models import RequestObject, _iterators
+from syntribos.clients.http.models import _iterators
+from syntribos.clients.http.models import RequestObject
 
 
 class RequestCreator(object):
@@ -32,7 +33,7 @@ class RequestCreator(object):
     @classmethod
     def create_request(cls, string, endpoint):
         string = cls.call_external_functions(string)
-        action_field = str(uuid4()).replace("-", "")
+        action_field = str(uuid.uuid4()).replace("-", "")
         string = string.replace(cls.ACTION_FIELD, action_field)
         lines = string.splitlines()
         for index, line in enumerate(lines):
@@ -76,10 +77,10 @@ class RequestCreator(object):
             return ""
         try:
             data = json.loads(data)
-        except:
+        except Exception:
             try:
                 data = ElementTree.fromstring(data)
-            except:
+            except Exception:
                 raise Exception("Unknown Data format")
         return data
 
@@ -95,14 +96,14 @@ class RequestCreator(object):
             dot_path = match.group(1)
             func_name = match.group(2)
             arg_list = match.group(3)
-            mod = import_module(dot_path)
+            mod = importlib.import_module(dot_path)
             func = getattr(mod, func_name)
             args = json.loads(arg_list)
             val = func(*args)
             if isinstance(val, types.GeneratorType):
-                uuid = str(uuid4()).replace("-", "")
-                string = re.sub(cls.EXTERNAL, uuid, string, count=1)
-                _iterators[uuid] = val
+                local_uuid = str(uuid.uuid4()).replace("-", "")
+                string = re.sub(cls.EXTERNAL, local_uuid, string, count=1)
+                _iterators[local_uuid] = val
             else:
                 string = re.sub(cls.EXTERNAL, str(val), string, count=1)
         return string

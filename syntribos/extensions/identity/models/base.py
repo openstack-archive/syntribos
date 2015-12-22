@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import json
-import six
-from xml.etree import ElementTree as ET
+import xml.etree.ElementTree as ET
 
-from cafe.engine.models.base import AutoMarshallingModel
+import cafe.engine.models.base
+import six
 
 
 class Namespaces(object):
@@ -27,7 +27,7 @@ class Namespaces(object):
     XMLNS_RAX_AUTH = "http://docs.rackspace.com/identity/api/ext/RAX-AUTH/v1.0"
 
 
-class BaseIdentityModel(AutoMarshallingModel):
+class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
     _namespaces = Namespaces
 
     def __init__(self, kwargs):
@@ -111,7 +111,9 @@ class BaseIdentityModel(AutoMarshallingModel):
 
     @classmethod
     def _remove_empty_values(cls, data):
-        """Returns a new dictionary based on 'dictionary', minus any keys with
+        """Remove empty values
+
+        Returns a new dictionary based on 'dictionary', minus any keys with
         values that evaluate to False
         """
         if isinstance(data, dict):

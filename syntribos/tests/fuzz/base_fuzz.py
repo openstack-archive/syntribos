@@ -18,15 +18,15 @@ import os
 
 from syntribos.clients.http import client
 from syntribos.tests import base
-from syntribos.tests.fuzz.config import BaseFuzzConfig
-from syntribos.tests.fuzz.datagen import FuzzParser
+import syntribos.tests.fuzz.config
+import syntribos.tests.fuzz.datagen
 
 
 data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
 
 
 class BaseFuzzTestCase(base.BaseTestCase):
-    config = BaseFuzzConfig()
+    config = syntribos.tests.fuzz.config.BaseFuzzConfig()
     client = client()
     failure_keys = None
     success_keys = None
@@ -85,7 +85,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
-        """being used as a setup test not"""
+        """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()
         cls.resp = cls.client.request(
             method=cls.request.method, url=cls.request.url,
@@ -101,7 +101,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
     @classmethod
     def get_test_cases(cls, filename, file_content):
         # maybe move this block to base.py
-        request_obj = FuzzParser.create_request(
+        request_obj = syntribos.tests.fuzz.datagen.FuzzParser.create_request(
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_response = cls.client.send_request(prepared_copy)

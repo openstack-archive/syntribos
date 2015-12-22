@@ -13,10 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from syntribos.extensions.identity.models.base import BaseIdentityModel
+import syntribos.extensions.identity.models.base
 
 
-class Auth(BaseIdentityModel):
+class Auth(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(
             self, identity=None, scope=None):
         super(Auth, self).__init__(locals())
@@ -27,7 +27,7 @@ class Auth(BaseIdentityModel):
             "scope": self._get_sub_model(self.scope)})}
 
 
-class Identity(BaseIdentityModel):
+class Identity(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, token=None, password=None, methods=None):
         super(Identity, self).__init__(locals())
 
@@ -38,7 +38,7 @@ class Identity(BaseIdentityModel):
             "token": self._get_sub_model(self.token)})
 
 
-class Password(BaseIdentityModel):
+class Password(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, user=None):
         super(Password, self).__init__(locals())
 
@@ -47,7 +47,7 @@ class Password(BaseIdentityModel):
             "user": self._get_sub_model(self.user)})
 
 
-class User(BaseIdentityModel):
+class User(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, id_=None, password=None, name=None, domain=None):
         super(User, self).__init__(locals())
 
@@ -59,7 +59,7 @@ class User(BaseIdentityModel):
             "domain": self._get_sub_model(self.domain)})
 
 
-class Token(BaseIdentityModel):
+class Token(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, id_=None):
         super(Token, self).__init__(locals())
 
@@ -67,7 +67,7 @@ class Token(BaseIdentityModel):
         return self._remove_empty_values({"id": self.id_})
 
 
-class Scope(BaseIdentityModel):
+class Scope(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, project=None, domain=None):
         super(Scope, self).__init__(locals())
 
@@ -77,7 +77,7 @@ class Scope(BaseIdentityModel):
             "domain": self._get_sub_model(self.domain)})
 
 
-class Domain(BaseIdentityModel):
+class Domain(syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, name=None, id_=None):
         super(Domain, self).__init__(locals())
 

@@ -16,17 +16,18 @@ limitations under the License.
 import re
 from xml.etree import ElementTree
 
+from syntribos.clients.http.models import RequestHelperMixin
+from syntribos.clients.http.models import RequestObject
 from syntribos.clients.http import parser
-from syntribos.clients.http.models import RequestObject, RequestHelperMixin
 
 
 class FuzzMixin(object):
-    """
-    FuzzBehavior provides the fuzz_data function which yields a test name and
-    all iterations of a given piece of data (currently supports dict,
+    """FuzzMixin Class
+
+    FuzzBehavior provides the fuzz_data function which yields a test name
+    and all iterations of a given piece of data (currently supports dict,
     ElementTree.Element, and basestring formats) with each string provided.
     """
-
     @classmethod
     def _fuzz_data(cls, strings, data, skip_var, name_prefix):
         for str_num, stri in enumerate(strings, 1):
@@ -74,10 +75,12 @@ class FuzzMixin(object):
 
     @staticmethod
     def _merge_dictionaries(x, y):
-        """
+        """merge the dictionaries
+
         Uses the copy function to create a merged dictionary without squashing
         the passed in objects
         """
+
         z = x.copy()
         z.update(y)
         return z
@@ -98,7 +101,8 @@ class FuzzMixin(object):
 
     @staticmethod
     def _update_element(ele, stri):
-        """
+        """update element
+
         Returns a copy of the element with the element text replaced by stri
         """
         ret = ele.copy()
@@ -107,7 +111,8 @@ class FuzzMixin(object):
 
     @staticmethod
     def _update_attribs(ele, attribs):
-        """
+        """update attributes
+
         Returns a copy of the element with the attributes replaced by attribs
         """
         ret = ele.copy()
@@ -116,7 +121,8 @@ class FuzzMixin(object):
 
     @staticmethod
     def _update_inner_element(ele, list_):
-        """
+        """Update inner element
+
         Returns a copy of the element with the subelements given via list_
         """
         ret = ele.copy()

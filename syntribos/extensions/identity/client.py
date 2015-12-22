@@ -13,11 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from cafe.engine.http.client import AutoMarshallingHTTPClient
+import cafe.engine.http.client
 
-from syntribos.extensions.identity.models import v2, v3
-from syntribos.extensions.identity.config import (
-    EndpointConfig, UserConfig)
+import syntribos.extensions.identity.config
+import syntribos.extensions.identity.models.v2 as v2
+import syntribos.extensions.identity.models.v3 as v3
 
 
 def authenticate_v2(
@@ -25,7 +25,8 @@ def authenticate_v2(
     tenant_id=None, token=None, domain=None, serialize_format="json",
         deserialize_format="json"):
     url = '{0}/v2.0/tokens'.format(url)
-    client = AutoMarshallingHTTPClient(serialize_format, deserialize_format)
+    client = cafe.engine.http.client.AutoMarshallingHTTPClient(
+        serialize_format, deserialize_format)
     client.default_headers["Content-Type"] = "application/{0}".format(
         serialize_format)
     client.default_headers["Accept"] = "application/{0}".format(
@@ -69,8 +70,11 @@ def authenticate_v2_config(user_config, userauth_config):
 
 def get_token_v2(user_section_name=None, endpoint_section_name=None):
     access_data = authenticate_v2_config(
-        UserConfig(section_name=user_section_name),
-        EndpointConfig(section_name=endpoint_section_name)).entity
+        syntribos.extensions.identity.config.UserConfig(
+            section_name=user_section_name),
+        syntribos.extensions.identity.config.EndpointConfig(
+            section_name=endpoint_section_name
+            )).entity
     return access_data.token.id_
 
 
@@ -79,7 +83,7 @@ def authenticate_v3(
         domain_name=None, token=None):
 
     url = '{0}/v3/auth/tokens'.format(url)
-    client = AutoMarshallingHTTPClient("json", "json")
+    client = cafe.engine.http.client.AutoMarshallingHTTPClient("json", "json")
     client.default_headers["Content-Type"] = "application/json"
     client.default_headers["Accept"] = "application/json"
 
@@ -119,6 +123,8 @@ def authenticate_v3_config(user_config, endpoint_config):
 
 def get_token_v3(user_section_name=None, endpoint_section_name=None):
     r = authenticate_v3_config(
-        UserConfig(section_name=user_section_name),
-        EndpointConfig(section_name=endpoint_section_name))
+        syntribos.extensions.identity.config.UserConfig(
+            section_name=user_section_name),
+        syntribos.extensions.identity.config.EndpointConfig(
+            section_name=endpoint_section_name))
     return r.headers.get("X-Subject-Token")

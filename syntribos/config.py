@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from cafe.engine.models.data_interfaces import ConfigSectionInterface
+import cafe.engine.models.data_interfaces as data_interfaces
 
 
-class MainConfig(ConfigSectionInterface):
+class MainConfig(data_interfaces.ConfigSectionInterface):
     SECTION_NAME = "syntribos"
 
     @property

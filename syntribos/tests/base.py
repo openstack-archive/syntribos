@@ -14,16 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from string import ascii_letters, digits
+import string as t_string
 
-from cafe.drivers.unittest.fixtures import BaseTestFixture
+import cafe.drivers.unittest.fixtures
+import six
 
-ALLOWED_CHARS = "().-_{0}{1}".format(ascii_letters, digits)
+ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 test_table = {}
 
 
 def replace_invalid_characters(string, new_char="_"):
-    """This functions corrects string so the following is true
+    """Replace invalid characters
+
+    This functions corrects string so the following is true
     Identifiers (also referred to as names) are described by the
     following lexical definitions:
     identifier ::=  (letter|"_") (letter | digit | "_")*
@@ -36,7 +39,7 @@ def replace_invalid_characters(string, new_char="_"):
         return string
     for char in set(string) - set(ALLOWED_CHARS):
         string = string.replace(char, new_char)
-    if string[0] in digits:
+    if string[0] in t_string.digits:
         string = string.replace(string[0], new_char, 1)
     return string
 
@@ -52,11 +55,12 @@ class TestType(type):
         return new_class
 
 
-class BaseTestCase(BaseTestFixture):
-    """
+@six.add_metaclass(TestType)
+class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
+    """Bese Class
+
     Base for building new tests
     """
-    __metaclass__ = TestType
     test_name = None
 
     @classmethod

@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from cafe.engine.models.data_interfaces import ConfigSectionInterface
+from cafe.engine.models.data_interfaces import(
+    ConfigSectionInterface as ConfigSectionInterface
+)
 
 
 class BaseFuzzConfig(ConfigSectionInterface):

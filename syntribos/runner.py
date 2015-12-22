@@ -14,25 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from __future__ import print_function
-
-from unittest.runner import _WritelnDecorator
 import os
 import pkgutil
-import requests
 import sys
 import time
 import unittest
+import unittest.runner
 
-from cafe.common.reporting.cclogging import init_root_log_handler
-from cafe.configurator.managers import TestEnvManager
-from cafe.drivers.base import print_exception
-from cafe.drivers.unittest.suite import OpenCafeUnittestTestSuite as TestSuite
+import requests
 
-from syntribos import tests
-from syntribos.tests.base import test_table
-from syntribos.config import MainConfig
-from syntribos.arguments import SyntribosCLI
+from cafe.common.reporting.cclogging import(
+    init_root_log_handler as init_root_log_handler
+)
+from cafe.configurator.managers import(
+    TestEnvManager as TestEnvManager
+)
+import cafe.drivers.base
+import cafe.drivers.unittest.suite
+
+import syntribos.arguments
+import syntribos.config
+import syntribos.tests as tests
+import syntribos.tests.base
 
 result = None
 
@@ -57,13 +60,13 @@ class Runner(object):
     def get_tests(cls, test_types=None):
         cls.load_modules(tests)
         test_types = test_types or [""]
-        for k, v in sorted(test_table.items()):
+        for k, v in sorted(syntribos.tests.base.test_table.items()):
             if any([True for t in test_types if t in k]):
                 yield k, v
 
     @staticmethod
     def print_symbol():
-        """ Syntribos radiation symbol """
+        """Syntribos radiation symbol."""
         border = '-' * 40
         symbol = """               Syntribos
                 xxxxxxx
@@ -107,7 +110,8 @@ class Runner(object):
                 syntribos <config> <input_file> -t TEST_TYPE TEST_TYPE ...
                 syntribos <config> <input_file>
                 """
-            args, unknown = SyntribosCLI(usage=usage).parse_known_args()
+            args, unknown = syntribos.arguments.SyntribosCLI(
+                usage=usage).parse_known_args()
             test_env_manager = TestEnvManager(
                 "", args.config, test_repo_package_name="os")
             test_env_manager.finalize()
@@ -116,7 +120,8 @@ class Runner(object):
 
             cls.print_log()
             result = unittest.TextTestResult(
-                _WritelnDecorator(sys.stdout), True, 2 if args.verbose else 1)
+                unittest.runner._WritelnDecorator(sys.stdout),
+                True, 2 if args.verbose else 1)
             start_time = time.time()
             for file_path, req_str in args.input:
                 for test_name, test_class in cls.get_tests(args.test_types):
@@ -124,12 +129,15 @@ class Runner(object):
                         cls.run_test(test, result, args.dry_run)
             cls.print_result(result, start_time)
         except KeyboardInterrupt:
-            print_exception("Runner", "run", "Keyboard Interrupt, exiting...")
+            cafe.drivers.base.print_exception(
+                "Runner",
+                "run",
+                "Keyboard Interrupt, exiting...")
             exit(0)
 
     @classmethod
     def run_test(cls, test, result, dry_run=False):
-        suite = TestSuite()
+        suite = cafe.drivers.unittest.suite.OpenCafeUnittestTestSuite()
         suite.addTest(test("test_case"))
         if dry_run:
             for test in suite:
@@ -139,12 +147,12 @@ class Runner(object):
 
     @classmethod
     def set_env(cls):
-        config = MainConfig()
+        config = syntribos.config.MainConfig()
         os.environ["SYNTRIBOS_ENDPOINT"] = config.endpoint
 
     @classmethod
     def print_result(cls, result, start_time):
-        """Prints results summerized"""
+        """Prints results summerized."""
         result.printErrors()
         run_time = time.time() - start_time
         tests = result.testsRun

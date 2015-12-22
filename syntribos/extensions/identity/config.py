@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from cafe.engine.models.data_interfaces import ConfigSectionInterface
+import cafe.engine.models.data_interfaces as data_interfaces
 
 
-class EndpointConfig(ConfigSectionInterface):
+class EndpointConfig(data_interfaces.ConfigSectionInterface):
     SECTION_NAME = 'auth'
 
     @property
@@ -33,7 +33,7 @@ class EndpointConfig(ConfigSectionInterface):
         return self.get("deserialize_format", "json")
 
 
-class UserConfig(ConfigSectionInterface):
+class UserConfig(data_interfaces.ConfigSectionInterface):
     SECTION_NAME = 'user'
 
     @property
@@ -62,7 +62,9 @@ class UserConfig(ConfigSectionInterface):
 
     @property
     def endpoint(self):
-        """Added to allow different users to auth at different endpoints.  For
+        """endpoint
+
+        Added to allow different users to auth at different endpoints.  For
         example the admin user needs to use an internal endpoint.
         """
         return self.get("endpoint")
