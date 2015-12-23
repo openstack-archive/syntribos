@@ -1,3 +1,20 @@
+"""
+Copyright 2015 Rackspace
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+
 class Issue(object):
     def __init__(self, severity, test="", text="",
                  request=None, response=None, assertions=[]):
@@ -40,11 +57,13 @@ class Issue(object):
         }
 
     def add_test(self, assertion, *args):
-        '''
+        '''add test
+
         Assertions will be stored as (assertion, arguments) tuples,
         such as (assertTrue, resp.status != 500) or
         (assertNotIn, line, resp.content)
         '''
+
         self.assertions.append((assertion,) + args)
 
     def run_tests(self):
