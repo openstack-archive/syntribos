@@ -15,12 +15,14 @@ limitations under the License.
 """
 import unittest2 as unittest
 
+import testtools
+
 from xml.etree import ElementTree
 
 from syntribos.tests.fuzz.datagen import FuzzMixin
 
 
-class FuzzMixinUnittest(unittest.TestCase):
+class FuzzMixinUnittest(testtools.TestCase):
     def test_fuzz_data_dict(self):
         data = {"a": {"b": "c", "ACTION_FIELD:d": "e"}}
         strings = ["test"]
