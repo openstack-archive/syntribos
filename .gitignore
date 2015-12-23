@@ -59,3 +59,6 @@ target/
 # pbr makes these
 ChangeLog
 AUTHORS
+
+cover/
+.testrepository/
