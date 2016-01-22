@@ -45,6 +45,8 @@ Syntribos can be [installed with pip](https://pypi.python.org/pypi/pip) from the
 
 * Run `pip install git+git://github.com/rackerlabs/syntribos` so that pip will auto-install all other dependencies.
 * To enable autocomplete for Syntribos, run the command `. scripts/syntribos-completion`
+* Run 'cafe-config init' this will create a directory named .opencafe in the user's home directory, or in the case of a python virtualenv, in the virtualenv root folder.
+* Run 'cafe-config plugins install http' this will install the http library and give you the minimum plugins required to use Syntribos.
 
 
 Configuration
