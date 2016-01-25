@@ -76,8 +76,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
         if cls.failure_keys is None:
             return []
         for line in cls.failure_keys:
-            failure_assertions.append([(cls.assertNotIn,
-                                        line, cls.resp.content)])
+            failure_assertions.append((cls.assertNotIn,
+                                      line, cls.resp.content))
         return failure_assertions
 
     @classmethod
@@ -123,20 +123,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
                         "could indicate a vulnerability to injection attacks")
                   .format(self.config.percent),
                   assertions=[(self.assertTrue, self.validate_length())]))
-        self.register_issue(
-            Issue(test="injection_strings",
-                  severity="Medium",
-                  text=("A known attack string was included in the response."
-                        "This could indicate a vulnerability to injection"
-                        "attacks."),
-                  assertions=self.data_driven_failure_cases()))
-        self.register_issue(
-            Issue(test="success_strings",
-                  severity="Low",
-                  text=("None of the expected strings in [{0}] can be found in"
-                        "the response").format(self.success_keys),
-                  assertions=[(self.assertTrue,
-                              self.data_driven_pass_cases())]))
         self.test_issues()
 
     def register_issue(self, issue=None):
