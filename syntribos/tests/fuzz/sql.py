@@ -58,6 +58,7 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
         self.register_issue(
             Issue(test="injection_strings",
                   severity="Medium",
+                  confidence="Low",
                   text=("A string known to be commonly returned after a "
                         "successful SQL injection attack was included in the "
                         "response. This could indicate a vulnerability to "
