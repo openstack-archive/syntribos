@@ -14,10 +14,11 @@ under the License.
 
 
 class Issue(object):
-    def __init__(self, severity, test="", text="",
+    def __init__(self, severity, test="", text="", confidence="",
                  request=None, response=None, assertions=[]):
         self.test = test
         self.severity = severity
+        self.confidence = confidence
         self.text = text
         self.request = request
         self.response = response

@@ -111,12 +111,14 @@ class BaseFuzzTestCase(base.BaseTestCase):
         self.register_issue(
             Issue(test="500_errors",
                   severity="Low",
+                  confidence="High",
                   text="This request generates a 500 error",
                   assertions=[(self.assertTrue, self.resp.status_code < 500)])
         )
         self.register_issue(
             Issue(test="length_diff",
                   severity="Low",
+                  confidence="Low",
                   text=("The difference in length between the response to the"
                         "baseline request and the request returned when"
                         "sending an attack string exceeds {0} percent, which"
