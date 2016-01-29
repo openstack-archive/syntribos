@@ -127,27 +127,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
                   assertions=[(self.assertTrue, self.validate_length())]))
         self.test_issues()
 
-    def register_issue(self, issue=None):
-        """Adds an issue to the test's list of issues
-
-        Creates a new issue object, and associates the test's request
-        and response to it. In addition, adds the issue to the test's
-        list of issues
-        """
-
-        if not issue:
-            issue = Issue()
-        issue.request = self.resp.request
-        issue.response = self.resp
-
-        self.issues.append(issue)
-
-        return issue
-
-    def test_issues(self):
-        for issue in self.issues:
-            issue.run_tests()
-
     @classmethod
     def get_test_cases(cls, filename, file_content):
         # maybe move this block to base.py

@@ -14,10 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import six
+
 import string as t_string
 
 import cafe.drivers.unittest.fixtures
-import six
+
+from syntribos.issue import Issue
 
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 test_table = {}
@@ -78,3 +81,24 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
     def test_case(self):
         pass
+
+    def register_issue(self, issue=None):
+        """Adds an issue to the test's list of issues
+
+        Creates a new issue object, and associates the test's request
+        and response to it. In addition, adds the issue to the test's
+        list of issues
+        """
+
+        if not issue:
+            issue = Issue()
+        issue.request = self.resp.request
+        issue.response = self.resp
+
+        self.issues.append(issue)
+
+        return issue
+
+    def test_issues(self):
+        for issue in self.issues:
+            issue.run_tests()
