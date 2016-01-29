@@ -39,12 +39,12 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
             return []
         for line in self.failure_keys:
             failure_assertions.append((self.assertNotIn,
-                                      line, self.resp.content))
+                                       line, self.resp.content))
         return failure_assertions
 
     def test_case(self):
         self.register_issue(
-            Issue(test="injection_strings",
+            Issue(test="xml_external_entity",
                   severity="Medium",
                   text=("A string known to be commonly returned after a "
                         "successful XML external entity attack was included "
@@ -52,3 +52,19 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
                         "vulnerability to XML entity attacks attacks."),
                   assertions=self.data_driven_failure_cases()))
         self.test_issues()
+
+
+class XMLExternalEntityParams(XMLExternalEntityBody):
+    test_name = "XML_EXTERNAL_ENTITY_PARAMS"
+    test_type = "params"
+
+
+class XMLExternalEntityHeaders(XMLExternalEntityBody):
+    test_name = "XML_EXTERNAL_ENTITY_HEADERS"
+    test_type = "headers"
+
+
+class XMLExternalEntityURL(XMLExternalEntityBody):
+    test_name = "XML_EXTERNAL_ENTITY_URL"
+    test_type = "url"
+    url_var = "FUZZ"
