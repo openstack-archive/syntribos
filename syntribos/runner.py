@@ -121,15 +121,21 @@ class Runner(object):
 
             cls.print_log()
 
-            result = IssueTestResult(
-                unittest.runner._WritelnDecorator(sys.stdout),
-                True, 2 if args.verbose else 1)
+            if not args.output_file:
+                result = IssueTestResult(
+                    unittest.runner._WritelnDecorator(sys.stdout),
+                    True, 2 if args.verbose else 1)
+            else:
+                result = IssueTestResult(
+                    unittest.runner._WritelnDecorator(
+                        open(args.output_file, 'w')),
+                    True, 2 if args.verbose else 1)
             start_time = time.time()
             for file_path, req_str in args.input:
                 for test_name, test_class in cls.get_tests(args.test_types):
                     for test in test_class.get_test_cases(file_path, req_str):
                         cls.run_test(test, result, args.dry_run)
-            cls.print_result(result, start_time)
+            cls.print_result(result, start_time, args)
         except KeyboardInterrupt:
             cafe.drivers.base.print_exception(
                 "Runner",
@@ -153,9 +159,9 @@ class Runner(object):
         os.environ["SYNTRIBOS_ENDPOINT"] = config.endpoint
 
     @classmethod
-    def print_result(cls, result, start_time):
+    def print_result(cls, result, start_time, args):
         """Prints results summerized."""
-        result.printErrors()
+        result.printErrors(args.output_format)
         run_time = time.time() - start_time
         tests = result.testsRun
         failures = len(result.failures)

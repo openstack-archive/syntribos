@@ -32,18 +32,10 @@ class IssueTestResult(unittest.TextTestResult):
             self.stream.flush()
 
     def addError(self, test, err):
-        """Duplicates parent class addError functionality
-
-        Putting this here to get some feedback: unittest treats errors
-        and test failures roughly the same way, but since this is a
-        security tool, a runtime error means differently from a failed
-        test. I think it's ok if tests that result in errors still just
-        printed a stacktrace, but if that's to be changed, it'd be changed
-        here
-        """
+        """Duplicates parent class addError functionality."""
         super(IssueTestResult, self).addError(test, err)
 
-    def printErrors(self):
+    def printErrors(self, output_format):
         if self.dots or self.showAll:
             self.stream.writeln()
         self.printErrorList('ERROR', self.errors)

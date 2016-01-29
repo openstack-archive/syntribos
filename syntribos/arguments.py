@@ -79,3 +79,12 @@ class SyntribosCLI(argparse.ArgumentParser):
             "--dry-run",
             action="store_true",
             help="Dry Run gets all test cases but does not run them")
+
+        self.add_argument(
+            '-o', '--output', dest='output_file', action='store',
+            default=None, help='write report to filename')
+
+        self.add_argument(
+            '-f', '--format', dest='output_format', action='store',
+            default='json', help='specify output format',
+            choices=["json"])
