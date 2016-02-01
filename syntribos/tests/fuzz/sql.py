@@ -56,7 +56,7 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
 
     def test_case(self):
         self.register_issue(
-            Issue(test="injection_strings",
+            Issue(test="sql_strings",
                   severity="Medium",
                   confidence="Low",
                   text=("A string known to be commonly returned after a "
