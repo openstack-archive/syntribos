@@ -32,7 +32,8 @@ class Issue(object):
             'issue_severity': self.severity,
             'issue_text': self.text,
             'request': self.request_as_dict(self.request),
-            'response': self.response_as_dict(self.response)
+            'response': self.response_as_dict(self.response),
+            'issue_confidence': self.confidence
         }
         return out
 
