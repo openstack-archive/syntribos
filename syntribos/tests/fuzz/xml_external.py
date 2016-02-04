@@ -49,7 +49,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
                   text=("A string known to be commonly returned after a "
                         "successful XML external entity attack was included "
                         "in the response. This could indicate a "
-                        "vulnerability to XML entity attacks attacks."),
+                        "vulnerability to XML entity attacks."),
                   assertions=self.data_driven_failure_cases()))
         self.test_issues()
 
