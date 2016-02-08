@@ -39,6 +39,8 @@ class RequestCreator(object):
         for index, line in enumerate(lines):
             if line == "":
                 break
+        if lines[index] != "":
+            index = index + 1
         method, url, params, version = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
         data = cls._parse_data(lines[index + 1:])
