@@ -23,6 +23,8 @@ import cafe.drivers.unittest.fixtures
 from syntribos.issue import Issue
 
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
+
+'''test_table is the master list of tests to be run by the runner'''
 test_table = {}
 
 
@@ -60,7 +62,7 @@ class TestType(type):
 
 @six.add_metaclass(TestType)
 class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
-    """Bese Class
+    """Base Class
 
     Base for building new tests
     """
@@ -72,6 +74,11 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
     @classmethod
     def extend_class(cls, new_name, kwargs):
+        '''Creates an extension for the class
+
+        Each TestCase class created is added to the test_table, which is then
+        read in by the test runner as the master list of tests to be run.
+        '''
         new_name = replace_invalid_characters(new_name)
         if not isinstance(kwargs, dict):
             raise Exception("kwargs must be a dictionary")
@@ -100,5 +107,6 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         return issue
 
     def test_issues(self):
+        '''run assertions for each test registered in test_case.'''
         for issue in self.issues:
             issue.run_tests()

@@ -14,6 +14,13 @@ under the License.
 
 
 class Issue(object):
+    """Object that encapsulates security vulnerability
+
+    This object is designed to hold the metadata associated with
+    an vulnerability, as well as the requests and responses that
+    caused the vulnerability to be flagged. Furthermore, holds the
+    assertions actually run by the test case
+    """
     def __init__(self, severity, test="", text="", confidence="",
                  request=None, response=None, assertions=[]):
         self.test = test
@@ -38,6 +45,7 @@ class Issue(object):
         return out
 
     def request_as_dict(self, req):
+        '''Convert the request object to a dict of values for outputting.'''
         return {
             'url': req.path_url,
             'method': req.method,
@@ -47,6 +55,7 @@ class Issue(object):
         }
 
     def response_as_dict(self, res):
+        '''Convert the response object to a dict of values for outputting.'''
         return {
             'status_code': res.status_code,
             'reason': res.reason,
@@ -67,6 +76,12 @@ class Issue(object):
         self.assertions.append((assertion,) + args)
 
     def run_tests(self):
+        '''Runs assertions associated with each Issue.
+
+        For each (assertion, arguments) tuple in the Issue's list of
+        assertions, run assertion(*arguments). On failure, mark the issue as
+        failed, and raise an AssertionError to the runner
+        '''
         try:
             for assertion in self.assertions:
                 assertion_function = assertion[0]

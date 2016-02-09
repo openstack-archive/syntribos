@@ -18,6 +18,7 @@ import cafe.engine.models.data_interfaces as data_interfaces
 
 
 class MainConfig(data_interfaces.ConfigSectionInterface):
+    '''Reads in configuration data from config file.'''
     SECTION_NAME = "syntribos"
 
     @property
