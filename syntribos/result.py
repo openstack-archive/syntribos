@@ -12,6 +12,7 @@ License for the specific language governing permissions and limitations
 under the License.
 """
 
+import sys
 import unittest
 
 from syntribos.formatters.json_formatter import JSONFormatter
@@ -23,14 +24,38 @@ class IssueTestResult(unittest.TextTestResult):
     A test result class that can return issues raised by tests
     to the Syntribos runner
     """
+    aggregated_failures = {}
+    pruned_failures = []
 
     def addFailure(self, test, err):
+        """Adds failed issues to data structures
+
+        Appends failed issues to the result's list of failures, as well as
+        to a dict of {url:
+                        method:
+                            test_name: issue} structure.
+        """
         self.failures.append((test, test.failures))
+        for issue in test.failures:
+            url = issue.request.url
+            method = issue.request.method
+            if url in self.aggregated_failures:
+                if method in self.aggregated_failures[url]:
+                    if issue.test in self.aggregated_failures[url][method]:
+                        (self.aggregated_failures[url]
+                         [method][issue.test].append(issue))
+                    else:
+                        self.aggregated_failures[url][method][issue.test] = []
+                        self.pruned_failures.append((test, [issue.as_dict()]))
+                else:
+                    self.aggregated_failures[url][method] = {}
+            else:
+                self.aggregated_failures[url] = {}
         if self.showAll:
-            self.stream.writeln("FAIL")
+            sys.stdout.write("FAIL\n")
         elif self.dots:
-            self.stream.write('F')
-            self.stream.flush()
+            sys.stdout.write('F')
+            sys.stdout.flush()
 
     def addError(self, test, err):
         """Duplicates parent class addError functionality."""
@@ -43,6 +68,7 @@ class IssueTestResult(unittest.TextTestResult):
         formatter = formatter_types[output_format]
         if self.dots or self.showAll:
             self.stream.writeln()
+        self.failures = self.pruned_failures
         formatter.report()
 
     def stopTestRun(self):

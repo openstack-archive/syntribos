@@ -101,4 +101,8 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
     def test_issues(self):
         for issue in self.issues:
-            issue.run_tests()
+            try:
+                issue.run_tests()
+            except AssertionError:
+                self.failures.append(issue)
+                raise
