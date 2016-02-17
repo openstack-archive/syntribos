@@ -1,5 +1,5 @@
 """
-Copyright 2015 Rackspace
+Copyright 2016 Rackspace
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import cafe.engine.models.data_interfaces as data_interfaces
+from syntribos.tests.auth import base_auth
 
 
-class MainConfig(data_interfaces.ConfigSectionInterface):
-    SECTION_NAME = "syntribos"
+class AuthWithSomeoneElsesToken(base_auth.BaseAuthTestCase):
+    """AuthWithSomeoneElsesToken Class
 
-    @property
-    def endpoint(self):
-        return self.get("endpoint")
-
-    @property
-    def version(self):
-        return self.get("version")
+    This is just a specialization of the base auth test class
+    which supplies the test name and type.
+    """
+    test_name = "AUTH_WITH_SOMEONE_ELSE_TOKEN"
+    test_type = "headers"

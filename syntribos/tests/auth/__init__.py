@@ -13,17 +13,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-import cafe.engine.models.data_interfaces as data_interfaces
-
-
-class MainConfig(data_interfaces.ConfigSectionInterface):
-    SECTION_NAME = "syntribos"
-
-    @property
-    def endpoint(self):
-        return self.get("endpoint")
-
-    @property
-    def version(self):
-        return self.get("version")
