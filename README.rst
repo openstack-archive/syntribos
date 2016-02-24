@@ -66,27 +66,41 @@ Installation
 Syntribos can be `installed with
 pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
 
--  Run ``pip install git+git://github.com/rackerlabs/syntribos`` so that
-   pip will auto-install all other dependencies.
--  To enable autocomplete for Syntribos, run the command
-   ``. scripts/syntribos-completion``
--  Run ``cafe-config init`` to create a directory named .opencafe
-   in the user's home directory, or in the case of a python virtualenv,
-   in the virtualenv root folder.
--  Run ``cafe-config plugins install http`` to install the http
-   library and give you the minimum plugins required to use Syntribos.
+-  Clone the repository and install it using pip
+
+::
+
+   $git clone https://github.com/openstack/syntribos.git
+   $cd syntribos
+   $pip install . --upgrade
+
+-  To enable autocomplete for Syntribos, run the command.
+
+::
+
+   $. scripts/syntribos-completion
+
+-  Create a directory named .opencafe in the user's home directory, or in the case of a python virtualenv, in the virtualenv root folder.
+
+::
+
+   $cafe-config init
+
+-  Install the http library that gives you the minimum plugins required to use Syntribos.
+
+::
+
+   $cafe-config plugins install http 
 
 Configuration
 -------------
 
-Copy the Syntribos data directory to OpenCafe. This directory contains
-the fuzz string files. Copy the example configuration file to
-``.opencafe/configs directory.``
+Copy the data files from Syntribos data directory to .opencafe/data directory created during "cafe-config init". This directory contains the fuzz string files. Copy the example configuration file to .opencafe/configs directory created during "cafe-config init".
 
 ::
 
-    $cp syntribos/data/* .opencafe/data/
-    $cp syntribos/examples/configs/keystone.config  .opencafe/configs/.
+    $cp data/* .opencafe/data/
+    $cp examples/configs/keystone.config  .opencafe/configs/.
 
 Modify the configuration files to update your keystone URL, API endpoint
 and user credentials.
@@ -119,7 +133,7 @@ start.
 
     $ mkdir payloads
     $ mkdir payloads/keystone
-    $ cp syntribos/examples/payloads/keystone/* payloads/keystone/.
+    $ cp examples/payloads/keystone/* payloads/keystone/.
 
 Here are some examples for payload files
 
