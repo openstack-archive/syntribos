@@ -18,10 +18,9 @@ import uuid
 
 
 def get_uuid():
-    """get_uuid
+    """Generates strings to use where random or unique data is required.
 
-    Simple function for generating random data.
-    Use for a unique value for each request when fuzzing.
+    :returns: universally unique identifiers
     """
     while True:
         random_data = str(uuid.uuid4())
