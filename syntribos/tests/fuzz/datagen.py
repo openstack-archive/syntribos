@@ -30,6 +30,12 @@ class FuzzMixin(object):
     """
     @classmethod
     def _fuzz_data(cls, strings, data, skip_var, name_prefix):
+        """Iterates through model fields and places fuzz string in each field
+
+        For each attribute in the model object, call the _build_combinations
+        method corresponding to the type of the data parameter, which replaces
+        the value with the fuzz string.
+        """
         for str_num, stri in enumerate(strings, 1):
             if isinstance(data, dict):
                 model_iter = cls._build_combinations(stri, data, skip_var)
@@ -46,6 +52,7 @@ class FuzzMixin(object):
 
     @classmethod
     def _build_str_combinations(cls, string, data):
+        """Places fuzz string in fuzz location for string data."""
         for match in re.finditer(r"{[^}]*}", data):
             start, stop = match.span()
             yield "{0}{1}{2}".format(
@@ -54,6 +61,7 @@ class FuzzMixin(object):
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
+        """Places fuzz string in fuzz location for object data."""
         for key, val in dic.iteritems():
             if skip_var in key:
                 continue
@@ -87,6 +95,7 @@ class FuzzMixin(object):
 
     @classmethod
     def _build_xml_combinations(cls, stri, ele, skip_var):
+        """Places fuzz string in fuzz location for XML data."""
         if skip_var not in ele.tag:
             if not ele.text or (skip_var not in ele.text):
                 yield cls._update_element(ele, stri)
@@ -137,6 +146,11 @@ class FuzzMixin(object):
 
 class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
     def fuzz_request(self, strings, fuzz_type, name_prefix):
+        """Creates the fuzzed request object
+
+        Gets the name and the fuzzed request model from _fuzz_data, and
+        creates a request object from the parameters of the model.
+        """
         for name, data in self._fuzz_data(
             strings, getattr(self, fuzz_type), self.action_field,
                 name_prefix):

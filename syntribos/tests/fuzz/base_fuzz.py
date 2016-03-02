@@ -33,6 +33,12 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def validate_length(cls):
+        """Validates length of response
+
+        Compares the length of a fuzzed response with a response to the
+        baseline request. If the response is longer than expected, returns
+        false
+        """
         if getattr(cls, "init_response", False) is False:
             raise NotImplemented
         init_req_len = len(cls.init_response.request.body or "")
@@ -72,6 +78,12 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def data_driven_failure_cases(cls):
+        '''Checks if response contains known bad strings
+
+        Returns a list of assertions that fail if the response contains
+        any string defined in cls.failure_keys as a string indicating a
+        failure to some sort of attack.
+        '''
         failure_assertions = []
         if cls.failure_keys is None:
             return []
@@ -82,6 +94,12 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def data_driven_pass_cases(cls):
+        '''Checks if response contains expected strings
+
+        Returns a list of assertions that fail if the response doesn't contain
+        a string defined in cls.success_keys as a string expected in the
+        response.
+        '''
         if cls.success_keys is None:
             return True
         for s in cls.success_keys:
@@ -108,6 +126,15 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 cls.failures.append(issue.as_dict())
 
     def test_case(self):
+        """Performs the test
+
+        The test runner will call test_case on every TestCase class, and will
+        report any AssertionError raised by this method to the results.
+
+        Any extension to this class should call
+        super(type(self), self).test_case in order to test for the Issues
+        defined here
+        """
         self.register_issue(
             Issue(test="500_errors",
                   severity="Low",
@@ -129,6 +156,16 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
+        """Generates new TestCases for each fuzz string
+
+        First, sends a baseline (non-fuzzed) request, storing it in
+        cls.init_response.
+
+        For each string returned by cls._get_strings(), yield a TestCase class
+        for the string as an extension to the current TestCase class. Every
+        string used as a fuzz test payload entails the generation of a new
+        subclass for each parameter fuzzed. See base.extend_class().
+        """
         # maybe move this block to base.py
         request_obj = syntribos.tests.fuzz.datagen.FuzzParser.create_request(
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
