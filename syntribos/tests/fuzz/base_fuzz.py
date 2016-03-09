@@ -121,9 +121,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
     @classmethod
     def tearDownClass(cls):
         super(BaseFuzzTestCase, cls).tearDownClass()
-        for issue in cls.issues:
-            if issue.failure:
-                cls.failures.append(issue.as_dict())
 
     def test_case(self):
         """Performs the test

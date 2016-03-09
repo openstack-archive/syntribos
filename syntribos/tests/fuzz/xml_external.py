@@ -40,7 +40,8 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         for line in self.failure_keys:
             failure_assertions.append((self.assertNotIn,
                                        line, self.resp.content))
-        return failure_assertions
+        # return failure_assertions
+        return [(self.assertTrue, False)]
 
     def test_case(self):
         self.register_issue(
