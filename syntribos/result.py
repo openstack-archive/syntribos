@@ -12,8 +12,9 @@ License for the specific language governing permissions and limitations
 under the License.
 """
 
-import json
 import unittest
+
+from syntribos.formatters.json_formatter import JSONFormatter
 
 
 class IssueTestResult(unittest.TextTestResult):
@@ -36,28 +37,13 @@ class IssueTestResult(unittest.TextTestResult):
         super(IssueTestResult, self).addError(test, err)
 
     def printErrors(self, output_format):
+        formatter_types = {
+            "json": JSONFormatter(self)
+        }
+        formatter = formatter_types[output_format]
         if self.dots or self.showAll:
             self.stream.writeln()
-        self.printErrorList('ERROR', self.errors)
-        self.printErrorList('FAIL', self.failures)
-
-    def printErrorList(self, flavor, errors):
-        """Prints test failures and errors
-
-        Right now, just spits out the list of Issues as json in the simplest
-        way possible. The idea is to pass this results class into bandit-style
-        formatters
-        """
-        for test, err in errors:
-            self.stream.writeln(self.separator1)
-            self.stream.writeln("%s: %s" %
-                                (flavor, self.getDescription(test)))
-            self.stream.writeln(self.separator2)
-            if flavor == "FAIL":
-                self.stream.writeln("%s" %
-                                    json.dumps(err, sort_keys=True, indent=2))
-            else:
-                self.stream.writeln("%s" % err)
+        formatter.report()
 
     def stopTestRun(self):
         super(IssueTestResult, self).stopTestRun()
