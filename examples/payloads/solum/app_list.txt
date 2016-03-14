@@ -1,0 +1,4 @@
+GET /v1/apps HTTP/1.1
+Accept: */*
+ACTION_FIELD:X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+

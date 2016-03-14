@@ -1,0 +1,4 @@
+GET /v1/language_packs/a509468a-baec-4b24-b1e6-b835a29f8b4d/logs HTTP/1.1
+Accept: */*
+ACTION_FIELD:X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+

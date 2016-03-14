@@ -1,0 +1,6 @@
+POST /v1/apps HTTP/1.1
+Accept: */*
+Content-Type: application/json
+ACTION_FIELD:X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+
+{"description": "default app description.", "parameters": {}, "name": "test", "base_url": "/v1", "languagepack": "python", "source": {"repository": "https://github.com/openstack/syntribos.git", "revision": "master"}, "version": 1, "trigger_actions": ["build", "deploy"], "ports": [80], "workflow_config": {"test_cmd": "", "run_cmd": ""}}

@@ -1,0 +1,6 @@
+POST /v1/apps/e315c9f8-f6eb-4e15-95d0-099937d37778/workflows HTTP/1.1
+Accept: */*
+Content-Type: application/json
+ACTION_FIELD:X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+
+{"base_url": "/v1/apps/e315c9f8-f6eb-4e15-95d0-099937d37778", "actions": ["unittest", "build", "deploy"]}

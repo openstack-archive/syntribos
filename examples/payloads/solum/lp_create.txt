@@ -1,0 +1,6 @@
+POST /v1/language_packs HTTP/1.1
+Accept: */*
+Content-Type: application/json
+ACTION_FIELD:X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+
+{"source_uri": "https://github.com/rackspace-solum-samples/solum-languagepack-python.git", "base_url": "/v1", "name": "python"}
