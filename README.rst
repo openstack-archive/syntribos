@@ -70,27 +70,27 @@ pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
 
 ::
 
-   $git clone https://github.com/openstack/syntribos.git
-   $cd syntribos
-   $pip install . --upgrade
+   $ git clone https://github.com/openstack/syntribos.git
+   $ cd syntribos
+   $ pip install . --upgrade
 
 -  To enable autocomplete for Syntribos, run the command.
 
 ::
 
-   $. scripts/syntribos-completion
+   $ . scripts/syntribos-completion
 
 -  Create a directory named .opencafe in the user's home directory, or in the case of a python virtualenv, in the virtualenv root folder.
 
 ::
 
-   $cafe-config init
+   $ cafe-config init
 
 -  Install the http library that gives you the minimum plugins required to use Syntribos.
 
 ::
 
-   $cafe-config plugins install http 
+   $ cafe-config plugins install http 
 
 Configuration
 -------------
@@ -99,15 +99,15 @@ Copy the data files from Syntribos data directory to .opencafe/data directory cr
 
 ::
 
-    $cp data/* .opencafe/data/
-    $cp examples/configs/keystone.config  .opencafe/configs/.
+    $ cp data/* .opencafe/data/
+    $ cp examples/configs/keystone.config  .opencafe/configs/.
 
 Modify the configuration files to update your keystone URL, API endpoint
 and user credentials.
 
 ::
 
-    vi .opencafe/configs/keystone.config
+    $ vi .opencafe/configs/keystone.config
 
 Example configuration file:
 
@@ -213,7 +213,7 @@ log filename has an easy to follow naming convention.
 
 ::
 
-    $ls .opencafe/logs/keystone.config/2015-08-18_14_44_04.333088/
+    $ ls .opencafe/logs/keystone.config/2015-08-18_14_44_04.333088/
     cafe.master.log
     syntribos.tests.fuzz.integer_overflow.(domains_post.txt)_(INT_OVERFLOW_BODY)_(integer-overflow.txt)_str1_model1.log
     syntribos.tests.fuzz.integer_overflow.(domains_post.txt)_(INT_OVERFLOW_BODY)_(integer-overflow.txt)_str1_model2.log
@@ -362,7 +362,7 @@ you want it to change for each test.
 
 While Syntribos is designed to test all fields in a request, it can also
 ignore specific fields through the use of Action Fields. If you want to
-fuzz against a static object ID, use th Action Field indicator as
+fuzz against a static object ID, use the Action Field indicator as
 follows:
 
 ::
@@ -374,11 +374,11 @@ The ID provided will remain static for every test.
 Executing Unittests
 -------------------
 
-Navigate to the syntribos root directory
+Navigate to the ``syntribos`` root directory
 
 ::
 
-    python -m unittest discover syntribos/ -p ut_*.py
+    $ python -m unittest discover syntribos/ -p ut_*.py
 
 .. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
 .. _Launchpad project: https://launchpad.net/syntribos
