@@ -122,21 +122,22 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def tearDownClass(cls):
         super(BaseFuzzTestCase, cls).tearDownClass()
 
-    def test_case(self):
-        """Performs the test
+    def register_default_tests(self):
+        """Registers default issues
 
-        The test runner will call test_case on every TestCase class, and will
-        report any AssertionError raised by this method to the results.
-
-        Any extension to this class should call
-        super(type(self), self).test_case in order to test for the Issues
-        defined here
+        These issues are not specific to any test type, and can be raised as a
+        result of many different types of attacks. Therefore, they're defined
+        separately from the test_case method so that they are not overwritten
+        by test cases that inherit from BaseFuzzTestCase.
         """
         self.register_issue(
             Issue(test="500_errors",
                   severity="Low",
                   confidence="High",
-                  text="This request generates a 500 error",
+                  text=("This request returns an error with status code >= 500"
+                        "which might indicate some server-side fault that"
+                        "could lead to further vulnerabilities"
+                        ),
                   assertions=[(self.assertTrue, self.resp.status_code < 500)])
         )
         self.register_issue(
@@ -149,6 +150,18 @@ class BaseFuzzTestCase(base.BaseTestCase):
                         "could indicate a vulnerability to injection attacks")
                   .format(self.config.percent),
                   assertions=[(self.assertTrue, self.validate_length())]))
+
+    def test_case(self):
+        """Performs the test
+
+        The test runner will call test_case on every TestCase class, and will
+        report any AssertionError raised by this method to the results.
+
+        Any extension to this class should call
+        super(type(self), self).test_case in order to test for the Issues
+        defined here
+        """
+        self.register_default_tests()
         self.test_issues()
 
     @classmethod

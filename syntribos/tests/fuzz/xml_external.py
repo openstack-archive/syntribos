@@ -44,6 +44,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         return [(self.assertTrue, False)]
 
     def test_case(self):
+        self.register_default_tests()
         self.register_issue(
             Issue(test="xml_external_entity",
                   severity="Medium",

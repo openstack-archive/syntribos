@@ -55,6 +55,7 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
         return failure_assertions
 
     def test_case(self):
+        self.register_default_tests()
         self.register_issue(
             Issue(test="sql_strings",
                   severity="Medium",
