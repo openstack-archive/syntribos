@@ -28,6 +28,7 @@ Index
     logging
     test.anatomy
     unittests
+    contributing
 
 
 Project information
