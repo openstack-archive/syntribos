@@ -1,0 +1,10 @@
+POST /v3/tickets HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+
+{
+    "metadata": "Zhn8yhasf8hihkf...",
+    "signature": "c2lnbmF0dXJl..."
+}

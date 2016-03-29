@@ -1,0 +1,13 @@
+PATCH /v3/users/{0ffd248c55b443eaac5253b4e9cbf9b5} HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+Content-type: application/json
+
+{
+    "user": {
+        "default_project_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "description": "James Doe's user",
+        "email": "jamesdoe@example.com",
+        "enabled": true
+    }
+}

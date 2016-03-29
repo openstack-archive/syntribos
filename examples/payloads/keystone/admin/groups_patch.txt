@@ -1,0 +1,10 @@
+PATCH /v3/groups/{c45412aa3cb74824a222c2f051bd62ac} HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "group": {
+        "description": "Security developers 2016",
+        "name": "user"
+    }
+}

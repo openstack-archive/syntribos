@@ -1,0 +1,10 @@
+PATCH /v3/projects/{0ffd248c55b443eaac5253b4e9cbf9b5}/cascade HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+{
+    "project": {
+        "enabled": true
+    }
+}
