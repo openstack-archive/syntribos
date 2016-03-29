@@ -86,6 +86,11 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         new_cls.__module__ = cls.__module__
         return new_cls
 
+    def run_test(self):
+        self.test_case()
+        if self.failures:
+            raise AssertionError
+
     def test_case(self):
         pass
 
@@ -94,7 +99,7 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
         Creates a new issue object, and associates the test's request
         and response to it. In addition, adds the issue to the test's
-        list of issues
+        list of issues.
         """
 
         if not issue:
@@ -102,15 +107,6 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         issue.request = self.resp.request
         issue.response = self.resp
 
-        self.issues.append(issue)
+        self.failures.append(issue)
 
         return issue
-
-    def test_issues(self):
-        '''run assertions for each test registered in test_case.'''
-        for issue in self.issues:
-            try:
-                issue.run_tests()
-            except AssertionError:
-                self.failures.append(issue)
-                raise

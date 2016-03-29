@@ -32,15 +32,6 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
         'unknown'
         ]
 
-    def data_driven_failure_cases(self):
-        if self.failure_keys is None:
-            return []
-        failure_assertions = []
-        for line in self.failure_keys:
-            failure_assertions.append((self.assertNotIn,
-                                       line, self.resp.content))
-        return failure_assertions
-
     @classmethod
     def _get_strings(cls, file_name=None):
         return [
@@ -50,17 +41,20 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
         ]
 
     def test_case(self):
-        self.register_default_tests()
-        self.register_issue(
-            Issue(test="buffer_overflow",
-                  severity="Medium",
-                  confidence="Low",
-                  text=("A string known to be commonly returned after a "
-                        "successful buffer overflow attack was included "
-                        "in the response. This could indicate a "
-                        "vulnerability to buffer overflow attacks."),
-                  assertions=self.data_driven_failure_cases()))
-        self.test_issues()
+        self.test_default_issues()
+        failed_strings = self.data_driven_failure_cases()
+        if failed_strings:
+            self.register_issue(
+                Issue(test="sql_strings",
+                      severity="Medium",
+                      confidence="Low",
+                      text=("The string(s): \'{0}\', known to be commonly "
+                            "returned after a successful buffer overflow "
+                            "attack, have been found in the response. This "
+                            "could indicate a vulnerability to buffer "
+                            "overflow attacks.").format(failed_strings)
+                      )
+            )
 
 
 class BufferOverflowParams(BufferOverflowBody):
