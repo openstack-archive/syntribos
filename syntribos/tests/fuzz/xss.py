@@ -60,23 +60,18 @@ class XSSBody(base_fuzz.BaseFuzzTestCase):
         <param name=url value=javascript:alert('XSS')></OBJECT>""",
         """<XML SRC="http://ha.ckers.org/xsstest.xml" ID=I></XML>"""]
 
-    def data_driven_failure_cases(self):
-        failure_assertions = []
-        if self.failure_keys is None:
-            return []
-        for line in self.failure_keys:
-            failure_assertions.append((self.assertNotIn,
-                                       line, self.resp.content))
-        return failure_assertions
-
     def test_case(self):
-        if 'html' in self.resp.headers:
+        self.test_default_issues()
+        failed_strings = self.data_driven_failure_cases()
+        if failed_strings and 'html' in self.resp.headers:
             self.register_issue(
                 Issue(test="xss_strings",
-                      severity="High",
-                      text=("A string known to be commonly returned after a "
-                            "successful XSS attack was included "
-                            "in the response. This could indicate a "
-                            "XSS vulnerability"),
-                      assertions=self.data_driven_failure_cases()))
-            self.test_issues()
+                      severity="Medium",
+                      confidence="Low",
+                      text=("The string(s): \'{0}\', known to be commonly "
+                            "returned after a successful XSS "
+                            "attack, have been found in the response. This "
+                            "could indicate a vulnerability to XSS "
+                            "attacks.").format(failed_strings)
+                      )
+            )

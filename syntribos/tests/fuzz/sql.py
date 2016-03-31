@@ -43,29 +43,25 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
         'quotation mark',
         'syntax',
         'ORA-',
-        '111111']
-
-    def data_driven_failure_cases(self):
-        failure_assertions = []
-        if self.failure_keys is None:
-            return []
-        for line in self.failure_keys:
-            failure_assertions.append((self.assertNotIn,
-                                      line, self.resp.content))
-        return failure_assertions
+        '111111'
+    ]
 
     def test_case(self):
-        self.register_default_tests()
-        self.register_issue(
-            Issue(test="sql_strings",
-                  severity="Medium",
-                  confidence="Low",
-                  text=("A string known to be commonly returned after a "
-                        "successful SQL injection attack was included in the "
-                        "response. This could indicate a vulnerability to "
-                        "SQL injection attacks."),
-                  assertions=self.data_driven_failure_cases()))
-        self.test_issues()
+        self.test_default_issues()
+        failed_strings = self.data_driven_failure_cases()
+        if failed_strings:
+            self.register_issue(
+                Issue(test="sql_strings",
+                      severity="Medium",
+                      confidence="Low",
+                      text=("The string(s): \'{0}\', known to be commonly "
+                            "returned after a successful SQL injection attack"
+                            ", have been found in the response. This could "
+                            "indicate a vulnerability to SQL injection "
+                            "attacks."
+                            ).format(failed_strings)
+                      )
+            )
 
 
 class SQLInjectionParams(SQLInjectionBody):

@@ -38,6 +38,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
         Compares the length of a fuzzed response with a response to the
         baseline request. If the response is longer than expected, returns
         false
+
+        :returns: boolean - whether the response is longer than expected
         """
         if getattr(cls, "init_response", False) is False:
             raise NotImplemented
@@ -80,25 +82,24 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def data_driven_failure_cases(cls):
         '''Checks if response contains known bad strings
 
-        Returns a list of assertions that fail if the response contains
-        any string defined in cls.failure_keys as a string indicating a
-        failure to some sort of attack.
+        :returns: a list of strings that show up in the response that are also
+        defined in cls.failure_strings.
         '''
-        failure_assertions = []
+        failed_strings = []
         if cls.failure_keys is None:
             return []
         for line in cls.failure_keys:
-            failure_assertions.append((cls.assertNotIn,
-                                      line, cls.resp.content))
-        return failure_assertions
+            if line in cls.resp.content:
+                failed_strings.append(line)
+        return failed_strings
 
     @classmethod
     def data_driven_pass_cases(cls):
         '''Checks if response contains expected strings
 
-        Returns a list of assertions that fail if the response doesn't contain
-        a string defined in cls.success_keys as a string expected in the
-        response.
+        :returns: a list of assertions that fail if the response doesn't
+        contain a string defined in cls.success_keys as a string expected in
+        the response.
         '''
         if cls.success_keys is None:
             return True
@@ -111,7 +112,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def setUpClass(cls):
         """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()
-        cls.issues = []
         cls.failures = []
         cls.resp = cls.client.request(
             method=cls.request.method, url=cls.request.url,
@@ -122,47 +122,51 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def tearDownClass(cls):
         super(BaseFuzzTestCase, cls).tearDownClass()
 
-    def register_default_tests(self):
-        """Registers default issues
+    def test_default_issues(self):
+        """Tests for some default issues
 
         These issues are not specific to any test type, and can be raised as a
         result of many different types of attacks. Therefore, they're defined
         separately from the test_case method so that they are not overwritten
         by test cases that inherit from BaseFuzzTestCase.
+
+        Any extension to this class should call
+        self.test_default_issues() in order to test for the Issues
+        defined here
         """
-        self.register_issue(
-            Issue(test="500_errors",
-                  severity="Low",
-                  confidence="High",
-                  text=("This request returns an error with status code >= 500"
-                        "which might indicate some server-side fault that"
-                        "could lead to further vulnerabilities"
-                        ),
-                  assertions=[(self.assertTrue, self.resp.status_code < 500)])
-        )
-        self.register_issue(
-            Issue(test="length_diff",
-                  severity="Low",
-                  confidence="Low",
-                  text=("The difference in length between the response to the"
-                        "baseline request and the request returned when"
-                        "sending an attack string exceeds {0} percent, which"
-                        "could indicate a vulnerability to injection attacks")
-                  .format(self.config.percent),
-                  assertions=[(self.assertTrue, self.validate_length())]))
+        if self.resp.status_code >= 500:
+            self.register_issue(
+                Issue(test="500_errors",
+                      severity="Low",
+                      confidence="High",
+                      text=("This request returns an error with status code"
+                            "{0}, which might indicate some server-side fault"
+                            "that could lead to further vulnerabilities"
+                            ).format(self.resp.status_code)
+                      )
+            )
+
+        if not self.validate_length():
+            self.register_issue(
+                Issue(test="length_diff",
+                      severity="Low",
+                      confidence="Low",
+                      text=("The difference in length between the response to"
+                            "the baseline request and the request returned"
+                            "when sending an attack string exceeds {0}"
+                            "percent, which could indicate a vulnerability to"
+                            "injection attacks")
+                      .format(self.config.percent)
+                      )
+                )
 
     def test_case(self):
         """Performs the test
 
         The test runner will call test_case on every TestCase class, and will
         report any AssertionError raised by this method to the results.
-
-        Any extension to this class should call
-        super(type(self), self).test_case in order to test for the Issues
-        defined here
         """
-        self.register_default_tests()
-        self.test_issues()
+        self.test_default_issues()
 
     @classmethod
     def get_test_cases(cls, filename, file_content):

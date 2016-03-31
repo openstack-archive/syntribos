@@ -146,7 +146,7 @@ class Runner(object):
     @classmethod
     def run_test(cls, test, result, dry_run=False):
         suite = cafe.drivers.unittest.suite.OpenCafeUnittestTestSuite()
-        suite.addTest(test("test_case"))
+        suite.addTest(test("run_test"))
         if dry_run:
             for test in suite:
                 print(test)
