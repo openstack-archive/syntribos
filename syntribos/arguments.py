@@ -22,11 +22,21 @@ import cafe.drivers.unittest.arguments
 
 
 class InputType(object):
+
+    """Reads a file/directory, or stdin, to collect request templates."""
+
     def __init__(self, mode, bufsize):
         self._mode = mode
         self._bufsize = bufsize
 
     def __call__(self, string):
+        """Yield the name and contents of the 'input' file(s)
+
+        :param str string: the value supplied as the 'input' argument
+
+        :rtype: tuple
+        :returns: (file name, file contents)
+        """
         if string == '-':
             fp = sys.stdin
             yield fp.name, fp.read()
@@ -51,6 +61,9 @@ class InputType(object):
 
 
 class SyntribosCLI(argparse.ArgumentParser):
+
+    """Class for parsing Syntribos command-line arguments."""
+
     def __init__(self, *args, **kwargs):
         super(SyntribosCLI, self).__init__(*args, **kwargs)
         self._add_args()

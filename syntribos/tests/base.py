@@ -24,21 +24,28 @@ from syntribos.issue import Issue
 
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 
-'''test_table is the master list of tests to be run by the runner'''
+"""test_table is the master list of tests to be run by the runner"""
 test_table = {}
 
 
 def replace_invalid_characters(string, new_char="_"):
-    """Replace invalid characters
+    """Replace invalid characters in test names
 
-    This functions corrects string so the following is true
+    This function corrects `string` so the following is true.
+
     Identifiers (also referred to as names) are described by the
     following lexical definitions:
-    identifier ::=  (letter|"_") (letter | digit | "_")*
-    letter     ::=  lowercase | uppercase
-    lowercase  ::=  "a"..."z"
-    uppercase  ::=  "A"..."Z"
-    digit      ::=  "0"..."9"
+
+    | ``identifier ::=  (letter|"_") (letter | digit | "_")*``
+    | ``letter     ::=  lowercase | uppercase``
+    | ``lowercase  ::=  "a"..."z"``
+    | ``uppercase  ::=  "A"..."Z"``
+    | ``digit      ::=  "0"..."9"``
+
+    :param str string: Test name
+    :param str new_char: The character to replace invalid characters with
+    :returns: The test name, with invalid characters replaced with `new_char`
+    :rtype: str
     """
     if not string:
         return string
@@ -50,6 +57,9 @@ def replace_invalid_characters(string, new_char="_"):
 
 
 class TestType(type):
+
+    """This is the metaclass for each class extending :class:`BaseTestCase`."""
+
     def __new__(cls, cls_name, cls_parents, cls_attr):
         new_class = super(TestType, cls).__new__(
             cls, cls_name, cls_parents, cls_attr)
@@ -62,23 +72,35 @@ class TestType(type):
 
 @six.add_metaclass(TestType)
 class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
-    """Base Class
 
-    Base for building new tests
+    """Base class for building new tests
+
+    :attribute test_name: A name like ``XML_EXTERNAL_ENTITY_BODY``, containing
+        the test type and the portion of the request template being tested
     """
+
     test_name = None
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
+        """Not sure what the point of this is.
+
+        TODO: FIGURE THIS OUT
+        """
         yield cls
 
     @classmethod
     def extend_class(cls, new_name, kwargs):
-        '''Creates an extension for the class
+        """Creates an extension for the class
 
-        Each TestCase class created is added to the test_table, which is then
+        Each TestCase class created is added to the `test_table`, which is then
         read in by the test runner as the master list of tests to be run.
-        '''
+
+        :param str new_name: Name of new class to be created
+        :param dict kwargs: Keyword arguments to pass to the new class
+        :rtype: class
+        :returns: A TestCase class extending :class:`BaseTestCase`
+        """
         new_name = replace_invalid_characters(new_name)
         if not isinstance(kwargs, dict):
             raise Exception("kwargs must be a dictionary")
@@ -97,9 +119,13 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
     def register_issue(self, issue=None):
         """Adds an issue to the test's list of issues
 
-        Creates a new issue object, and associates the test's request
-        and response to it. In addition, adds the issue to the test's
-        list of issues.
+        Creates a new :class:`syntribos.issue.Issue` object, and associates the
+        test's request and response to it. In addition, adds the issue to the
+        test's list of issues.
+
+        :param Issue issue: (OPTIONAL) issue object to update
+        :returns: new issue object with request and response associated
+        :rtype: Issue
         """
 
         if not issue:
@@ -110,3 +136,12 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         self.failures.append(issue)
 
         return issue
+
+    def test_issues(self):
+        """Run assertions for each test registered in test_case."""
+        for issue in self.issues:
+            try:
+                issue.run_tests()
+            except AssertionError:
+                self.failures.append(issue)
+                raise

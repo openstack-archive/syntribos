@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import re
+import sys
 from xml.etree import ElementTree
 
 from syntribos.clients.http.models import RequestHelperMixin
@@ -145,6 +146,7 @@ class FuzzMixin(object):
 
 
 class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
+
     def fuzz_request(self, strings, fuzz_type, name_prefix):
         """Creates the fuzzed request object
 
@@ -154,6 +156,7 @@ class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
         for name, data in self._fuzz_data(
             strings, getattr(self, fuzz_type), self.action_field,
                 name_prefix):
+            sys.stdout.write("Name: {0}\nData: {1}\n".format(name, data))
             request_copy = self.get_copy()
             setattr(request_copy, fuzz_type, data)
             request_copy.prepare_request(fuzz_type)

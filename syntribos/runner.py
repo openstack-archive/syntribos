@@ -44,11 +44,16 @@ class Runner(object):
 
     @classmethod
     def print_tests(cls):
+        """Print out all the tests that will be run."""
         for name, test in cls.get_tests():
             print(name)
 
     @classmethod
     def load_modules(cls, package):
+        """Imports all tests (:mod:`syntribos.tests`)
+
+        :param package: a package of tests for pkgutil to load
+        """
         if not os.environ.get("CAFE_CONFIG_FILE_PATH"):
             os.environ["CAFE_CONFIG_FILE_PATH"] = "./"
         for importer, modname, ispkg in pkgutil.walk_packages(
@@ -59,6 +64,13 @@ class Runner(object):
 
     @classmethod
     def get_tests(cls, test_types=None):
+        """Yields relevant tests based on test type (from ```syntribos.arguments```)
+
+        :param list test_types: Test types to be run
+
+        :rtype: tuple
+        :returns: (test type (str), ```syntribos.tests.base.TestType```)
+        """
         cls.load_modules(tests)
         test_types = test_types or [""]
         for k, v in sorted(syntribos.tests.base.test_table.items()):
@@ -94,6 +106,7 @@ class Runner(object):
 
     @staticmethod
     def print_log():
+        """Print the path to the log folder for this run."""
         test_log = os.environ.get("CAFE_TEST_LOG_PATH")
         if test_log:
             print("=" * 70)
@@ -113,6 +126,7 @@ class Runner(object):
                 """
             args, unknown = syntribos.arguments.SyntribosCLI(
                 usage=usage).parse_known_args()
+            sys.stdout.write("TYPE: {0}".format(type(args)))
             test_env_manager = TestEnvManager(
                 "", args.config, test_repo_package_name="os")
             test_env_manager.finalize()
@@ -145,7 +159,16 @@ class Runner(object):
 
     @classmethod
     def run_test(cls, test, result, dry_run=False):
+        """Create a new test suite, add a test, and run it
+
+        :param test: The test to add to the suite
+        :param result: The result object to append to
+        :type result: :class:`syntribos.result.IssueTestResult`
+        :param bool dry_run: (OPTIONAL) Only print out test names
+        """
+        suite = cafe.drivers.unittest.suite.OpenCafeUnittestTestSuite()
         suite = unittest.TestSuite()
+
         suite.addTest(test("run_test"))
         if dry_run:
             for test in suite:
@@ -155,12 +178,20 @@ class Runner(object):
 
     @classmethod
     def set_env(cls):
+        """Set environment variables for this run."""
         config = syntribos.config.MainConfig()
         os.environ["SYNTRIBOS_ENDPOINT"] = config.endpoint
 
     @classmethod
     def print_result(cls, result, start_time, args):
-        """Prints results summerized."""
+        """Prints test summary/stats (e.g. # failures) to stdout
+
+        :param result: Global result object with all issues/etc.
+        :type result: :class:`syntribos.result.IssueTestResult`
+        :param float start_time: Time this run started
+        :param args: Parsed CLI arguments
+        :type args: ``argparse.Namespace``
+        """
         result.printErrors(args.output_format)
         run_time = time.time() - start_time
         tests = result.testsRun
@@ -180,6 +211,7 @@ class Runner(object):
 
 
 def entry_point():
+    """Start runner. Need this so we can point to it in ``setup.cfg``."""
     Runner.run()
     return 0
 

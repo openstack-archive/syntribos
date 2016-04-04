@@ -14,13 +14,15 @@ under the License.
 
 
 class Issue(object):
-    """Object that encapsulates security vulnerability
+
+    """Object that encapsulates a security vulnerability
 
     This object is designed to hold the metadata associated with
-    an vulnerability, as well as the requests and responses that
+    a vulnerability, as well as the requests and responses that
     caused the vulnerability to be flagged. Furthermore, holds the
     assertions actually run by the test case
     """
+
     def __init__(self, severity, test="", text="", confidence="",
                  request=None, response=None):
         self.test = test
@@ -32,7 +34,11 @@ class Issue(object):
         self.failure = False
 
     def as_dict(self):
-        '''Convert the issue to a dict of values for outputting.'''
+        """Convert the issue to a dict of values for outputting.
+
+        :rtype: `dict`
+        :returns: dictionary of issue data
+        """
         out = {
             'test_name': self.test,
             'issue_severity': self.severity,
@@ -44,7 +50,13 @@ class Issue(object):
         return out
 
     def request_as_dict(self, req):
-        '''Convert the request object to a dict of values for outputting.'''
+        """Convert the request object to a dict of values for outputting.
+
+        :param req: The request object
+        :type req: (TODO)
+        :rtype: `dict`
+        :returns: dictionary of HTTP request data
+        """
         return {
             'url': req.path_url,
             'method': req.method,
@@ -54,7 +66,13 @@ class Issue(object):
         }
 
     def response_as_dict(self, res):
-        '''Convert the response object to a dict of values for outputting.'''
+        """Convert the response object to a dict of values for outputting.
+
+        :param res: The result object
+        :type res: (TODO)
+        :rtype: `dict`
+        :returns: dictionary of HTTP response data
+        """
         return {
             'status_code': res.status_code,
             'reason': res.reason,

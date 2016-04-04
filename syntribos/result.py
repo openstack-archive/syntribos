@@ -19,21 +19,24 @@ from syntribos.formatters.json_formatter import JSONFormatter
 
 
 class IssueTestResult(unittest.TextTestResult):
+
     """Custom unnittest results holder class
 
-    A test result class that can return issues raised by tests
-    to the Syntribos runner
+    This class aggregates :class:`syntribos.issue.Issue` objects from all the
+    tests as they run
     """
     aggregated_failures = {}
     pruned_failures = []
 
     def addFailure(self, test, err):
-        """Adds failed issues to data structures
+        """Adds issues to data structures
 
-        Appends failed issues to the result's list of failures, as well as
-        to a dict of {url:
-                        method:
-                            test_name: issue} structure.
+        Appends issues to the result's list of failures, as well as
+        to a dict of {url: {method: {test_name: issue}}} structure.
+
+        :param test: The test that has failed
+        :type test: :class:`syntribos.tests.base.BaseTestCase`
+        :param tuple err: Tuple of format ``(type, value, traceback)``
         """
         self.failures.append((test, test.failures))
         for issue in test.failures:
@@ -58,10 +61,20 @@ class IssueTestResult(unittest.TextTestResult):
             sys.stdout.flush()
 
     def addError(self, test, err):
-        """Duplicates parent class addError functionality."""
+        """Duplicates parent class addError functionality.
+
+        :param test: The test that encountered an error
+        :type test: :class:`syntribos.tests.base.BaseTestCase`
+        :param err:
+        :type tuple: Tuple of format ``(type, value, traceback)``
+        """
         super(IssueTestResult, self).addError(test, err)
 
     def printErrors(self, output_format):
+        """Print out each :class:`syntribos.issue.Issue` that was encountered
+
+        :param str output_format: Either "json" or "xml"
+        """
         formatter_types = {
             "json": JSONFormatter(self)
         }
@@ -72,5 +85,6 @@ class IssueTestResult(unittest.TextTestResult):
         formatter.report()
 
     def stopTestRun(self):
+        """Print errors when the test run is complete."""
         super(IssueTestResult, self).stopTestRun()
         self.printErrors()

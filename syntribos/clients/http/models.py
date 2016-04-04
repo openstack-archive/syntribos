@@ -22,8 +22,18 @@ _iterators = {}
 
 
 class RequestHelperMixin(object):
+
+    """Class that helps with fuzzing requests."""
+
     @classmethod
     def _run_iters(cls, data, action_field):
+        """Recursively fuzz variables in `data` and its children
+
+        :param data: The request data to be modified
+        :param action_field: The name of the field to be replaced
+        :returns: object or string with action_field fuzzed
+        :rtype: `dict` OR `str` OR :class:`ElementTree.Element`
+        """
         if isinstance(data, dict):
             return cls._run_iters_dict(data, action_field)
         elif isinstance(data, ElementTree.Element):
@@ -35,6 +45,7 @@ class RequestHelperMixin(object):
 
     @classmethod
     def _run_iters_dict(cls, dic, action_field=""):
+        """Run fuzz iterators for a dict type."""
         for key, val in dic.iteritems():
             dic[key] = val = cls._replace_iter(val)
             if isinstance(key, basestring):
@@ -50,6 +61,7 @@ class RequestHelperMixin(object):
 
     @classmethod
     def _run_iters_list(cls, val, action_field=""):
+        """Run fuzz iterators for a list type."""
         for i, v in enumerate(val):
             if isinstance(v, basestring):
                 val[i] = v = cls._replace_iter(v).replace(action_field, "")
@@ -60,6 +72,7 @@ class RequestHelperMixin(object):
 
     @classmethod
     def _run_iters_xml(cls, ele, action_field=""):
+        """Run fuzz iterators for an XML element type."""
         if isinstance(ele.text, basestring):
             ele.text = cls._replace_iter(ele.text).replace(action_field, "")
         cls._run_iters_dict(ele.attrib, action_field)
@@ -69,6 +82,7 @@ class RequestHelperMixin(object):
 
     @staticmethod
     def _string_data(data):
+        """Replace various objects types with string representations."""
         if isinstance(data, dict):
             return json.dumps(data)
         elif isinstance(data, ElementTree.Element):
@@ -78,6 +92,7 @@ class RequestHelperMixin(object):
 
     @staticmethod
     def _replace_iter(string):
+        """Fuzz a string."""
         if not isinstance(string, basestring):
             return string
         for k, v in _iterators.items():
@@ -86,11 +101,11 @@ class RequestHelperMixin(object):
         return string
 
     def prepare_request(self):
-        """prepare a request
+        """Prepare a request for sending off
 
-        it should be noted this function does not make a request copy
+        It should be noted this function does not make a request copy,
         destroying iterators in request.  A copy should be made if making
-        multiple requests
+        multiple requests.
         """
         self.data = self._run_iters(self.data, self.action_field)
         self.headers = self._run_iters(self.headers, self.action_field)
@@ -98,6 +113,11 @@ class RequestHelperMixin(object):
         self.data = self._string_data(self.data)
 
     def get_prepared_copy(self):
+        """Create a copy of `self`, and prepare it for use by a fuzzer
+
+        :returns: Copy of request object that has been prepared for sending
+        :rtype: :class:`RequestHelperMixin`
+        """
         local_copy = copy.deepcopy(self)
         local_copy.prepare_request()
         return local_copy
@@ -107,6 +127,9 @@ class RequestHelperMixin(object):
 
 
 class RequestObject(object):
+
+    """An object that holds information about an HTTP request."""
+
     def __init__(
         self, method, url, action_field=None, headers=None, params=None,
             data=None):

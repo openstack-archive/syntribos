@@ -27,9 +27,16 @@ Index
     running
     logging
     test.anatomy
-    unittests
-    contributing
 
+For Developers
+--------------
+
+.. toctree::
+    :maxdepth: 1
+
+    contributing
+    code-docs
+    unittests
 
 Project information
 -------------------

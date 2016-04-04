@@ -32,6 +32,15 @@ class RequestCreator(object):
 
     @classmethod
     def create_request(cls, string, endpoint):
+        """Parse the HTTP request template into its components
+
+        :param str string: HTTP request template
+        :param str endpoint: URL of the target to be tested
+
+        :rtype: :class:`syntribos.clients.http.models.RequestObject`
+        :returns: RequestObject with method, url, params, etc. for use by
+                  runner
+        """
         string = cls.call_external_functions(string)
         action_field = str(uuid.uuid4()).replace("-", "")
         string = string.replace(cls.ACTION_FIELD, action_field)
@@ -50,6 +59,14 @@ class RequestCreator(object):
 
     @classmethod
     def _parse_url_line(cls, line, endpoint):
+        """Split first line of an HTTP request into its components
+
+        :param str line: the first line of the HTTP request
+        :param str endpoint: the full URL of the endpoint to test
+
+        :rtype: tuple
+        :returns: HTTP method, URL, request parameters, HTTP version
+        """
         params = {}
         method, url, version = line.split()
         url = url.split("?", 1)
@@ -66,6 +83,13 @@ class RequestCreator(object):
 
     @classmethod
     def _parse_headers(cls, lines):
+        """Find and return headers in HTTP request
+
+        :param str lines:  All but the first line of the HTTP request (list)
+
+        :rtype: dict
+        :returns: headers as key:value pairs
+        """
         headers = {}
         for line in lines:
             key, value = line.split(":", 1)
@@ -74,6 +98,12 @@ class RequestCreator(object):
 
     @classmethod
     def _parse_data(cls, lines):
+        """Parse the body of the HTTP request (e.g. POST variables)
+
+        :param list lines: lines of the HTTP body
+
+        :returns: object representation of body data (JSON or XML)
+        """
         data = "\n".join(lines).strip()
         if not data:
             return ""
@@ -88,6 +118,14 @@ class RequestCreator(object):
 
     @classmethod
     def call_external_functions(cls, string):
+        """Parse external function calls in the body of request templates
+
+        :param str string: full HTTP request template as a string
+
+        :rtype: str
+        :returns: the request, with EXTERNAL calls filled in with their values
+                  or UUIDs
+        """
         if not isinstance(string, basestring):
             return string
 

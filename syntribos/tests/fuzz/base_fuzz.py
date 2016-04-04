@@ -80,11 +80,12 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def data_driven_failure_cases(cls):
-        '''Checks if response contains known bad strings
+        """Checks if response contains known bad strings
 
         :returns: a list of strings that show up in the response that are also
         defined in cls.failure_strings.
-        '''
+        failed_strings = []
+        """
         failed_strings = []
         if cls.failure_keys is None:
             return []
@@ -95,12 +96,12 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def data_driven_pass_cases(cls):
-        '''Checks if response contains expected strings
+        """Checks if response contains expected strings
 
         :returns: a list of assertions that fail if the response doesn't
         contain a string defined in cls.success_keys as a string expected in
         the response.
-        '''
+        """
         if cls.success_keys is None:
             return True
         for s in cls.success_keys:
@@ -158,7 +159,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
                             "injection attacks")
                       .format(self.config.percent)
                       )
-                )
+            )
 
     def test_case(self):
         """Performs the test
@@ -178,7 +179,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         For each string returned by cls._get_strings(), yield a TestCase class
         for the string as an extension to the current TestCase class. Every
         string used as a fuzz test payload entails the generation of a new
-        subclass for each parameter fuzzed. See base.extend_class().
+        subclass for each parameter fuzzed. See :func:`base.extend_class`.
         """
         # maybe move this block to base.py
         request_obj = syntribos.tests.fuzz.datagen.FuzzParser.create_request(
