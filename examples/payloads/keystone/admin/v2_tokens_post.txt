@@ -1,0 +1,15 @@
+POST /v2.0/tokens HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v2:["user"]|
+Content-type: application/json
+
+
+{
+    "auth": {
+        "tenantName": "demo",
+        "passwordCredentials": {
+            "username": "demo",
+            "password": "secretsecret"
+        }
+    }
+}

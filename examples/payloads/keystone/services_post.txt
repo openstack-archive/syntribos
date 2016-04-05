@@ -1,0 +1,12 @@
+POST /v3/services HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+{
+    "service": {
+        "type": "compute",
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "description": "Compute service 2"
+    }
+}

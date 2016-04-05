@@ -1,0 +1,13 @@
+PATCH /v3/endpoints/{9242e05f0c23467bbd1cf1f7a6e5e596} HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+{
+    "endpoint": {
+        "interface": "public",
+        "name": "Name",
+        "url": "http://identity:35357/v3/endpoints/828384",
+        "service_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}

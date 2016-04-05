@@ -1,0 +1,19 @@
+POST /v3/OS-TRUST/trusts HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+{
+    "trust": {
+        "expires_at": "2017-12-30T23:59:59.999999Z",
+        "impersonation": false,
+        "project_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "roles": [
+            {
+                "name": "admin"
+            }
+        ],
+        "trustee_user_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "trustor_user_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}

@@ -1,0 +1,13 @@
+POST /v3/policies HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+Content-type: application/json
+
+{
+    "policy": {
+        "blob": "{'foobar_user': 'role:compute-user'}",
+        "project_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "type": "application/json",
+        "user_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}
