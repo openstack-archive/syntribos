@@ -22,14 +22,13 @@ class Issue(object):
     assertions actually run by the test case
     """
     def __init__(self, severity, test="", text="", confidence="",
-                 request=None, response=None, assertions=[]):
+                 request=None, response=None):
         self.test = test
         self.severity = severity
         self.confidence = confidence
         self.text = text
         self.request = request
         self.response = response
-        self.assertions = assertions
         self.failure = False
 
     def as_dict(self):
@@ -64,29 +63,3 @@ class Issue(object):
             'cookies': res.cookies.get_dict(),
             'text': res.text
         }
-
-    def add_test(self, assertion, *args):
-        '''Adds an assertion to the issue's list of assertions.
-
-        Assertions will be stored as (assertion, arguments) tuples,
-        such as (assertTrue, resp.status != 500) or
-        (assertNotIn, line, resp.content)
-        '''
-
-        self.assertions.append((assertion,) + args)
-
-    def run_tests(self):
-        '''Runs assertions associated with each Issue.
-
-        For each (assertion, arguments) tuple in the Issue's list of
-        assertions, run assertion(*arguments). On failure, mark the issue as
-        failed, and raise an AssertionError to the runner
-        '''
-        try:
-            for assertion in self.assertions:
-                assertion_function = assertion[0]
-                condition = assertion[1:]
-                assertion_function(*condition)
-        except AssertionError as e:
-            self.failure = True
-            raise e
