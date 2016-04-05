@@ -29,7 +29,6 @@ from cafe.configurator.managers import(
     TestEnvManager as TestEnvManager
 )
 import cafe.drivers.base
-import cafe.drivers.unittest.suite
 
 import syntribos.arguments
 import syntribos.config
@@ -42,6 +41,7 @@ result = None
 
 
 class Runner(object):
+
     @classmethod
     def print_tests(cls):
         for name, test in cls.get_tests():
@@ -145,7 +145,7 @@ class Runner(object):
 
     @classmethod
     def run_test(cls, test, result, dry_run=False):
-        suite = cafe.drivers.unittest.suite.OpenCafeUnittestTestSuite()
+        suite = unittest.TestSuite()
         suite.addTest(test("run_test"))
         if dry_run:
             for test in suite:
