@@ -16,6 +16,8 @@ limitations under the License.
 
 import os
 
+from six.moves.urllib.parse import urlparse
+
 from syntribos.clients.http import client
 from syntribos.issue import Issue
 from syntribos.tests import base
@@ -140,7 +142,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 Issue(test="500_errors",
                       severity="Low",
                       confidence="High",
-                      text=("This request returns an error with status code"
+                      text=("This request returns an error with status code "
                             "{0}, which might indicate some server-side fault"
                             "that could lead to further vulnerabilities"
                             ).format(self.resp.status_code)
@@ -190,6 +192,67 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
             filename=filename, test_name=cls.test_name, fuzz_file=cls.data_key)
-        for fuzz_name, request in request_obj.fuzz_request(
-                cls._get_strings(), cls.test_type, prefix_name):
-            yield cls.extend_class(fuzz_name, {"request": request})
+        fr = request_obj.fuzz_request(
+            cls._get_strings(), cls.test_type, prefix_name)
+        for fuzz_name, request, fuzz_string, param_path in fr:
+            yield cls.extend_class(fuzz_name, fuzz_string, param_path,
+                                   {"request": request})
+
+    def register_issue(self, issue):
+        """Adds an issue to the test's list of issues
+
+        Registers a :class:`syntribos.issue.Issue` object as a failure and
+        associates the test's metadata to it, including the
+        :class:`syntribos.tests.fuzz.base_fuzz.ImpactedParameter` object that
+        encapsulates the details of the fuzz test.
+
+        :param Issue issue: issue object to update
+        :returns: new issue object with metadata associated
+        :rtype: Issue
+        """
+
+        # Still associating request and response objects with issue in event of
+        # debug log
+        req = self.resp.request
+        issue.request = req
+        issue.response = self.resp
+
+        issue.test_type = self.test_name
+        url_components = urlparse(self.resp.request.url)
+        issue.target = url_components.netloc
+        issue.path = url_components.path
+
+        issue.impacted_parameter = ImpactedParameter(method=req.method,
+                                                     location=self.test_type,
+                                                     name=self.param_path,
+                                                     value=self.fuzz_string)
+
+        self.failures.append(issue)
+
+        return issue
+
+
+class ImpactedParameter(object):
+    """Object that encapsulates the details about what caused the defect
+
+    :ivar method: The HTTP method used in the test
+    :ivar location: The location of the impacted parameter
+    :ivar name: The parameter (e.g. HTTP header, GET var) that was modified by
+        a given test case
+    :ivar value: The "fuzz" string that was supplied in a given test case
+    :ivar request_body_format: The type of a body (POST/PATCH/etc.) variable.
+    """
+
+    def __init__(self, method, location, name, value):
+        self.method = method
+        self.location = location
+        self.fuzz_string = value
+        self.name = name
+
+    def as_dict(self):
+        return {
+            "method": self.method,
+            "location": self.location,
+            "name": self.name,
+            "value": self.fuzz_string
+        }

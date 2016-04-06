@@ -19,8 +19,7 @@ import six
 import string as t_string
 
 import cafe.drivers.unittest.fixtures
-
-from syntribos.issue import Issue
+from six.moves.urllib.parse import urlparse
 
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 
@@ -90,7 +89,7 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         yield cls
 
     @classmethod
-    def extend_class(cls, new_name, kwargs):
+    def extend_class(cls, new_name, fuzz_string, param_path, kwargs):
         """Creates an extension for the class
 
         Each TestCase class created is added to the `test_table`, which is then
@@ -101,11 +100,14 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         :rtype: class
         :returns: A TestCase class extending :class:`BaseTestCase`
         """
+
         new_name = replace_invalid_characters(new_name)
         if not isinstance(kwargs, dict):
             raise Exception("kwargs must be a dictionary")
         new_cls = type(new_name, (cls, ), kwargs)
         new_cls.__module__ = cls.__module__
+        new_cls.fuzz_string = fuzz_string
+        new_cls.param_path = param_path
         return new_cls
 
     def run_test(self):
@@ -116,22 +118,27 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
     def test_case(self):
         pass
 
-    def register_issue(self, issue=None):
+    def register_issue(self, issue):
         """Adds an issue to the test's list of issues
 
-        Creates a new :class:`syntribos.issue.Issue` object, and associates the
-        test's request and response to it. In addition, adds the issue to the
-        test's list of issues.
+        Registers a :class:`syntribos.issue.Issue` object as a failure and
+        associates the test's metadata to it.
 
-        :param Issue issue: (OPTIONAL) issue object to update
-        :returns: new issue object with request and response associated
+        :param Issue issue: issue object to update
+        :returns: new issue object with metadata associated
         :rtype: Issue
         """
 
-        if not issue:
-            issue = Issue()
-        issue.request = self.resp.request
+        # Still associating request and response objects with issue in event of
+        # debug log
+        req = self.resp.request
+        issue.request = req
         issue.response = self.resp
+
+        issue.defect_type = self.test_name
+        url_components = urlparse(self.resp.request.url)
+        issue.target = url_components.netloc
+        issue.path = url_components.path
 
         self.failures.append(issue)
 

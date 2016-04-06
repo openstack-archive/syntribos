@@ -126,7 +126,6 @@ class Runner(object):
                 """
             args, unknown = syntribos.arguments.SyntribosCLI(
                 usage=usage).parse_known_args()
-            sys.stdout.write("TYPE: {0}".format(type(args)))
             test_env_manager = TestEnvManager(
                 "", args.config, test_repo_package_name="os")
             test_env_manager.finalize()
@@ -166,7 +165,6 @@ class Runner(object):
         :type result: :class:`syntribos.result.IssueTestResult`
         :param bool dry_run: (OPTIONAL) Only print out test names
         """
-        suite = cafe.drivers.unittest.suite.OpenCafeUnittestTestSuite()
         suite = unittest.TestSuite()
 
         suite.addTest(test("run_test"))
