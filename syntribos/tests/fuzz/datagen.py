@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import re
-import sys
 from xml.etree import ElementTree
 
 from syntribos.clients.http.models import RequestHelperMixin
@@ -37,6 +36,7 @@ class FuzzMixin(object):
         method corresponding to the type of the data parameter, which replaces
         the value with the fuzz string.
         """
+        param_path = ""
         for str_num, stri in enumerate(strings, 1):
             if isinstance(data, dict):
                 model_iter = cls._build_combinations(stri, data, skip_var)
@@ -46,19 +46,22 @@ class FuzzMixin(object):
                 model_iter = cls._build_str_combinations(stri, data)
             else:
                 raise TypeError("Format not recognized!")
-            for model_num, model in enumerate(model_iter, 1):
+            for model_num, (model, param_path) in enumerate(model_iter, 1):
                 name = "{0}str{1}_model{2}".format(
                     name_prefix, str_num, model_num)
-                yield (name, model)
+                yield (name, model, stri, param_path)
 
     @classmethod
     def _build_str_combinations(cls, string, data):
         """Places fuzz string in fuzz location for string data."""
         for match in re.finditer(r"{[^}]*}", data):
             start, stop = match.span()
-            yield "{0}{1}{2}".format(
-                cls.remove_braces(data[:start]),
-                string, cls.remove_braces(data[stop + 1:]))
+            yield (
+                "{0}{1}{2}".format(
+                    cls.remove_braces(data[:start]),
+                    string, cls.remove_braces(data[stop:])),
+                cls.remove_braces(data[start:stop])
+            )
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
@@ -67,20 +70,24 @@ class FuzzMixin(object):
             if skip_var in key:
                 continue
             elif isinstance(val, dict):
-                for ret in cls._build_combinations(stri, val, skip_var):
-                    yield cls._merge_dictionaries(dic, {key: ret})
+                for ret, param_path in cls._build_combinations(
+                        stri, val, skip_var):
+                    yield (cls._merge_dictionaries(dic, {key: ret}),
+                           "{0}/{1}".format(key, param_path))
             elif isinstance(val, list):
                 for i, v in enumerate(val):
                     list_ = [_ for _ in val]
                     if isinstance(v, dict):
-                        for ret in cls._build_combinations(stri, v, skip_var):
+                        for ret, param_path in cls._build_combinations(
+                                stri, v, skip_var):
                             list_[i] = ret.copy()
-                            yield cls._merge_dictionaries(dic, {key: list_})
+                            yield (cls._merge_dictionaries(dic, {key: ret}),
+                                   "{0}/{1}".format(key, param_path))
                     else:
                         list_[i] = stri
-                        yield cls._merge_dictionaries(dic, {key: list_})
+                        yield cls._merge_dictionaries(dic, {key: list_}), key
             else:
-                yield cls._merge_dictionaries(dic, {key: stri})
+                yield cls._merge_dictionaries(dic, {key: stri}), key
 
     @staticmethod
     def _merge_dictionaries(x, y):
@@ -153,14 +160,13 @@ class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
         Gets the name and the fuzzed request model from _fuzz_data, and
         creates a request object from the parameters of the model.
         """
-        for name, data in self._fuzz_data(
+        for name, data, stri, param_path in self._fuzz_data(
             strings, getattr(self, fuzz_type), self.action_field,
                 name_prefix):
-            sys.stdout.write("Name: {0}\nData: {1}\n".format(name, data))
             request_copy = self.get_copy()
             setattr(request_copy, fuzz_type, data)
             request_copy.prepare_request(fuzz_type)
-            yield name, request_copy
+            yield name, request_copy, stri, param_path
 
     def prepare_request(self, fuzz_type=None):
         super(FuzzRequest, self).prepare_request()
