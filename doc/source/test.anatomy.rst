@@ -14,23 +14,23 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt -t SQL
+    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL
 
-For SQL injection tests against the payload body only, use:
+For SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt -t SQL_INJECTION_BODY
+    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt -t HEADERS
+    $ syntribos keystone.config templates/keystone/domains_post.txt -t HEADERS
 
 **Call External**
 
-Syntribos payload files can be supplemented with variable data, or data
+Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
 
 Extensions are found in ``syntribos/syntribos/extensions/`` .
@@ -39,8 +39,7 @@ One example packaged with Syntribos enables the tester to obtain an auth
 token from keystone/identity. The code is located in
 ``identity/client.py``
 
-To make use of this extension, add the following to the header of your
-payload file:
+To use this extension, you can add the following to your template file:
 
 ::
 

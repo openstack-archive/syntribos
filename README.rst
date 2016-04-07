@@ -125,83 +125,32 @@ Example configuration file:
     [auth]
     endpoint=<yourkeystoneurl>
 
-Your can create a directory to store the payloads for the resources
-being tested. The payloads under examples directory can give you quick
+You can create a directory to store the request templates for the resources
+being tested. The templates under the `examples` directory can give you a quick
 start.
 
 ::
 
-    $ mkdir payloads
-    $ mkdir payloads/keystone
-    $ cp examples/payloads/keystone/* payloads/keystone/.
-
-Here are some examples for payload files
-
-::
-
-    $ vi payloads/keystone/domains_post.txt
-
-::
-
-    POST /v3/domains HTTP/1.1
-    Accept: application/json
-    X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
-    Content-type: application/json
-
-    {
-        "domain": {
-            "description": "Domain description",
-            "enabled": true,
-            "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
-        }
-    }
-
-::
-
-    $ vi payloads/keystone/domains_patch.txt
-
-::
-
-    PATCH /v3/domains/c45412aa3cb74824a222c2f051bd62ac HTTP/1.1
-    Accept: application/json
-    X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
-    Content-type: application/json
-
-    {
-        "domain": {
-            "description": "Domain description",
-            "enabled": true,
-            "name": "test name"
-        }
-    }
-
-::
-
-    $ vi payloads/keystone/domains_get.txt
-
-::
-
-    GET /v3/domains/{c45412aa3cb74824a222c2f051bd62ac} HTTP/1.1
-    Accept: application/json
-    X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
-
+    $ mkdir templates
+    $ mkdir templates/keystone
+    $ cp examples/templates/keystone/* templates/keystone
 
 Running Syntribos
 -----------------
 
 To execute a Syntribos test, run ``syntribos`` specifying the configuration
-file and payload file(s) you want to use.
+file and template file(s) you want to use.
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt
+    $ syntribos keystone.config templates/keystone/domains_post.txt
 
-To run ``syntribos`` against all payload files, just specify the payload
+To run ``syntribos`` against all template files, just specify the template 
 directory:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/
+    $ syntribos keystone.config templates/keystone/
 
 Syntribos Logging
 -----------------
@@ -312,23 +261,23 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt -t SQL
+    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL
 
-For SQL injection tests against the payload body only, use:
+For SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt -t SQL_INJECTION_BODY
+    $ syntribos keystone.config template/keystone/domains_post.txt -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos keystone.config payloads/keystone/domains_post.txt -t HEADERS
+    $ syntribos keystone.config template/keystone/domains_post.txt -t HEADERS
 
 **Call External**
 
-Syntribos payload files can be supplemented with variable data, or data
+Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
 
 Extensions are found in ``syntribos/syntribos/extensions/`` .
@@ -337,8 +286,7 @@ One example packaged with Syntribos enables the tester to obtain an auth
 token from keystone/identity. The code is located in
 ``identity/client.py``
 
-To make use of this extension, add the following to the header of your
-payload file:
+To use this extension, you can add the following to your template file:
 
 ::
 
