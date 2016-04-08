@@ -82,10 +82,11 @@ class FuzzMixin(object):
                                 stri, v, skip_var):
                             list_[i] = ret.copy()
                             yield (cls._merge_dictionaries(dic, {key: ret}),
-                                   "{0}/{1}".format(key, param_path))
+                                   "{0}[{1}]/{2}".format(key, i, param_path))
                     else:
                         list_[i] = stri
-                        yield cls._merge_dictionaries(dic, {key: list_}), key
+                        yield (cls._merge_dictionaries(dic, {key: list_}),
+                               "{0}[{1}]".format(key, i))
             else:
                 yield cls._merge_dictionaries(dic, {key: stri}), key
 
