@@ -109,15 +109,18 @@ class FuzzMixin(object):
         """Places fuzz string in fuzz location for XML data."""
         if skip_var not in ele.tag:
             if not ele.text or (skip_var not in ele.text):
-                yield cls._update_element(ele, stri)
-            for attr in cls._build_combinations(stri, ele.attrib, skip_var):
-                yield cls._update_attribs(ele, attr)
+                yield cls._update_element(ele, stri), ele.tag
+            for attr, param_path in cls._build_combinations(
+                    stri, ele.attrib, skip_var):
+                yield (cls._update_attribs(ele, attr),
+                       "{0}/{1}".format(ele.tag, param_path))
             for i, element in enumerate(list(ele)):
-                for ret in cls._build_xml_combinations(
+                for ret, param_path in cls._build_xml_combinations(
                         stri, element, skip_var):
                     list_ = list(ele)
                     list_[i] = ret.copy()
-                    yield cls._update_inner_element(ele, list_)
+                    yield (cls._update_inner_element(ele, list_),
+                           "{0}/{1}".format(ele.tag, param_path))
 
     @staticmethod
     def _update_element(ele, stri):
