@@ -21,7 +21,7 @@ from syntribos.tests import base
 import syntribos.tests.fuzz.config
 import syntribos.tests.fuzz.datagen
 
-data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
+data_dir = os.environ.get("CAFE_DATA_DIR_PATH", "")
 
 
 class BaseFuzzTestCase(base.BaseTestCase):

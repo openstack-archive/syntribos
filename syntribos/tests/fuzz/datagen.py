@@ -20,11 +20,13 @@ from syntribos.clients.http import parser
 
 
 class FuzzMixin(object):
-    """FuzzMixin Class
 
-    FuzzBehavior provides the fuzz_data function which yields a test name
-    and all iterations of a given piece of data (currently supports dict,
-    ElementTree.Element, and basestring formats) with each string provided.
+    """Mixin for fuzz tests
+
+    This class provides the :meth:`~.FuzzMixin._fuzz_data` function which
+    yields a test name and all iterations of a given piece of data (currently
+    supports `dict`, :class:`xml.etree.ElementTree.Element`, and `basestring`
+    formats) with each string provided.
     """
     @classmethod
     def _fuzz_data(cls, strings, data, skip_var, name_prefix):
@@ -33,6 +35,11 @@ class FuzzMixin(object):
         For each attribute in the model object, call the _build_combinations
         method corresponding to the type of the data parameter, which replaces
         the value with the fuzz string.
+
+        :param strings:
+        :param data:
+        :param skip_var:
+        :param name_prefix:
         """
         param_path = ""
         for str_num, stri in enumerate(strings, 1):
@@ -50,14 +57,18 @@ class FuzzMixin(object):
                 yield (name, model, stri, param_path)
 
     @classmethod
-    def _build_str_combinations(cls, string, data):
-        """Places fuzz string in fuzz location for string data."""
+    def _build_str_combinations(cls, fuzz_string, data):
+        """Places `fuzz_string` in fuzz location for string data.
+
+        :param str fuzz_string: Value to place in fuzz location
+        :param str data: Lines from the request template
+        """
         for match in re.finditer(r"{([\w]*):?([^}]*)}", data):
             # Match either "{identifier:value}" or "{value}"
             start, stop = match.span()
             model = "{0}{1}{2}".format(
                     cls.remove_braces(data[:start]),
-                    string, cls.remove_braces(data[stop:]))
+                    fuzz_string, cls.remove_braces(data[stop:]))
             if match.group(1):
                 # The string is of the format "{identifier:value}", so we just
                 # want the identifier as the param_path
@@ -67,7 +78,12 @@ class FuzzMixin(object):
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
-        """Places fuzz string in fuzz location for object data."""
+        """Places fuzz string in fuzz location for object data.
+
+        :param stri:
+        :param dic:
+        :param skip_var:
+        """
         for key, val in dic.iteritems():
             if skip_var in key:
                 continue
@@ -94,10 +110,15 @@ class FuzzMixin(object):
 
     @staticmethod
     def _merge_dictionaries(x, y):
-        """merge the dictionaries
+        """Merge `dicts` together
 
-        Uses the copy function to create a merged dictionary without squashing
-        the passed in objects
+        Create a copy of `x`, and update that with elements of `y`, to prevent
+        squashing of passed in dicts.
+
+        :param dict x: Dictionary 1
+        :param dict y: Dictionary 2
+        :returns: Merged dictionary
+        :rtype: `dict`
         """
 
         z = x.copy()
@@ -123,20 +144,28 @@ class FuzzMixin(object):
                            "{0}/{1}".format(ele.tag, param_path))
 
     @staticmethod
-    def _update_element(ele, stri):
-        """update element
+    def _update_element(ele, text):
+        """Copies an XML element, updates its text attribute with `text`
 
-        Returns a copy of the element with the element text replaced by stri
+        :param ele: XML element to be copied, modified
+        :type ele: :class:`xml.ElementTree.Element`
+        :param str text: Text to populate `ele`'s text attribute with
+        :returns: XML element with "text" attribute set to `text`
+        :rtype: :class:`xml.ElementTree.Element`
         """
         ret = ele.copy()
-        ret.text = stri
+        ret.text = text
         return ret
 
     @staticmethod
     def _update_attribs(ele, attribs):
-        """update attributes
+        """Copies an XML element, populates attributes from `attribs`
 
-        Returns a copy of the element with the attributes replaced by attribs
+        :param ele: XML element to be copied, modified
+        :type ele: :class:`xml.ElementTree.Element`
+        :param dict attribs: Source of new attribute values for `ele`
+        :returns: XML element with all attributes overwritten by `attribs`
+        :rtype: :class:`xml.ElementTree.Element`
         """
         ret = ele.copy()
         ret.attrib = attribs
@@ -144,9 +173,14 @@ class FuzzMixin(object):
 
     @staticmethod
     def _update_inner_element(ele, list_):
-        """Update inner element
+        """Copies an XML element, populates sub-elements from `list_`
 
         Returns a copy of the element with the subelements given via list_
+        :param ele: XML element to be copied, modified
+        :type ele: :class:`xml.ElementTree.Element`
+        :param list list_: List of subelements to append to `ele`
+        :returns: XML element with new subelements from `list_`
+        :rtype: :class:`xml.ElementTree.Element`
         """
         ret = ele.copy()
         for i, v in enumerate(list_):
@@ -155,6 +189,7 @@ class FuzzMixin(object):
 
     @staticmethod
     def remove_braces(string):
+        """Remove braces from strings (in request templates)."""
         return string.replace("}", "").replace("{", "")
 
     @staticmethod
@@ -175,6 +210,13 @@ class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
 
         Gets the name and the fuzzed request model from _fuzz_data, and
         creates a request object from the parameters of the model.
+
+        :param strings:
+        :param fuzz_type:
+        :param name_prefix:
+        :returns: Generator of tuples:
+            (name, request, fuzzstring, ImpactedParameter name)
+        :rtype: `tuple`
         """
         for name, data, stri, param_path in self._fuzz_data(
             strings, getattr(self, fuzz_type), self.action_field,

@@ -7,20 +7,20 @@ Configuration
 This section describes the configuration specified in your configuration file
 (second argument to the runner).
 
-.. autoclass:: syntribos.config.MainConfig
+.. automodule:: syntribos.config
     :members:
+    :undoc-members:
+    :show-inheritance:
 
 ..
-    Arguments
-    ---------
-    .. autoclass:: syntribos.arguments.SyntribosCLI
+    .. automodule:: syntribos.arguments
         :members:
-
-..
-    Runner
-    ------
-    .. autoclass:: syntribos.runners.Runner
+        :undoc-members:
+        :show-inheritance:
+    .. automodule:: syntribos.runner
         :members:
+        :undoc-members:
+        :show-inheritance:
 
 Tests
 -----
@@ -34,19 +34,26 @@ either directly, or through a subclass like
 
 All tests are aggregated in the `syntribos.tests.base.test_table` variable
 
-.. autoclass:: syntribos.tests.base.TestType
+.. automodule:: syntribos.tests.base
     :members:
-
-.. autoclass:: syntribos.tests.base.BaseTestCase
-    :members:
-
-.. autofunction:: syntribos.tests.base.replace_invalid_characters
-
+    :undoc-members:
+    :show-inheritance:
 
 ..
-    .. autoclass:: syntribos.tests.fuzz.base_fuzz.BaseFuzzTestCase
+    .. automodule:: syntribos.tests.fuzz.base_fuzz
         :members:
+        :undoc-members:
+        :show-inheritance:
 
+.. automodule:: syntribos.tests.fuzz.config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: syntribos.tests.fuzz.datagen
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Issues
 ------
@@ -54,8 +61,10 @@ Issues
 This section describes the representation of issues that are uncovered by
 Syntribos.
 
-.. autoclass:: syntribos.issue.Issue
+.. automodule:: syntribos.issue
     :members:
+    :undoc-members:
+    :show-inheritance:
 
 Results
 -------
@@ -63,8 +72,10 @@ Results
 This section describes the representation of results (collections of issues)
 from a given Syntribos run.
 
-.. autoclass:: syntribos.result.IssueTestResult
+.. automodule:: syntribos.result
     :members:
+    :undoc-members:
+    :show-inheritance:
 
 HTTP Requests
 -------------
@@ -72,13 +83,17 @@ HTTP Requests
 This section describes the components related to generating, fuzzing, and making
 HTTP requests.
 
-.. autoclass:: syntribos.clients.http.parser.RequestCreator
+.. automodule:: syntribos.clients.http.client
     :members:
-    :private-members:
+    :undoc-members:
+    :show-inheritance:
 
-.. autoclass:: syntribos.clients.http.models.RequestObject
+.. automodule:: syntribos.clients.http.models
     :members:
+    :undoc-members:
+    :show-inheritance:
 
-.. autoclass:: syntribos.clients.http.models.RequestHelperMixin
+.. automodule:: syntribos.clients.http.parser
     :members:
-    :private-members:
+    :undoc-members:
+    :show-inheritance:

@@ -27,5 +27,5 @@ class MainConfig(data_interfaces.ConfigSectionInterface):
 
     @property
     def version(self):
-        """???"""
+        """Used for base_auth test."""
         return self.get("version")

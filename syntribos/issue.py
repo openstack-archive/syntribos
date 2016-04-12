@@ -30,15 +30,15 @@ class Issue(object):
     :ivar response: The response object returned after sending the request
     :ivar target: A hostname/IP/etc. to be tested
     :ivar path: A specific REST API method, i.e. a URL path associated with a
-        Target
+        Target.
     :ivar test_type: The type of vulnerability that is being tested for. This
         is not necessarily the same as the Defect Type, which may be something
         like 500 error or DoS.
     :ivar impacted_parameter: For fuzz tests only, a
         :class:`syntribos.tests.fuzz.base_fuzz.ImpactedParameter` that holds
-            data about what part of the request was affected by the fuzz test
-
+        data about what part of the request was affected by the fuzz test.
     """
+
     def __init__(self, test, severity, text, confidence,
                  request=None, response=None, impacted_parameter=None):
         self.defect_type = test
@@ -86,7 +86,6 @@ class Issue(object):
         """Convert the request object to a dict of values for outputting.
 
         :param req: The request object
-        :type req: (TODO)
         :rtype: `dict`
         :returns: dictionary of HTTP request data
         """
@@ -102,7 +101,6 @@ class Issue(object):
         """Convert the response object to a dict of values for outputting.
 
         :param res: The result object
-        :type res: (TODO)
         :rtype: `dict`
         :returns: dictionary of HTTP response data
         """

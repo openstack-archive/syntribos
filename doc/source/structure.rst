@@ -1,0 +1,20 @@
+Project Structure
+=================
+
+- ``data/`` (textfiles containing data for use by Syntribos tests)
+- ``doc/source/`` (Sphinx documentation files)
+- ``examples/`` (example Syntribos request templates, config files)
+    - ``configs/`` (examples of Syntribos configs; currently only Keystone)
+    - ``templates/`` (examples of request templates; currently only Keystone/Solum)
+- ``scripts/`` (?)
+- ``syntribos/`` (core Syntribos code)
+    - ``clients/`` (clients for making calls, e.g. HTTP)
+        - ``http/`` (clients for making HTTP requests)
+    - ``extensions/`` (extensions that can be called in request templates)
+        - ``identity/`` (extension for interacting with Keystone/identity)
+        - ``random_data/`` (extension for generating random test data)
+    - ``formatters/`` (output formatters, e.g. JSON, XML/XUnit)
+    - ``tests/`` (location of tests that Syntribos can run against a target)
+        - ``auth/`` (tests related to authentication/authorization)
+        - ``fuzz/`` (tests that "fuzz" API requests)
+- ``tests/unit/`` (unittests for testing Syntribos itself)

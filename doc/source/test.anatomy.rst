@@ -1,4 +1,4 @@
-Basic syntribos test anatomy
+Basic Syntribos Test Anatomy
 ============================
 
 **Test Types**
@@ -33,7 +33,13 @@ For all tests against HTTP headers only, use:
 Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
 
-Extensions are found in ``syntribos/syntribos/extensions/`` .
+Extensions are found in ``syntribos/extensions/`` .
+
+Calls to extensions are made in this form: 
+
+::
+
+    CALL_EXTERNAL|{extension dot path}:{function}:{arguments}
 
 One example packaged with Syntribos enables the tester to obtain an auth
 token from keystone/identity. The code is located in
@@ -54,7 +60,7 @@ usernames when fuzzing a create user call.
 
 ::
 
-    "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+    "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
 
 The extension function can return one value or be used as a generator if
 you want it to change for each test.
@@ -68,6 +74,6 @@ follows:
 
 ::
 
-    "ACTION_FIELD:id": "1a16f348-c8d5-42ec-a474-b1cdf78cf40f",
+    "ACTION_FIELD:id": "1a16f348-c8d5-42ec-a474-b1cdf78cf40f"
 
 The ID provided will remain static for every test.

@@ -34,6 +34,7 @@ For Developers
 .. toctree::
     :maxdepth: 1
 
+    structure
     contributing
     code-docs
     unittests

@@ -79,10 +79,7 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
-        """Not sure what the point of this is.
-
-        TODO: FIGURE THIS OUT
-        """
+        """Returns tests for given TestCase class (overwritten by children)."""
         yield cls
 
     @classmethod
@@ -93,6 +90,8 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         read in by the test runner as the master list of tests to be run.
 
         :param str new_name: Name of new class to be created
+        :param str fuzz_string: Fuzz string to insert
+        :param str param_path: String tracing location of the ImpactedParameter
         :param dict kwargs: Keyword arguments to pass to the new class
         :rtype: class
         :returns: A TestCase class extending :class:`BaseTestCase`
@@ -108,11 +107,23 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         return new_cls
 
     def run_test(self):
+        """This kicks off the test(s) for a given TestCase class
+
+        After running the tests, an `AssertionError` is raised if any tests
+        were added to self.failures.
+
+        :raises: :exc:`AssertionError`
+        """
         self.test_case()
         if self.failures:
             raise AssertionError
 
     def test_case(self):
+        """This method is overwritten by individual TestCase classes
+
+        It represents the actual test that is called in :func:`run_test`,
+        and handles populating `self.failures`
+        """
         pass
 
     def register_issue(self, issue):
@@ -121,9 +132,10 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         Registers a :class:`syntribos.issue.Issue` object as a failure and
         associates the test's metadata to it.
 
-        :param Issue issue: issue object to update
+        :param issue: issue object to update
+        :type issue: :class:`syntribos.issue.Issue`
         :returns: new issue object with metadata associated
-        :rtype: Issue
+        :rtype: :class:`syntribos.issue.Issue`
         """
 
         # Still associating request and response objects with issue in event of
@@ -142,7 +154,7 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         return issue
 
     def test_issues(self):
-        """Run assertions for each test registered in test_case."""
+        """(DEPRECATED) Run assertions for each test in test_case."""
         for issue in self.issues:
             try:
                 issue.run_tests()

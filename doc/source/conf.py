@@ -16,7 +16,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath('../../'))
-sys.path.insert(0, os.path.abspath('../../syntribos'))
 
 # -- General configuration ----------------------------------------------------
 
@@ -76,9 +75,10 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 # intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {'cafe': ('http://opencafe.readthedocs.org/en/latest', None)}
 
-autodoc_mock_imports = [
-    'cafe',
-    'cafe.engine.http.client',
-    'cafe.drivers.unittest.arguments'
-]
+# autodoc_mock_imports = [
+#     'cafe',
+#     'cafe.engine.http.client',
+#     'cafe.drivers.unittest.arguments'
+# ]
