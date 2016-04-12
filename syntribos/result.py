@@ -25,8 +25,7 @@ class IssueTestResult(unittest.TextTestResult):
     This class aggregates :class:`syntribos.issue.Issue` objects from all the
     tests as they run
     """
-    aggregated_failures = {}
-    pruned_failures = []
+    stats = {"errors": 0, "failures": 0, "successes": 0}
 
     def addFailure(self, test, err):
         """Adds issues to data structures
@@ -39,21 +38,7 @@ class IssueTestResult(unittest.TextTestResult):
         :param tuple err: Tuple of format ``(type, value, traceback)``
         """
         self.failures.append((test, test.failures))
-        for issue in test.failures:
-            url = issue.request.url
-            method = issue.request.method
-            if url in self.aggregated_failures:
-                if method in self.aggregated_failures[url]:
-                    if issue.test in self.aggregated_failures[url][method]:
-                        (self.aggregated_failures[url]
-                         [method][issue.test].append(issue))
-                    else:
-                        self.aggregated_failures[url][method][issue.test] = []
-                        self.pruned_failures.append((test, [issue.as_dict()]))
-                else:
-                    self.aggregated_failures[url][method] = {}
-            else:
-                self.aggregated_failures[url] = {}
+        self.stats["failures"] += len(test.failures)
         if self.showAll:
             sys.stdout.write("FAIL\n")
         elif self.dots:
@@ -68,7 +53,26 @@ class IssueTestResult(unittest.TextTestResult):
         :param err:
         :type tuple: Tuple of format ``(type, value, traceback)``
         """
-        super(IssueTestResult, self).addError(test, err)
+        self.errors.append((test, self._exc_info_to_string(err, test)))
+        self.stats["errors"] += 1
+        if self.showAll:
+            sys.stdout.write("ERROR\n")
+        elif self.dots:
+            sys.stdout.write('E')
+            sys.stdout.flush()
+
+    def addSuccess(self, test):
+        """Duplicates parent class addSuccess functionality.
+
+        :param test: The test that was run
+        :type test: :class:`syntribos.tests.base.BaseTestCase`
+        """
+        self.stats["successes"] += 1
+        if self.showAll:
+            sys.stdout.write("ok\n")
+        elif self.dots:
+            sys.stdout.write('.')
+            sys.stdout.flush()
 
     def printErrors(self, output_format):
         """Print out each :class:`syntribos.issue.Issue` that was encountered
@@ -81,7 +85,6 @@ class IssueTestResult(unittest.TextTestResult):
         formatter = formatter_types[output_format]
         if self.dots or self.showAll:
             self.stream.writeln()
-        self.failures = self.pruned_failures
         formatter.report()
 
     def stopTestRun(self):

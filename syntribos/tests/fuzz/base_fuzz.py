@@ -218,7 +218,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         issue.response = self.resp
 
         issue.test_type = self.test_name
-        url_components = urlparse(self.resp.request.url)
+        url_components = urlparse(self.init_response.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
 
