@@ -1,18 +1,16 @@
-"""
-Copyright 2015 Rackspace
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
+# Copyright 2015 Rackspace
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import json
 from xml.etree import ElementTree as ET
 
@@ -21,7 +19,8 @@ import syntribos.extensions.identity.models.base
 
 class AuthResponse(
     syntribos.extensions.identity.models.base.BaseIdentityModel
-    ):
+):
+
     def __init__(
             self, token=None, service_catalog=None, user=None, metadata=None):
             super(AuthResponse, self).__init__(locals())
@@ -67,6 +66,7 @@ class Metadata(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Tenant(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(self, enabled=None, description=None, name=None, id_=None):
         super(Tenant, self).__init__(locals())
 
@@ -88,6 +88,7 @@ class Tenant(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Token(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(self, id_=None, issued_at=None, expires=None, tenant=None):
         super(Token, self).__init__(locals())
 
@@ -109,6 +110,7 @@ class Token(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class User(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(
             self, id_=None, name=None, username=None, roles=None):
         super(User, self).__init__(locals())
@@ -132,6 +134,7 @@ class User(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Service(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(
             self, endpoints=None, name=None, type_=None):
         super(Service, self).__init__(locals())
@@ -150,6 +153,7 @@ class Service(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Endpoint(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(
             self, region=None, id_=None, public_url=None, admin_url=None,
             internal_url=None, private_url=None, version_id=None,
@@ -182,6 +186,7 @@ class Endpoint(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Role(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(
         self, id_=None, name=None, description=None,
             tenant_id=None, service_id=None):
@@ -207,6 +212,7 @@ class Role(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Auth(syntribos.extensions.identity.models.base.BaseIdentityModel):
+
     def __init__(
             self, password_creds=None, tenant_id=None, tenant_name=None):
         super(Auth, self).__init__(locals())
@@ -228,7 +234,8 @@ class Auth(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 class PasswordCredentials(
     syntribos.extensions.identity.models.base.BaseIdentityModel
-    ):
+):
+
     def __init__(self, username=None, password=None):
         super(PasswordCredentials, self).__init__(locals())
 
