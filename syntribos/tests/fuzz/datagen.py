@@ -52,14 +52,18 @@ class FuzzMixin(object):
     @classmethod
     def _build_str_combinations(cls, string, data):
         """Places fuzz string in fuzz location for string data."""
-        for match in re.finditer(r"{[^}]*}", data):
+        for match in re.finditer(r"{([\w]*):?([^}]*)}", data):
+            # Match either "{identifier:value}" or "{value}"
             start, stop = match.span()
-            yield (
-                "{0}{1}{2}".format(
+            model = "{0}{1}{2}".format(
                     cls.remove_braces(data[:start]),
-                    string, cls.remove_braces(data[stop:])),
-                cls.remove_braces(data[start:stop])
-            )
+                    string, cls.remove_braces(data[stop:]))
+            if match.group(1):
+                # The string is of the format "{identifier:value}", so we just
+                # want the identifier as the param_path
+                yield model, match.group(1)
+            else:
+                yield model, cls.remove_braces(match.group(0))
 
     @classmethod
     def _build_combinations(cls, stri, dic, skip_var):
@@ -150,6 +154,16 @@ class FuzzMixin(object):
     def remove_braces(string):
         return string.replace("}", "").replace("{", "")
 
+    @staticmethod
+    def remove_attr_names(string):
+        """removes identifiers from string substitution
+
+        If we are fuzzing example.com/{userid:123}, this method removes the
+        identifier name so that the client only sees example.com/{123} when
+        it sends the request
+        """
+        return re.sub(r"{[\w]+:", "{", string)
+
 
 class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
 
@@ -170,6 +184,7 @@ class FuzzRequest(RequestObject, FuzzMixin, RequestHelperMixin):
     def prepare_request(self, fuzz_type=None):
         super(FuzzRequest, self).prepare_request()
         if fuzz_type != "url":
+            self.url = self.remove_attr_names(self.url)
             self.url = self.remove_braces(self.url)
 
 
