@@ -20,7 +20,7 @@ class JSONFormatter(object):
         self.results = results
 
     def report(self):
-        machine_output = dict({'results': [], 'errors': [], 'stats': []})
+        machine_output = dict({'failures': {}, 'errors': [], 'stats': []})
 
         # reports errors
         for test, error in self.results.errors:
@@ -31,16 +31,59 @@ class JSONFormatter(object):
                 })
 
         # reports failures
-        for test, failure in self.results.failures:
-            machine_output['results'].append(
-                {
-                    'test': self.results.getDescription(test),
-                    'failure': failure
-                })
+        # Gets list of [issues] by flattening list of [(test, [issues])]
+        issues = [issue for test, failures in self.results.failures
+                  for issue in failures]
+        for issue in issues:
+            target = issue.target
+            path = issue.path
+            url = "{0}{1}".format(target, path)
+            test_type = issue.test_type
+
+            if issue.impacted_parameter:
+                # Only fuzz tests have an ImpactedParameter
+                method = issue.impacted_parameter.method
+                loc = issue.impacted_parameter.location
+                name = issue.impacted_parameter.name
+                param = "{0} - {1}|{2}".format(method, loc, name)
+            defect_type = issue.defect_type
+
+            if url not in machine_output['failures']:
+                machine_output['failures'][url] = {}
+
+            issues_by_url = machine_output['failures'][url]
+            if test_type not in issues_by_url:
+                issues_by_url[test_type] = {}
+
+            issues_by_test = issues_by_url[test_type]
+            if issue.impacted_parameter:
+                if param not in issues_by_test:
+                    issues_by_test[param] = {}
+
+                issues_by_param = issues_by_test[param]
+                if defect_type not in issues_by_param:
+                    issues_by_param[defect_type] = issue.get_details()
+                    issues_by_param[defect_type]['payloads'] = set(
+                        [issue.impacted_parameter.fuzz_string])
+
+                issues_by_defect = issues_by_param[defect_type]
+                issues_by_defect['payloads'].add(
+                    issue.impacted_parameter.fuzz_string)
+            else:
+                if defect_type not in issues_by_test:
+                    issues_by_test[defect_type] = issue.get_details()
+
+        # reports stats
+        machine_output['stats'] = self.results.stats
 
         output = json.dumps(machine_output, sort_keys=True,
-                            indent=2, separators=(',', ': '))
-
-        # TODO(mdong): Stats
+                            indent=2, separators=(',', ': '), cls=SetEncoder)
 
         self.results.stream.write(output)
+
+
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)

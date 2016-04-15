@@ -20,9 +20,9 @@ class Issue(object):
     This object is designed to hold the metadata associated with
     a vulnerability.
 
-    :ivar test: The type of vulnerability that Syntribos believes it has found.
-        This may be something like 500 error or DoS, regardless of what the
-        Test Type is.
+    :ivar defect_type: The type of vulnerability that Syntribos believes it has
+        found. This may be something like 500 error or DoS, regardless of what
+        the Test Type is.
     :ivar severity: "Low", "Medium", or "High", depending on the defect
     :ivar text: Description of the defect
     :ivar confidence: The confidence of the defect
@@ -41,7 +41,7 @@ class Issue(object):
     """
     def __init__(self, test, severity, text, confidence,
                  request=None, response=None, impacted_parameter=None):
-        self.test = test
+        self.defect_type = test
         self.severity = severity
         self.text = text
         self.confidence = confidence
@@ -58,7 +58,7 @@ class Issue(object):
         out = {
             'issue_target': self.target,
             'issue_path': self.path,
-            'issue_defect_type': self.test,
+            'issue_defect_type': self.defect_type,
             'issue_test_type': self.test_type,
             'issue_severity': self.severity,
             'issue_description': self.text,
@@ -69,6 +69,18 @@ class Issue(object):
             out['impacted_parameter'] = self.impacted_parameter.as_dict()
 
         return out
+
+    def get_details(self):
+        """Returns the most relevant information needed for output.
+
+        :rtype: `dict`
+        :returns: dictionary of issue details
+        """
+        return {
+            'description': self.text,
+            'confidence': self.confidence,
+            'severity': self.severity
+        }
 
     def request_as_dict(self, req):
         """Convert the request object to a dict of values for outputting.
