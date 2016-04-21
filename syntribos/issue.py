@@ -34,6 +34,7 @@ class Issue(object):
     :ivar test_type: The type of vulnerability that is being tested for. This
         is not necessarily the same as the Defect Type, which may be something
         like 500 error or DoS.
+    :ivar content_type: The content-type of the unmodified request
     :ivar impacted_parameter: For fuzz tests only, a
         :class:`syntribos.tests.fuzz.base_fuzz.ImpactedParameter` that holds
         data about what part of the request was affected by the fuzz test.

@@ -45,7 +45,12 @@ class JSONFormatter(object):
                 method = issue.impacted_parameter.method
                 loc = issue.impacted_parameter.location
                 name = issue.impacted_parameter.name
-                param = "{0} - {1}|{2}".format(method, loc, name)
+                content_type = issue.content_type
+                if loc == "data":
+                    param = "{0} - {1}:{2}|{3}".format(method, loc,
+                                                       content_type, name)
+                else:
+                    param = "{0} - {1}|{2}".format(method, loc, name)
             defect_type = issue.defect_type
 
             if url not in machine_output['failures']:

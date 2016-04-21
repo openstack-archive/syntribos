@@ -185,6 +185,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_response = cls.client.send_request(prepared_copy)
+        cls.init_request = cls.init_response.request
         # end block
 
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
@@ -218,6 +219,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
         url_components = urlparse(self.init_response.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
+        if 'content-type' in self.init_request.headers:
+            issue.content_type = self.init_request.headers['content-type']
+        else:
+            issue.content_type = None
 
         issue.impacted_parameter = ImpactedParameter(method=req.method,
                                                      location=self.test_type,
