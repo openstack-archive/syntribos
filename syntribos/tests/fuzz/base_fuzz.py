@@ -185,6 +185,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_response = cls.client.send_request(prepared_copy)
+        cls.init_request = cls.init_response.request
         # end block
 
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
