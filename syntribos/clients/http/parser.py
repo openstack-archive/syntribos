@@ -15,9 +15,10 @@ import importlib
 import json
 import re
 import types
-import urlparse
 import uuid
 import xml.etree.ElementTree as ElementTree
+
+from six.moves.urllib import parse as urlparse
 
 from syntribos.clients.http.models import _iterators
 from syntribos.clients.http.models import RequestObject
