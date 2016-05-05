@@ -144,7 +144,8 @@ class Runner(object):
             for file_path, req_str in args.input:
                 for test_name, test_class in cls.get_tests(args.test_types):
                     for test in test_class.get_test_cases(file_path, req_str):
-                        cls.run_test(test, result, args.dry_run)
+                        if test:
+                            cls.run_test(test, result, args.dry_run)
             cls.print_result(result, start_time, args)
         except KeyboardInterrupt:
             cafe.drivers.base.print_exception(

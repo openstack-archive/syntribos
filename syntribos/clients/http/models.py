@@ -15,6 +15,8 @@ import copy
 import json
 import xml.etree.ElementTree as ElementTree
 
+from six.moves import html_parser
+
 
 _iterators = {}
 
@@ -84,7 +86,10 @@ class RequestHelperMixin(object):
         if isinstance(data, dict):
             return json.dumps(data)
         elif isinstance(data, ElementTree.Element):
-            return ElementTree.tostring(data)
+            str_data = ElementTree.tostring(data)
+            # No way to stop tostring from HTML escaping even if we wanted
+            h = html_parser.HTMLParser()
+            return h.unescape(str_data)
         else:
             return data
 
