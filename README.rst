@@ -99,8 +99,8 @@ Copy the data files from Syntribos data directory to .opencafe/data directory cr
 
 ::
 
-    $ cp data/* .opencafe/data/
-    $ cp examples/configs/keystone.config  .opencafe/configs/.
+    $ cp syntribos/data/* .opencafe/data/
+    $ cp syntribos/examples/configs/keystone.config  .opencafe/configs/.
 
 Modify the configuration files to update your keystone URL, API endpoint
 and user credentials.
@@ -125,15 +125,15 @@ Example configuration file:
     [auth]
     endpoint=<yourkeystoneurl>
 
-You can create a directory to store the request templates for the resources
+You can create a templates directory inside .opencafe directory to store the request templates for the resources
 being tested. The templates under the `examples` directory can give you a quick
 start.
 
 ::
 
-    $ mkdir templates
-    $ mkdir templates/keystone
-    $ cp examples/templates/keystone/* templates/keystone
+    $ mkdir .opencafe/templates
+    $ mkdir .opencafe/templates/keystone
+    $ cp syntribos/examples/templates/keystone/* .opencafe/templates/keystone
 
 Running Syntribos
 -----------------
@@ -143,14 +143,14 @@ file and template file(s) you want to use.
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt
+    $ syntribos keystone.config .opencafe/templates/keystone/roles_get.txt
 
 To run ``syntribos`` against all template files, just specify the template 
 directory:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/
+    $ syntribos keystone.config .opencafe/templates/keystone/
 
 Syntribos Logging
 -----------------
