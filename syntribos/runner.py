@@ -33,7 +33,6 @@ from syntribos.result import IssueTestResult
 import syntribos.tests as tests
 import syntribos.tests.base
 
-
 result = None
 
 
