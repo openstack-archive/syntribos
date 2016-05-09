@@ -58,7 +58,6 @@ class InputType(object):
 
 
 class SyntribosCLI(argparse.ArgumentParser):
-
     """Class for parsing Syntribos command-line arguments."""
 
     def __init__(self, *args, **kwargs):

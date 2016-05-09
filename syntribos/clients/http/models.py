@@ -134,11 +134,11 @@ class RequestObject(object):
     """An object that holds information about an HTTP request."""
 
     def __init__(
-        self, method, url, action_field=None, headers=None, params=None,
-            data=None):
+        self, method, url, action_field={}, headers={}, params={},
+            data={}):
         self.method = method
         self.url = url
-        self.headers = headers or {}
-        self.params = params or {}
-        self.data = data
         self.action_field = action_field
+        self.headers = headers
+        self.params = params
+        self.data = data

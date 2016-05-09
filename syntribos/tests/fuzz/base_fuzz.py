@@ -134,6 +134,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         self.test_default_issues() in order to test for the Issues
         defined here
         """
+
         if self.resp.status_code >= 500:
             self.register_issue(
                 Issue(test="500_errors",

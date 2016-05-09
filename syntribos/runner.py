@@ -17,14 +17,8 @@ import sys
 import time
 import unittest
 
-import requests
-
-from cafe.common.reporting.cclogging import(
-    init_root_log_handler as init_root_log_handler
-)
-from cafe.configurator.managers import(
-    TestEnvManager as TestEnvManager
-)
+from cafe.common.reporting.cclogging import init_root_log_handler
+from cafe.configurator.managers import TestEnvManager
 import cafe.drivers.base
 
 import syntribos.arguments
@@ -112,7 +106,6 @@ class Runner(object):
     @classmethod
     def run(cls):
         global result
-        requests.packages.urllib3.disable_warnings()
         try:
             cls.print_symbol()
             usage = """

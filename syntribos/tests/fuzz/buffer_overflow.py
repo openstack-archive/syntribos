@@ -42,7 +42,7 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
         failed_strings = self.data_driven_failure_cases()
         if failed_strings:
             self.register_issue(
-                Issue(test="sql_strings",
+                Issue(test="bof_strings",
                       severity="Medium",
                       confidence="Low",
                       text=("The string(s): \'{0}\', known to be commonly "
