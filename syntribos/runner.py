@@ -140,6 +140,7 @@ class Runner(object):
                             cls.run_test(test, result, args.dry_run)
             cls.print_result(result, start_time, args)
         except KeyboardInterrupt:
+            cls.print_result(result, start_time, args)
             cafe.drivers.base.print_exception(
                 "Runner",
                 "run",
