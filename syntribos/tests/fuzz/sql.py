@@ -20,27 +20,23 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
     test_type = "data"
     data_key = "sql-injection.txt"
     failure_keys = [
-        'fatal',
-        'warning',
-        'error',
-        'exception',
-        'illegal',
-        'invalid',
-        'fail',
-        'stack',
-        'access',
-        'directory',
-        'file',
-        'not found',
-        'unknown',
-        'uid=',
-        'varchar',
-        'ODBC',
-        'SQL',
-        'quotation mark',
-        'syntax',
-        'ORA-',
-        '111111'
+        "SQL syntax",
+        "mysql",
+        "MySqlException (0x",
+        "valid MySQL result",
+        "check the manual that corresponds to your MySQL server version",
+        "MySqlClient.",
+        "com.mysql.jdbc.exceptions",
+        "SQLite/JDBCDriver",
+        "SQLite.Exception",
+        "System.Data.SQLite.SQLiteException",
+        "sqlite_.",
+        "SQLite3::",
+        "[SQLITE_ERROR]",
+        "Unknown column",
+        "where clause",
+        "SqlServer",
+        "syntax error"
     ]
 
     def test_case(self):
@@ -58,6 +54,20 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
                             "attacks."
                             ).format(failed_strings)
                       )
+            )
+
+        time_diff = self.config.time_difference_percent / 100
+        if (self.resp.elapsed.total_seconds() >
+                time_diff * self.init_response.elapsed.total_seconds()):
+            self.register_issue(
+                Issue(test="sql_timing",
+                      severity="Medium",
+                      confidence="Medium",
+                      text=(
+                          "A response to one of our payload requests has "
+                          "taken too long compared to the baseline request. "
+                          "This could indicate a vulnerability to time-based "
+                          "SQL injection attacks"))
             )
 
 
