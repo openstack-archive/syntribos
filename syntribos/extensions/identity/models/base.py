@@ -36,6 +36,12 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
 
     @classmethod
     def _remove_xml_namespaces(cls, element):
+        """Prunes namespaces from XML element
+
+        :param element: element to be trimmed
+        :returns: element with namespaces trimmed
+        :rtype: :class:`xml.etree.ElementTree.Element`
+        """
         for key, value in vars(cls._namespaces).items():
             if key.startswith("__"):
                 continue
@@ -63,6 +69,15 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
 
     @staticmethod
     def _find(element, tag):
+        """Finds element with tag
+
+        :param element: :class:`xml.etree.ElementTree.Element`, the element
+            through which to start searching
+        :param tag: the tag to search for
+        :returns: The element with tag `tag` if found, or a new element with
+            tag None if not found
+        :rtype: :class:`xml.etree.ElementTree.Element`
+        """
         if element is None:
             return ET.Element(None)
         new_element = element.find(tag)
@@ -72,6 +87,20 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
 
     @staticmethod
     def _build_list_model(data, field_name, model):
+        """Builds list of python objects from XML or json data
+
+        If data type is json, will find all json objects with `field_name` as
+        key, and convert them into python objects of type `model`.
+        If XML, will find all :class:`xml.etree.ElementTree.Element` with
+        `field_name` as tag, and convert them into python objects of type
+        `model`
+
+        :param data: Either json or XML object
+        :param str field_name: json key or XML tag
+        :param model: Class of objects to be returned
+        :returns: list of `model` objects
+        :rtype: `list`
+        """
         if data is None:
             return []
         if isinstance(data, dict):
@@ -82,6 +111,16 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
 
     @staticmethod
     def _build_list(items, element=None):
+        """Builds json object or xml element from model
+
+        Calls either :func:`item._obj_to_dict` or
+        :func:`item.obj_to_xml_ele` on all objects in `items`, and either
+        returns the dict objects as a list or appends `items` to `element`
+
+        :param items: list of objects for conversion
+        :param element: The element to be appended, or None if json
+        :returns: list of dicts if `element` is None or  `element` otherwise.
+        """
         if element is None:
             if items is None:
                 return []
@@ -95,6 +134,11 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
 
     @staticmethod
     def _create_text_element(name, text):
+        """Creates element with text data
+
+        :returns: new element with name `name` and text `text`
+        :rtype: :class:`xml.etree.ElementTree.Element`
+        """
         element = ET.Element(name)
         if text is True or text is False:
             element.text = str(text).lower()
@@ -112,7 +156,11 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
         """Remove empty values
 
         Returns a new dictionary based on 'dictionary', minus any keys with
-        values that evaluate to False
+        values that evaluate to False.
+
+        :param dict data: Dictionary to be pruned
+        :returns: dictionary without empty values
+        :rtype: `dict`
         """
         if isinstance(data, dict):
             return dict(
@@ -128,6 +176,11 @@ class BaseIdentityModel(cafe.engine.models.base.AutoMarshallingModel):
 
     @staticmethod
     def _get_sub_model(model, json=True):
+        """Converts object to json or XML
+
+        :param model: Object to convert
+        :param boolean json: True if converting to json, false if XML
+        """
         if json:
             if model is not None:
                 return model._obj_to_dict()

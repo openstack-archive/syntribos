@@ -97,3 +97,15 @@ HTTP requests.
     :members:
     :undoc-members:
     :show-inheritance:
+
+Extension
+----------
+
+This section describes Syntribos' extensions, which are called by the
+CALL_EXTERNAL field in the request template.
+
+.. automodule:: syntribos.extensions.identity.models.base
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
