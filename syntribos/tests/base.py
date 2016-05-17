@@ -148,6 +148,8 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         url_components = urlparse(self.resp.request.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
+        if self.test_type:
+            issue.test_type = self.test_type
 
         self.failures.append(issue)
 
