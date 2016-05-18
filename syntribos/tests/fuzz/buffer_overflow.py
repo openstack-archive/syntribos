@@ -20,21 +20,19 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
     test_type = "data"
     data_key = "buffer-overflow.txt"
     failure_keys = [
-        'fatal',
-        'warning',
-        'error',
-        'exception',
-        'fail',
-        'not found',
-        'unknown'
+        '*** stack smashing detected ***:',
+        'Backtrace:',
+        'Memory map:',
     ]
 
     @classmethod
     def _get_strings(cls, file_name=None):
         return [
             "A" * (2 ** 16 + 1),
+            "a" * 10 ** 5,
+            "a" * 10 ** 6,
+            '\x00' * (2 ** 16 + 1),
             "%%s" * 513,
-            "%d" % 0x7fffffff,
         ]
 
     def test_case(self):
@@ -50,6 +48,19 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
                             "attack, have been found in the response. This "
                             "could indicate a vulnerability to buffer "
                             "overflow attacks.").format(failed_strings)
+                      )
+            )
+        time_diff = self.config.time_difference_percent / 100
+        if (self.resp.elapsed.total_seconds() >
+                time_diff * self.init_response.elapsed.total_seconds()):
+            self.register_issue(
+                Issue(test="bof_timing",
+                      severity="Medium",
+                      confidence="Medium",
+                      text=("The time it took to resolve a request with a "
+                            "long string was too long compared to the "
+                            "baseline request. This could indicate a "
+                            "vulnerability to buffer overflow attacks")
                       )
             )
 
