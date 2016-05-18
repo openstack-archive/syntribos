@@ -250,18 +250,19 @@ class ImpactedParameter(object):
     def __init__(self, method, location, name, value):
         self.method = method
         self.location = location
+        if len(value) >= 512:
+            self.trunc_fuzz_string = "{0}...({1} chars)...{2}".format(
+                value[:256], len(value),
+                value[-256:])
+        else:
+            self.trunc_fuzz_string = value
         self.fuzz_string = value
         self.name = name
 
     def as_dict(self):
-        trunc_string = self.fuzz_string
-        if len(self.fuzz_string) >= 512:
-            trunc_string = "{0}...({1} chars)...{2}".format(
-                self.fuzz_string[:256], len(self.fuzz_string),
-                self.fuzz_string[-256:])
         return {
             "method": self.method,
             "location": self.location,
             "name": self.name,
-            "value": trunc_string
+            "value": self.trunc_fuzz_string
         }

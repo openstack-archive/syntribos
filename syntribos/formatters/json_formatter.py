@@ -69,11 +69,11 @@ class JSONFormatter(object):
                 if defect_type not in issues_by_param:
                     issues_by_param[defect_type] = issue.get_details()
                     issues_by_param[defect_type]['payloads'] = set(
-                        [issue.impacted_parameter.fuzz_string])
+                        [issue.impacted_parameter.trunc_fuzz_string])
 
                 issues_by_defect = issues_by_param[defect_type]
                 issues_by_defect['payloads'].add(
-                    issue.impacted_parameter.fuzz_string)
+                    issue.impacted_parameter.trunc_fuzz_string)
             else:
                 if defect_type not in issues_by_test:
                     issues_by_test[defect_type] = issue.get_details()
