@@ -83,15 +83,13 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         yield cls
 
     @classmethod
-    def extend_class(cls, new_name, fuzz_string, param_path, kwargs):
+    def extend_class(cls, new_name, kwargs):
         """Creates an extension for the class
 
         Each TestCase class created is added to the `test_table`, which is then
         read in by the test runner as the master list of tests to be run.
 
         :param str new_name: Name of new class to be created
-        :param str fuzz_string: Fuzz string to insert
-        :param str param_path: String tracing location of the ImpactedParameter
         :param dict kwargs: Keyword arguments to pass to the new class
         :rtype: class
         :returns: A TestCase class extending :class:`BaseTestCase`
@@ -102,8 +100,6 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
             raise Exception("kwargs must be a dictionary")
         new_cls = type(new_name, (cls, ), kwargs)
         new_cls.__module__ = cls.__module__
-        new_cls.fuzz_string = fuzz_string
-        new_cls.param_path = param_path
         return new_cls
 
     def run_test(self):
