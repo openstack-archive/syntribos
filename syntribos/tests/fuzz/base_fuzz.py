@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import re
 
 from six.moves.urllib.parse import urlparse
 
@@ -134,6 +135,22 @@ class BaseFuzzTestCase(base.BaseTestCase):
         self.test_default_issues() in order to test for the Issues
         defined here
         """
+
+        target = self.init_request.url
+        domain = urlparse(target).hostname
+        regex = r"\bhttp://{0}".format(domain)
+        response_text = self.resp.text
+
+        if re.search(regex, response_text):
+            self.register_issue(
+                Issue(test="SSL_ERROR",
+                      severity="Medium",
+                      confidence="High",
+                      text=("Make sure that all the returned endpoint URIs"
+                            " use 'https://' and not 'http://'"
+                            )
+                      )
+            )
 
         if self.resp.status_code >= 500:
             self.register_issue(
