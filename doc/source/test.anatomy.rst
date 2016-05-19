@@ -4,7 +4,8 @@ Basic Syntribos Test Anatomy
 **Test Types**
 
 The tests included at release time include LDAP injection, SQL
-injection, integer overflow and the generic all\_attacks.
+injection, integer overflow, command injection, XML external entity, and
+reflected cross-site scripting.
 
 In order to run a specific test, simply use the ``-t, --test-types``
 option and provide `syntribos` with a keyword or keywords to match from
@@ -35,7 +36,7 @@ retrieved from external sources. This is handled using 'extensions.'
 
 Extensions are found in ``syntribos/extensions/`` .
 
-Calls to extensions are made in this form: 
+Calls to extensions are made in this form:
 
 ::
 
