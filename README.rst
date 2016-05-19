@@ -90,7 +90,7 @@ pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
 
 ::
 
-   $ cafe-config plugins install http 
+   $ cafe-config plugins install http
 
 Configuration
 -------------
@@ -145,7 +145,7 @@ file and template file(s) you want to use.
 
     $ syntribos keystone.config .opencafe/templates/keystone/roles_get.txt
 
-To run ``syntribos`` against all template files, just specify the template 
+To run ``syntribos`` against all template files, just specify the template
 directory:
 
 ::
@@ -228,22 +228,22 @@ above:
 
 ::
 
-    2015-08-18 14:44:12,466: INFO: root: ========================================================
-    2015-08-18 14:44:12,466: INFO: root: Test Case......: test_case
-    2015-08-18 14:44:12,466: INFO: root: Result.........: Passed
-    2015-08-18 14:44:12,466: INFO: root: Start Time.....: 2015-08-18 14:44:12.464843
-    2015-08-18 14:44:12,466: INFO: root: Elapsed Time...: 0:00:00.001203
-    2015-08-18 14:44:12,466: INFO: root: ========================================================
-    2015-08-18 14:44:12,467: INFO: root: ========================================================
-    2015-08-18 14:44:12,467: INFO: root: Fixture........: syntribos.tests.fuzz.all_attacks.(agent_patch.txt)_(ALL_ATTACKS_BODY)_(all-attacks.txt)_str1_model1
-    2015-08-18 14:44:12,467: INFO: root: Result.........: Passed
-    2015-08-18 14:44:12,467: INFO: root: Start Time.....: 2015-08-18 14:44:11.139070
-    2015-08-18 14:44:12,467: INFO: root: Elapsed Time...: 0:00:01.328030
-    2015-08-18 14:44:12,468: INFO: root: Total Tests....: 1
-    2015-08-18 14:44:12,468: INFO: root: Total Passed...: 1
-    2015-08-18 14:44:12,468: INFO: root: Total Failed...: 0
-    2015-08-18 14:44:12,468: INFO: root: Total Errored..: 0
-    2015-08-18 14:44:12,468: INFO: root: ========================================================
+    2016-05-19 16:11:52,079: INFO: root: ========================================================
+    2016-05-19 16:11:52,079: INFO: root: Test Case......: run_test
+    2016-05-19 16:11:52,080: INFO: root: Result.........: Passed
+    2016-05-19 16:11:52,080: INFO: root: Start Time.....: 2016-05-19 16:11:52.078475
+    2016-05-19 16:11:52,080: INFO: root: Elapsed Time...: 0:00:00.001370
+    2016-05-19 16:11:52,080: INFO: root: ========================================================
+    2016-05-19 16:11:52,082: INFO: root: ========================================================
+    2016-05-19 16:11:52,082: INFO: root: Fixture........: syntribos.tests.fuzz.sql.domains_get.txt_SQL_INJECTION_HEADERS_sql-injection.txt_str19_model2
+    2016-05-19 16:11:52,082: INFO: root: Result.........: Passed
+    2016-05-19 16:11:52,082: INFO: root: Start Time.....: 2016-05-19 16:11:51.953432
+    2016-05-19 16:11:52,083: INFO: root: Elapsed Time...: 0:00:00.129109
+    2016-05-19 16:11:52,083: INFO: root: Total Tests....: 1
+    2016-05-19 16:11:52,083: INFO: root: Total Passed...: 1
+    2016-05-19 16:11:52,083: INFO: root: Total Failed...: 0
+    2016-05-19 16:11:52,083: INFO: root: Total Errored..: 0
+    2016-05-19 16:11:52,083: INFO: root: ========================================================
 
 Basic Syntribos Test Anatomy
 ----------------------------
