@@ -141,22 +141,23 @@ class BaseFuzzTestCase(base.BaseTestCase):
                       severity="Low",
                       confidence="High",
                       text=("This request returns an error with status code "
-                            "{0}, which might indicate some server-side fault"
+                            "{0}, which might indicate some server-side fault "
                             "that could lead to further vulnerabilities"
                             ).format(self.resp.status_code)
                       )
             )
 
-        if not self.validate_length():
+        if (not self.validate_length() and
+                self.resp.status_code == self.init_response.status_code):
             self.register_issue(
                 Issue(test="length_diff",
                       severity="Low",
                       confidence="Low",
-                      text=("The difference in length between the response to"
-                            "the baseline request and the request returned"
-                            "when sending an attack string exceeds {0}"
-                            "percent, which could indicate a vulnerability to"
-                            "injection attacks")
+                      text=("The difference in length between the response to "
+                            "the baseline request and the request returned "
+                            "when sending an attack string exceeds {0} "
+                            "percent, which could indicate a vulnerability "
+                            "to injection attacks")
                       .format(self.config.percent)
                       )
             )
