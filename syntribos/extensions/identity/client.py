@@ -90,7 +90,7 @@ def get_token_v2(user_section_name=None, endpoint_section_name=None):
 def authenticate_v3(
     url, username=None, password=None, user_id=None, domain_id=None,
         domain_name=None, token=None, serialize_format="json",
-        desrialize_format="json"):
+        deserialize_format="json"):
 
     headers = {}
     kwargs = {}
