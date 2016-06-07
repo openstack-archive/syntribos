@@ -41,7 +41,9 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
                             "attacks.").format(failed_strings)
                       )
             )
-        elif self.resp.elapsed.total_seconds() >= 10:
+        time_diff = self.config.time_difference_percent / 100
+        if (self.resp.elapsed.total_seconds() >
+                time_diff * self.init_response.elapsed.total_seconds()):
             self.register_issue(
                 Issue(test="command_injection",
                       severity="High",
