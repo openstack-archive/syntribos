@@ -51,6 +51,16 @@ add_module_names = True
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+#-- Options for man page output --------------------------------------------
+
+# Grouping the document tree for man pages.
+# List of tuples 'sourcefile', 'target', u'title', u'Authors name', 'manual'
+
+man_pages = [
+    ('man/syntribos', 'syntribos', u'Automated API security testing tool',
+     [u'OpenStack Security Group'], 1)
+]
+
 # -- Options for HTML output --------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
