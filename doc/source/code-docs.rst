@@ -22,6 +22,19 @@ This section describes the configuration specified in your configuration file
         :undoc-members:
         :show-inheritance:
 
+Signals
+-------
+
+This section describes Signals (:class:`syntribos.signal.SynSignal`) and
+SignalHolders (:class:`syntribos.signal.SignalHolder`)
+
+.. autoclass:: syntribos.signal.SynSignal
+    :members:
+
+.. autoclass:: syntribos.signal.SignalHolder
+    :members:
+    :special-members: __init__, __contains__
+
 Tests
 -----
 
