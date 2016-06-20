@@ -75,7 +75,8 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 # intersphinx_mapping = {'http://docs.python.org/': None}
-intersphinx_mapping = {'cafe': ('http://opencafe.readthedocs.org/en/latest', None)}
+intersphinx_mapping = {'cafe': ('http://opencafe.readthedocs.org/en/latest', None),
+                       'requests': ('http://docs.python-requests.org/en/master', None)}
 
 # autodoc_mock_imports = [
 #     'cafe',

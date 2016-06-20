@@ -35,6 +35,13 @@ SignalHolders (:class:`syntribos.signal.SignalHolder`)
     :members:
     :special-members: __init__, __contains__
 
+Checks
+------
+
+.. autofunction:: syntribos.checks.http.check_http_fail
+
+.. autofunction:: syntribos.checks.http.check_http_status_code
+
 Tests
 -----
 

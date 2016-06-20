@@ -131,11 +131,18 @@ class RequestHelperMixin(object):
 
 class RequestObject(object):
 
-    """An object that holds information about an HTTP request."""
+    """An object that holds information about an HTTP request.
 
-    def __init__(
-        self, method, url, action_field={}, headers={}, params={},
-            data={}):
+    :ivar str method: Request method
+    :ivar str url: URL to request
+    :ivar dict action_field: Action Fields
+    :ivar dict headers: Dictionary of headers in name:value format
+    :ivar dict params: Dictionary of params in name:value format
+    :ivar data: Data to send as part of request body
+    """
+
+    def __init__(self, method, url, action_field=None, headers=None,
+                 params=None, data=None):
         self.method = method
         self.url = url
         self.action_field = action_field

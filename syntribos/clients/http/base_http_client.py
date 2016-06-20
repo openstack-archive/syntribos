@@ -21,6 +21,11 @@ from time import time
 import requests
 from requests.packages import urllib3
 import six
+
+import syntribos.checks.http as http_checks
+import syntribos.signal
+
+
 urllib3.disable_warnings()
 
 
@@ -67,17 +72,27 @@ def _log_transaction(log, level=logging.DEBUG):
                     'method in http client')
                 log.exception(exception)
 
-            # Make the request and time it's execution
+            # Make the request and time its execution
             response = None
             elapsed = None
+            signals = syntribos.signal.SignalHolder()
+
             try:
                 start = time()
                 response = func(*args, **kwargs)
-                elapsed = time() - start
-            except Exception as exception:
+            except requests.exceptions.RequestException as exc:
+                signals.register(http_checks.check_fail(exc))
+            except Exception as exc:
                 log.critical('Call to Requests failed due to exception')
                 log.exception(exception)
-                raise exception
+                signals.register(syntribos.signal.from_generic_exception(exc))
+                raise exc
+
+            elapsed = time() - start
+
+            if response is None:
+                log.log(level, "COULD NOT RETRIEVE RESPONSE FOR REQUEST")
+                return (response, signals)
 
             # requests lib 1.0.0 renamed body to data in the request object
             request_body = ''
@@ -125,7 +140,7 @@ def _log_transaction(log, level=logging.DEBUG):
                 # Ignore all exceptions that happen in logging, then log them
                 log.log(level, '\n{0}\nRESPONSE INFO\n{0}\n'.format('-' * 13))
                 log.exception(exception)
-            return response
+            return (response, signals)
         return _wrapper
     return _decorator
 
@@ -189,5 +204,4 @@ class HTTPClient(object):
              'data': data}, **requestslib_kwargs)
 
         # Make the request
-        return requests.request(
-            method, url, **requestslib_kwargs)
+        return requests.request(method, url, **requestslib_kwargs)
