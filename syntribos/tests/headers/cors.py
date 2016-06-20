@@ -13,9 +13,9 @@
 # limitations under the License.
 import os
 
+import syntribos
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
-from syntribos.issue import Issue
 from syntribos.tests import base
 
 
@@ -43,40 +43,37 @@ class CorsHeader(base.BaseTestCase):
         if 'Access-Control-Allow-Origin' in self.resp.headers:
             if self.resp.headers['Access-Control-Allow-Origin'] == "*":
                 self.register_issue(
-                    Issue(test="CORS_HEADER",
-                          severity="Medium",
-                          confidence="High",
-                          text=("CORS header `Access-Control-Allow-Origin` set"
-                                " to a wild character, this header should"
-                                " always be set to a white listed set of URIs"
-                                )
-                          )
+                    syntribos.Issue(
+                        test="CORS_HEADER",
+                        severity=syntribos.MEDIUM,
+                        confidence=syntribos.HIGH,
+                        text=("CORS header `Access-Control-Allow-Origin` set"
+                              " to a wild character, this header should"
+                              " always be set to a white listed set of URIs"))
                 )
 
         if 'Access-Control-Allow-Methods' in self.resp.headers:
             if self.resp.headers['Access-Control-Allow-Methods'] == "*":
                 self.register_issue(
-                    Issue(test="CORS_HEADER",
-                          severity="Low",
-                          confidence="High",
-                          text=("CORS header `Access-Control-Allow-Methods`"
-                                " set to a wild character,it is a good"
-                                " practice to give a white list of allowed"
-                                " methods."
-                                )
-                          )
+                    syntribos.Issue(
+                        test="CORS_HEADER",
+                        severity=syntribos.LOW,
+                        confidence=syntribos.HIGH,
+                        text=("CORS header `Access-Control-Allow-Methods`"
+                              " set to a wild character,it is a good"
+                              " practice to give a white list of allowed"
+                              " methods."))
                 )
 
         if 'Access-Control-Allow-Headers' in self.resp.headers:
             if self.resp.headers['Access-Control-Allow-Headers'] == "*":
                 self.register_issue(
-                    Issue(test="CORS_HEADER",
-                          severity="Low",
-                          confidence="High",
-                          text=("CORS header `Access-Control-Allow-Headers`"
-                                " set to a wild character,it is a good"
-                                " practice to give a white list of allowed"
-                                " headers"
-                                )
-                          )
+                    syntribos.Issue(
+                        test="CORS_HEADER",
+                        severity=syntribos.LOW,
+                        confidence=syntribos.HIGH,
+                        text=("CORS header `Access-Control-Allow-Headers`"
+                              " set to a wild character,it is a good"
+                              " practice to give a white list of allowed"
+                              " headers"))
                 )

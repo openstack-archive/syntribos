@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from syntribos.issue import Issue
+import syntribos
 from syntribos.tests.fuzz import base_fuzz
 
 
@@ -25,14 +25,14 @@ class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
         if (self.resp.elapsed.total_seconds() >
                 time_diff * self.init_response.elapsed.total_seconds()):
             self.register_issue(
-                Issue(test="int_timing",
-                      severity="Medium",
-                      confidence="Medium",
-                      text=("The time it took to resolve a request with an "
-                            "invalid integer was too long compared to the "
-                            "baseline request. This could indicate a "
-                            "vulnerability to buffer overflow attacks")
-                      )
+                syntribos.Issue(
+                    test="int_timing",
+                    severity=syntribos.MEDIUM,
+                    confidence=syntribos.MEDIUM,
+                    text=("The time it took to resolve a request with an "
+                          "invalid integer was too long compared to the "
+                          "baseline request. This could indicate a "
+                          "vulnerability to buffer overflow attacks"))
             )
 
 
