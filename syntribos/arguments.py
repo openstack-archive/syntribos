@@ -97,3 +97,13 @@ class SyntribosCLI(argparse.ArgumentParser):
             '-f', '--format', dest='output_format', action='store',
             default='json', help='specify output format',
             choices=["json"])
+
+        self.add_argument(
+            '-S', '--min_severity', dest='min_severity', action='store',
+            default='LOW', help='specify minimum severity for reporting',
+            type=str.upper, choices=['LOW', 'MEDIUM', 'HIGH'])
+
+        self.add_argument(
+            '-C', '--min_confidence', dest='min_confidence', action='store',
+            default='LOW', help='specify minimum confidence for reporting',
+            type=str.upper, choices=['LOW', 'MEDIUM', 'HIGH'])

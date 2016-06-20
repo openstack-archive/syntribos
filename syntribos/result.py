@@ -73,7 +73,7 @@ class IssueTestResult(unittest.TextTestResult):
             sys.stdout.write('.')
             sys.stdout.flush()
 
-    def printErrors(self, output_format):
+    def printErrors(self, output_format, min_severity, min_confidence):
         """Print out each :class:`syntribos.issue.Issue` that was encountered
 
         :param str output_format: Either "json" or "xml"
@@ -84,7 +84,7 @@ class IssueTestResult(unittest.TextTestResult):
         formatter = formatter_types[output_format]
         if self.dots or self.showAll:
             self.stream.writeln()
-        formatter.report()
+        formatter.report(min_severity, min_confidence)
 
     def stopTestRun(self):
         """Print errors when the test run is complete."""

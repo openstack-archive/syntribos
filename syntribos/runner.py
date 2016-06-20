@@ -181,7 +181,8 @@ class Runner(object):
         :param args: Parsed CLI arguments
         :type args: ``argparse.Namespace``
         """
-        result.printErrors(args.output_format)
+        result.printErrors(args.output_format, args.min_severity,
+                           args.min_confidence)
         run_time = time.time() - start_time
         tests = result.testsRun
         failures = len(result.failures)

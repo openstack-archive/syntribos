@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOW = 1
-MEDIUM = 2
-HIGH = 3
 
-RANKING = ['Undefined', 'Low', 'Medium', 'High']
+RANKING = ['UNDEFINED', 'LOW', 'MEDIUM', 'HIGH']
+RANKING_VALUES = {'UNDEFINED': 0, 'LOW': 1, 'MEDIUM': 2, 'HIGH': 3}
+for rank in RANKING_VALUES:
+    globals()[rank] = RANKING_VALUES[rank]

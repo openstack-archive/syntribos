@@ -21,9 +21,15 @@ class JSONFormatter(object):
     def __init__(self, results):
         self.results = results
 
-    def report(self):
-        machine_output = dict({'failures': {}, 'errors': []})
-        machine_output['stats'] = {'High': 0, 'Medium': 0, 'Low': 0}
+    def report(self, min_severity, min_confidence):
+        min_sev = syntribos.RANKING_VALUES[min_severity]
+        min_conf = syntribos.RANKING_VALUES[min_confidence]
+        machine_output = dict({'failures': {}, 'errors': [], 'stats': {}})
+        machine_output['stats']['severity'] = {
+            'UNDEFINED': 0, 'LOW': 0, 'MEDIUM': 0, 'HIGH': 0
+        }
+
+        severity_counter_dict = {}
 
         # reports errors
         for test, error in self.results.errors:
@@ -42,20 +48,31 @@ class JSONFormatter(object):
             target = issue.target
             path = issue.path
             url = "{0}{1}".format(target, path)
+            defect_type = issue.defect_type
+            sev_rating = syntribos.RANKING[issue.severity]
+            conf_rating = syntribos.RANKING[issue.confidence]
+
+            defect_obj = {
+                'description': issue.text,
+                'severity': sev_rating
+            }
+
+            if defect_type not in severity_counter_dict:
+                severity_counter_dict[defect_type] = defect_obj
+                machine_output['stats']['severity'][sev_rating] += 1
 
             if url not in machine_output['failures']:
-                machine_output['failures'][url] = {}
+                if issue.severity >= min_sev and issue.confidence >= min_conf:
+                    machine_output['failures'][url] = {}
+                else:
+                    continue
 
             issues_by_url = machine_output['failures'][url]
-            defect_type = issue.defect_type
-
             if defect_type not in issues_by_url:
-                sev_rating = syntribos.RANKING[issue.severity]
-                issues_by_url[defect_type] = {
-                    'description': issue.text,
-                    'severity': sev_rating
-                }
-                machine_output['stats'][sev_rating] += 1
+                if issue.severity >= min_sev and issue.confidence >= min_conf:
+                    issues_by_url[defect_type] = defect_obj
+                else:
+                    continue
 
             issues_by_defect = issues_by_url[defect_type]
             if issue.impacted_parameter:
@@ -65,7 +82,7 @@ class JSONFormatter(object):
                 name = issue.impacted_parameter.name
                 content_type = issue.content_type
                 payload_string = issue.impacted_parameter.trunc_fuzz_string
-                conf_rating = syntribos.RANKING[issue.confidence]
+
                 param = {
                     'method': method,
                     'location': loc,
