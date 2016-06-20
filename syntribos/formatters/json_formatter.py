@@ -20,7 +20,8 @@ class JSONFormatter(object):
         self.results = results
 
     def report(self):
-        machine_output = dict({'failures': {}, 'errors': [], 'stats': []})
+        machine_output = dict({'failures': {}, 'errors': []})
+        machine_output['stats'] = {'High': 0, 'Medium': 0, 'Low': 0}
 
         # reports errors
         for test, error in self.results.errors:
@@ -34,55 +35,72 @@ class JSONFormatter(object):
         # Gets list of [issues] by flattening list of [(test, [issues])]
         issues = [issue for test, failures in self.results.failures
                   for issue in failures]
+
         for issue in issues:
             target = issue.target
             path = issue.path
             url = "{0}{1}".format(target, path)
-            test_type = issue.test_type
 
+            if url not in machine_output['failures']:
+                machine_output['failures'][url] = {}
+
+            issues_by_url = machine_output['failures'][url]
+            defect_type = issue.defect_type
+
+            if defect_type not in issues_by_url:
+                issues_by_url[defect_type] = {
+                    'description': issue.text,
+                    'severity': issue.severity
+                }
+                machine_output['stats'][issue.severity] += 1
+
+            issues_by_defect = issues_by_url[defect_type]
             if issue.impacted_parameter:
                 # Only fuzz tests have an ImpactedParameter
                 method = issue.impacted_parameter.method
                 loc = issue.impacted_parameter.location
                 name = issue.impacted_parameter.name
                 content_type = issue.content_type
+                payload_string = issue.impacted_parameter.trunc_fuzz_string
+                param = {
+                    'method': method,
+                    'location': loc,
+                    'variables': [name],
+                }
                 if loc == "data":
-                    param = "{0} - {1}:{2}|{3}".format(method, loc,
-                                                       content_type, name)
+                    param['type'] = content_type
+
+                payload_obj = {
+                    'strings': [payload_string],
+                    'param': param,
+                    'confidence': issue.confidence
+                }
+                if 'payloads' not in issues_by_defect:
+                    issues_by_defect['payloads'] = [payload_obj]
                 else:
-                    param = "{0} - {1}|{2}".format(method, loc, name)
-            defect_type = issue.defect_type
+                    is_not_duplicate_payload = True
 
-            if url not in machine_output['failures']:
-                machine_output['failures'][url] = {}
+                    for p in issues_by_defect['payloads']:
 
-            issues_by_url = machine_output['failures'][url]
-            if test_type not in issues_by_url:
-                issues_by_url[test_type] = {}
+                        if (p['param']['method'] == method and
+                                p['param']['location'] == loc):
 
-            issues_by_test = issues_by_url[test_type]
-            if issue.impacted_parameter:
-                if param not in issues_by_test:
-                    issues_by_test[param] = {}
+                            if payload_string not in p['strings']:
+                                p['strings'].append(payload_string)
 
-                issues_by_param = issues_by_test[param]
-                if defect_type not in issues_by_param:
-                    issues_by_param[defect_type] = issue.get_details()
-                    issues_by_param[defect_type]['payloads'] = set(
-                        [issue.impacted_parameter.trunc_fuzz_string])
+                            if name not in p['param']['variables']:
+                                p['param']['variables'].append(name)
 
-                issues_by_defect = issues_by_param[defect_type]
-                issues_by_defect['payloads'].add(
-                    issue.impacted_parameter.trunc_fuzz_string)
+                            is_not_duplicate_payload = False
+                            break
+                    if is_not_duplicate_payload:
+                        issues_by_defect['payloads'].append(payload_obj)
+
             else:
-                if defect_type not in issues_by_test:
-                    issues_by_test[defect_type] = issue.get_details()
-
-        # reports stats
-        machine_output['stats'] = self.results.stats
+                issues_by_defect['confidence'] = issue.confidence
 
         output = json.dumps(machine_output, sort_keys=True,
-                            indent=2, separators=(',', ': '), cls=SetEncoder)
+                            indent=2, separators=(',', ': '))
 
         self.results.stream.write(output)
 
