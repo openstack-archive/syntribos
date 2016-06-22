@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 
+import syntribos
 from syntribos.clients.http import client
-from syntribos.issue import Issue
 import syntribos.tests.auth.datagen
 from syntribos.tests import base
 
@@ -67,10 +67,11 @@ class BaseAuthTestCase(base.BaseTestCase):
                 " therefore it indicates that authentication with"
                 " another user's token was successful.")
         self.register_issue(
-            Issue(test="try_alt_user_token",
-                  severity="High",
-                  text=text,
-                  assertions=[(self.assertTrue, self.resp.status_code == 404)])
+            syntribos.Issue(
+                test="try_alt_user_token",
+                severity=syntribos.HIGH,
+                text=text,
+                assertions=[(self.assertTrue, self.resp.status_code == 404)])
         )
         self.test_issues()
 

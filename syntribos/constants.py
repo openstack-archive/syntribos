@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from syntribos.issue import Issue  # flake8: noqa
-from syntribos.constants import *
-from syntribos.result import IssueTestResult  # flake8: noqa
+
+LOW = 1
+MEDIUM = 2
+HIGH = 3
+
+RANKING = ['Undefined', 'Low', 'Medium', 'High']

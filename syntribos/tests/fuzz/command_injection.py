@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from syntribos.issue import Issue
+import syntribos
 from syntribos.tests.fuzz import base_fuzz
 
 
@@ -31,29 +31,29 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
         failed_strings = self.data_driven_failure_cases()
         if failed_strings:
             self.register_issue(
-                Issue(test="command_injection",
-                      severity="High",
-                      confidence="Medium",
-                      text=("A string known to be commonly returned after a "
-                            "successful command injection attack was "
-                            "included in the response. This could indicate "
-                            "a vulnerability to command injection "
-                            "attacks.").format(failed_strings)
-                      )
+                syntribos.Issue(
+                    test="command_injection",
+                    severity=syntribos.HIGH,
+                    confidence=syntribos.MEDIUM,
+                    text=("A string known to be commonly returned after a "
+                          "successful command injection attack was "
+                          "included in the response. This could indicate "
+                          "a vulnerability to command injection "
+                          "attacks.").format(failed_strings))
             )
         time_diff = self.config.time_difference_percent / 100
         if (self.resp.elapsed.total_seconds() >
                 time_diff * self.init_response.elapsed.total_seconds()):
             self.register_issue(
-                Issue(test="command_injection",
-                      severity="High",
-                      confidence="Medium",
-                      text=("The time elapsed between the sending of "
-                            "the request and the arrival of the res"
-                            "ponse exceeds the expected amount of time, "
-                            "suggesting a vulnerability to command "
-                            "injection attacks.").format(self.resp.elapsed)
-                      )
+                syntribos.Issue(
+                    test="command_injection",
+                    severity=syntribos.HIGH,
+                    confidence=syntribos.MEDIUM,
+                    text=("The time elapsed between the sending of "
+                          "the request and the arrival of the res"
+                          "ponse exceeds the expected amount of time, "
+                          "suggesting a vulnerability to command "
+                          "injection attacks.").format(self.resp.elapsed))
             )
 
 

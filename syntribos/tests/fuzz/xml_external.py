@@ -13,7 +13,7 @@
 # limitations under the License.
 import os
 
-from syntribos.issue import Issue
+import syntribos
 from syntribos.tests.fuzz import base_fuzz
 import syntribos.tests.fuzz.datagen
 
@@ -84,15 +84,15 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         failed_strings = self.data_driven_failure_cases()
         if failed_strings:
             self.register_issue(
-                Issue(test="xml_strings",
-                      severity="Medium",
-                      confidence="Low",
-                      text=("The string(s): \'{0}\', known to be commonly "
-                            "returned after a successful XML external entity "
-                            "attack, have been found in the response. This "
-                            "could indicate a vulnerability to XML external "
-                            "entity attacks.").format(failed_strings)
-                      )
+                syntribos.Issue(
+                    test="xml_strings",
+                    severity=syntribos.MEDIUM,
+                    confidence=syntribos.LOW,
+                    text=("The string(s): \'{0}\', known to be commonly "
+                          "returned after a successful XML external entity "
+                          "attack, have been found in the response. This "
+                          "could indicate a vulnerability to XML external "
+                          "entity attacks.").format(failed_strings))
             )
 
         time_diff = self.config.time_difference_percent / 100
@@ -100,11 +100,12 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         if (self.resp.elapsed.total_seconds() >
                 time_diff * self.init_response.elapsed.total_seconds()):
             self.register_issue(
-                Issue(test="xml_timing",
-                      severity="Medium",
-                      confidence="Medium",
-                      text=("The time it took to resolve a request with an "
-                            "invalid URL in the DTD takes too long compared "
-                            "to the baseline request. This could reflect a "
-                            "vulnerability to an XML external entity attack."))
+                syntribos.Issue(
+                    test="xml_timing",
+                    severity=syntribos.MEDIUM,
+                    confidence=syntribos.MEDIUM,
+                    text=("The time it took to resolve a request with an "
+                          "invalid URL in the DTD takes too long compared "
+                          "to the baseline request. This could reflect a "
+                          "vulnerability to an XML external entity attack."))
             )

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from syntribos.issue import Issue
+import syntribos
 from syntribos.tests.fuzz import base_fuzz
 
 
@@ -40,28 +40,28 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
         failed_strings = self.data_driven_failure_cases()
         if failed_strings:
             self.register_issue(
-                Issue(test="bof_strings",
-                      severity="Medium",
-                      confidence="Low",
-                      text=("The string(s): \'{0}\', known to be commonly "
-                            "returned after a successful buffer overflow "
-                            "attack, have been found in the response. This "
-                            "could indicate a vulnerability to buffer "
-                            "overflow attacks.").format(failed_strings)
-                      )
+                syntribos.Issue(
+                    test="bof_strings",
+                    severity=syntribos.MEDIUM,
+                    confidence=syntribos.LOW,
+                    text=("The string(s): \'{0}\', known to be commonly "
+                          "returned after a successful buffer overflow "
+                          "attack, have been found in the response. This "
+                          "could indicate a vulnerability to buffer "
+                          "overflow attacks.").format(failed_strings))
             )
         time_diff = self.config.time_difference_percent / 100
         if (self.resp.elapsed.total_seconds() >
                 time_diff * self.init_response.elapsed.total_seconds()):
             self.register_issue(
-                Issue(test="bof_timing",
-                      severity="Medium",
-                      confidence="Medium",
-                      text=("The time it took to resolve a request with a "
-                            "long string was too long compared to the "
-                            "baseline request. This could indicate a "
-                            "vulnerability to buffer overflow attacks")
-                      )
+                syntribos.Issue(
+                    test="bof_timing",
+                    severity=syntribos.MEDIUM,
+                    confidence=syntribos.MEDIUM,
+                    text=("The time it took to resolve a request with a "
+                          "long string was too long compared to the "
+                          "baseline request. This could indicate a "
+                          "vulnerability to buffer overflow attacks"))
             )
 
 

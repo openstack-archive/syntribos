@@ -13,6 +13,8 @@
 # limitations under the License.
 import json
 
+import syntribos
+
 
 class JSONFormatter(object):
 
@@ -48,11 +50,12 @@ class JSONFormatter(object):
             defect_type = issue.defect_type
 
             if defect_type not in issues_by_url:
+                sev_rating = syntribos.RANKING[issue.severity]
                 issues_by_url[defect_type] = {
                     'description': issue.text,
-                    'severity': issue.severity
+                    'severity': sev_rating
                 }
-                machine_output['stats'][issue.severity] += 1
+                machine_output['stats'][sev_rating] += 1
 
             issues_by_defect = issues_by_url[defect_type]
             if issue.impacted_parameter:
@@ -62,6 +65,7 @@ class JSONFormatter(object):
                 name = issue.impacted_parameter.name
                 content_type = issue.content_type
                 payload_string = issue.impacted_parameter.trunc_fuzz_string
+                conf_rating = syntribos.RANKING[issue.confidence]
                 param = {
                     'method': method,
                     'location': loc,
@@ -73,7 +77,7 @@ class JSONFormatter(object):
                 payload_obj = {
                     'strings': [payload_string],
                     'param': param,
-                    'confidence': issue.confidence
+                    'confidence': conf_rating
                 }
                 if 'payloads' not in issues_by_defect:
                     issues_by_defect['payloads'] = [payload_obj]
@@ -97,7 +101,7 @@ class JSONFormatter(object):
                         issues_by_defect['payloads'].append(payload_obj)
 
             else:
-                issues_by_defect['confidence'] = issue.confidence
+                issues_by_defect['confidence'] = conf_rating
 
         output = json.dumps(machine_output, sort_keys=True,
                             indent=2, separators=(',', ': '))

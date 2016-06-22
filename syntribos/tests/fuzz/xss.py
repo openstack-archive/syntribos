@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from syntribos.issue import Issue
+import syntribos
 from syntribos.tests.fuzz import base_fuzz
 
 
@@ -27,20 +27,20 @@ class XSSBody(base_fuzz.BaseFuzzTestCase):
         if 'content-type' in self.init_request.headers:
             content_type = self.init_request.headers['content-type']
             if 'html' in content_type:
-                sev = "Medium"
+                sev = syntribos.MEDIUM
             else:
-                sev = "Low"
+                sev = syntribos.LOW
         else:
-            sev = "Low"
+            sev = syntribos.LOW
         if failed_strings:
             self.register_issue(
-                Issue(test="xss_strings",
-                      severity=sev,
-                      confidence="Low",
-                      text=("The string(s): \'{0}\', known to be commonly "
-                            "returned after a successful XSS "
-                            "attack, have been found in the response. This "
-                            "could indicate a vulnerability to XSS "
-                            "attacks.").format(failed_strings)
-                      )
+                syntribos.Issue(
+                    test="xss_strings",
+                    severity=sev,
+                    confidence=syntribos.LOW,
+                    text=("The string(s): \'{0}\', known to be commonly "
+                          "returned after a successful XSS "
+                          "attack, have been found in the response. This "
+                          "could indicate a vulnerability to XSS "
+                          "attacks.").format(failed_strings))
             )

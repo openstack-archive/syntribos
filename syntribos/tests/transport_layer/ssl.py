@@ -16,9 +16,9 @@ import re
 
 from six.moves.urllib.parse import urlparse
 
+import syntribos
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
-from syntribos.issue import Issue
 from syntribos.tests import base
 
 
@@ -47,11 +47,10 @@ class SSLTestCase(base.BaseTestCase):
 
         if re.search(regex, response_text):
             self.register_issue(
-                Issue(test="SSL_ERROR",
-                      severity="Medium",
-                      confidence="High",
-                      text=("Make sure that all the returned endpoint URIs"
-                            " use 'https://' and not 'http://'"
-                            )
-                      )
+                syntribos.Issue(
+                    test="SSL_ERROR",
+                    severity=syntribos.MEDIUM,
+                    confidence=syntribos.HIGH,
+                    text=("Make sure that all the returned endpoint URIs"
+                          " use 'https://' and not 'http://'"))
             )
