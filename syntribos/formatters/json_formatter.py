@@ -53,7 +53,7 @@ class JSONFormatter(object):
             conf_rating = syntribos.RANKING[issue.confidence]
 
             defect_obj = {
-                'description': issue.text,
+                'description': issue.description,
                 'severity': sev_rating
             }
 

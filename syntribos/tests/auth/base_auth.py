@@ -23,27 +23,6 @@ data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
 
 class BaseAuthTestCase(base.BaseTestCase):
     client = client()
-    failure_keys = None
-    success_keys = None
-
-    @classmethod
-    def data_driven_failure_cases(cls):
-        failure_assertions = []
-        if cls.failure_keys is None:
-            return []
-        for line in cls.failure_keys:
-            failure_assertions.append((cls.assertNotIn,
-                                      line, cls.resp.content))
-        return failure_assertions
-
-    @classmethod
-    def data_driven_pass_cases(cls):
-        if cls.success_keys is None:
-            return True
-        for s in cls.success_keys:
-            if s in cls.resp.content:
-                return True
-        return False
 
     @classmethod
     def setUpClass(cls):
@@ -63,15 +42,14 @@ class BaseAuthTestCase(base.BaseTestCase):
                 cls.failures.append(issue.as_dict())
 
     def test_case(self):
-        text = ("This request did not fail with 404 (User not found)"
-                " therefore it indicates that authentication with"
-                " another user's token was successful.")
+        description = ("This request did not fail with 404 (User not found)"
+                       " therefore it indicates that authentication with"
+                       " another user's token was successful.")
         self.register_issue(
-            syntribos.Issue(
-                test="try_alt_user_token",
-                severity=syntribos.HIGH,
-                text=text,
-                assertions=[(self.assertTrue, self.resp.status_code == 404)])
+            defect_type="try_alt_user_token",
+            severity=syntribos.HIGH,
+            confidence=syntribos.HIGH,
+            description=description,
         )
         self.test_issues()
 

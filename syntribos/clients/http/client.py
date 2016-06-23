@@ -45,8 +45,9 @@ class SynHTTPClient(HTTPClient):
             method, url, headers=headers, params=params, data=data,
             requestslib_kwargs=requestslib_kwargs)
 
-        signals.register(http_checks.check_status_code(response))
-        signals.register(http_checks.check_content_type(response))
+        if response is not None:
+            signals.register(http_checks.check_status_code(response))
+            signals.register(http_checks.check_content_type(response))
 
         return (response, signals)
 

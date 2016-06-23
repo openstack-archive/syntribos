@@ -16,7 +16,7 @@ import os
 from six.moves.urllib.parse import urlparse
 
 import syntribos
-from syntribos.clients.http import client
+from syntribos.checks import length_diff as length_diff
 from syntribos.tests import base
 import syntribos.tests.fuzz.config
 import syntribos.tests.fuzz.datagen
@@ -26,56 +26,21 @@ data_dir = os.environ.get("CAFE_DATA_DIR_PATH", "")
 
 class BaseFuzzTestCase(base.BaseTestCase):
     config = syntribos.tests.fuzz.config.BaseFuzzConfig()
-    client = client()
     failure_keys = None
     success_keys = None
-
-    @classmethod
-    def validate_length(cls):
-        """Validates length of response
-
-        Compares the length of a fuzzed response with a response to the
-        baseline request. If the response is longer than expected, returns
-        false
-
-        :returns: boolean - whether the response is longer than expected
-        """
-        if getattr(cls, "init_response", False) is False:
-            raise NotImplemented
-        init_req_len = len(cls.init_response.request.body or "")
-        init_resp_len = len(cls.init_response.content or "")
-        req_len = len(cls.resp.request.body or "")
-        resp_len = len(cls.resp.content or "")
-        request_diff = req_len - init_req_len
-        response_diff = resp_len - init_resp_len
-        percent_diff = abs(float(response_diff) / (init_resp_len + 1)) * 100
-        msg = (
-            "Validate Length:\n"
-            "\tInitial request length: {0}\n"
-            "\tInitial response length: {1}\n"
-            "\tRequest length: {2}\n"
-            "\tResponse length: {3}\n"
-            "\tRequest difference: {4}\n"
-            "\tResponse difference: {5}\n"
-            "\tPercent difference: {6}\n"
-            "\tConfig percent: {7}\n").format(
-            init_req_len, init_resp_len, req_len, resp_len, request_diff,
-            response_diff, percent_diff, cls.config.percent)
-        cls.fixture_log.debug(msg)
-        if request_diff == response_diff:
-            return True
-        elif resp_len == init_resp_len:
-            return True
-        elif cls.config.percent:
-            if percent_diff <= cls.config.percent:
-                return True
-        return False
 
     @classmethod
     def _get_strings(cls, file_name=None):
         path = os.path.join(data_dir, file_name or cls.data_key)
         with open(path, "rb") as fp:
             return fp.read().splitlines()
+
+    @classmethod
+    def send_init_request(cls, filename, file_content):
+        super(BaseFuzzTestCase, cls).send_init_request(
+            filename, file_content,
+            parser=syntribos.tests.fuzz.datagen.FuzzParser
+        )
 
     @classmethod
     def data_driven_failure_cases(cls):
@@ -89,7 +54,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         if cls.failure_keys is None:
             return []
         for line in cls.failure_keys:
-            if line in cls.resp.content:
+            if line in cls.test_resp.content:
                 failed_strings.append(line)
         return failed_strings
 
@@ -104,7 +69,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         if cls.success_keys is None:
             return True
         for s in cls.success_keys:
-            if s in cls.resp.content:
+            if s in cls.test_resp.content:
                 return True
         return False
 
@@ -112,11 +77,14 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def setUpClass(cls):
         """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()
-        cls.failures = []
-        cls.resp = cls.client.request(
+        cls.test_resp, cls.test_signals = cls.client.request(
             method=cls.request.method, url=cls.request.url,
             headers=cls.request.headers, params=cls.request.params,
             data=cls.request.data)
+        cls.test_req = cls.request
+
+        if cls.test_resp is None or "EXCEPTION_RAISED" in cls.test_signals:
+            cls.dead = True
 
     @classmethod
     def tearDownClass(cls):
@@ -135,31 +103,28 @@ class BaseFuzzTestCase(base.BaseTestCase):
         defined here
         """
 
-        if self.resp.status_code >= 500:
+        if "HTTP_STATUS_CODE_5XX" in self.test_signals:
             self.register_issue(
-                syntribos.Issue(
-                    test="500_errors",
-                    severity=syntribos.LOW,
-                    confidence=syntribos.HIGH,
-                    text=("This request returns an error with status code "
-                          "{0}, which might indicate some server-side fault "
-                          "that could lead to further vulnerabilities"
-                          ).format(self.resp.status_code))
-            )
-
-        if (not self.validate_length() and
-                self.resp.status_code == self.init_response.status_code):
-            self.register_issue(
-                syntribos.Issue(
-                    test="length_diff",
-                    severity=syntribos.LOW,
-                    confidence=syntribos.LOW,
-                    text=("The difference in length between the response to "
-                          "the baseline request and the request returned "
-                          "when sending an attack string exceeds {0} "
-                          "percent, which could indicate a vulnerability "
-                          "to injection attacks").format(self.config.percent))
-            )
+                defect_type="500_errors",
+                severity=syntribos.LOW,
+                confidence=syntribos.HIGH,
+                description=("This request returns an error with status code "
+                             "{0}, which might indicate some server-side "
+                             "fault that could lead to further vulnerabilities"
+                             ).format(self.test_resp.status_code))
+        self.diff_signals.register(length_diff(self.init_resp, self.test_resp))
+        if "LENGTH_DIFF_OVER" in self.diff_signals:
+            if self.init_resp.status_code == self.test_resp.status_code:
+                description = ("The difference in length between the response "
+                               "to the baseline request and the request "
+                               "returned when sending an attack string "
+                               "exceeds {0} percent, which could indicate a "
+                               "vulnerability to injection attacks"
+                               ).format(self.config.percent)
+                self.register_issue(
+                    defect_type="length_diff", severity=syntribos.LOW,
+                    confidence=syntribos.LOW, description=description
+                )
 
     def test_case(self):
         """Performs the test
@@ -174,24 +139,16 @@ class BaseFuzzTestCase(base.BaseTestCase):
         """Generates new TestCases for each fuzz string
 
         First, sends a baseline (non-fuzzed) request, storing it in
-        cls.init_response.
+        cls.init_resp.
 
         For each string returned by cls._get_strings(), yield a TestCase class
         for the string as an extension to the current TestCase class. Every
         string used as a fuzz test payload entails the generation of a new
         subclass for each parameter fuzzed. See :func:`base.extend_class`.
         """
-        # maybe move this block to base.py
-        request_obj = syntribos.tests.fuzz.datagen.FuzzParser.create_request(
-            file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
-        prepared_copy = request_obj.get_prepared_copy()
-        cls.init_response = cls.client.send_request(prepared_copy)
-        cls.init_request = cls.init_response.request
-        # end block
-
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
             filename=filename, test_name=cls.test_name, fuzz_file=cls.data_key)
-        fr = request_obj.fuzz_request(
+        fr = cls.init_req.fuzz_request(
             cls._get_strings(), cls.test_type, prefix_name)
         for fuzz_name, request, fuzz_string, param_path in fr:
             yield cls.extend_class(fuzz_name, fuzz_string, param_path,
@@ -217,38 +174,47 @@ class BaseFuzzTestCase(base.BaseTestCase):
         new_cls.param_path = param_path
         return new_cls
 
-    def register_issue(self, issue):
+    def register_issue(self, defect_type, severity, confidence, description):
         """Adds an issue to the test's list of issues
 
-        Registers a :class:`syntribos.issue.Issue` object as a failure and
-        associates the test's metadata to it, including the
+        Creates a :class:`syntribos.issue.Issue` object, with given function
+        parameters as instance variables, registers the Issue as a
+        failure, and associates the test's metadata to it, including the
         :class:`syntribos.tests.fuzz.base_fuzz.ImpactedParameter` object that
         encapsulates the details of the fuzz test.
 
-        :param Issue issue: issue object to update
+        :param defect_type: The type of vulnerability that Syntribos believes
+        it has found. This may be something like 500 error or DoS, regardless
+        of what the Test Type is.
+        :param severity: "Low", "Medium", or "High", depending on the defect
+        :param description: Description of the defect
+        :param confidence: The confidence in the validity of the defect
         :returns: new issue object with metadata associated
-        :rtype: Issue
+        :rtype: :class:`syntribos.issue.Issue`
         """
+
+        issue = syntribos.Issue(defect_type=defect_type,
+                                severity=severity,
+                                confidence=confidence,
+                                description=description)
 
         # Still associating request and response objects with issue in event of
         # debug log
-        req = self.resp.request
-        issue.request = req
-        issue.response = self.resp
+        issue.request = self.test_req
+        issue.response = self.test_resp
 
         issue.test_type = self.test_name
-        url_components = urlparse(self.init_response.url)
+        url_components = urlparse(self.init_resp.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
-        if 'content-type' in self.init_request.headers:
-            issue.content_type = self.init_request.headers['content-type']
+        if 'content-type' in self.init_req.headers:
+            issue.content_type = self.init_req.headers['content-type']
         else:
             issue.content_type = None
 
-        issue.impacted_parameter = ImpactedParameter(method=req.method,
-                                                     location=self.test_type,
-                                                     name=self.param_path,
-                                                     value=self.fuzz_string)
+        issue.impacted_parameter = ImpactedParameter(
+            method=issue.request.method, location=self.test_type,
+            name=self.param_path, value=self.fuzz_string)
 
         self.failures.append(issue)
 

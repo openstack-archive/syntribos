@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import syntribos
+from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
 
 
@@ -44,31 +45,26 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
         failed_strings = self.data_driven_failure_cases()
         if failed_strings:
             self.register_issue(
-                syntribos.Issue(
-                    test="sql_strings",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.LOW,
-                    text=("The string(s): \'{0}\', known to be commonly "
-                          "returned after a successful SQL injection attack"
-                          ", have been found in the response. This could "
-                          "indicate a vulnerability to SQL injection "
-                          "attacks."
-                          ).format(failed_strings))
-            )
+                defect_type="sql_strings",
+                severity=syntribos.MEDIUM,
+                confidence=syntribos.LOW,
+                description=("The string(s): \'{0}\', known to be commonly "
+                             "returned after a successful SQL injection attack"
+                             ", have been found in the response. This could "
+                             "indicate a vulnerability to SQL injection "
+                             "attacks."
+                             ).format(failed_strings))
 
-        time_diff = self.config.time_difference_percent / 100
-        if (self.resp.elapsed.total_seconds() >
-                time_diff * self.init_response.elapsed.total_seconds()):
+        self.diff_signals.register(time_diff(self.init_resp, self.test_resp))
+        if "TIME_DIFF_OVER" in self.diff_signals:
             self.register_issue(
-                syntribos.Issue(
-                    test="sql_timing",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.MEDIUM,
-                    text=("A response to one of our payload requests has "
-                          "taken too long compared to the baseline request. "
-                          "This could indicate a vulnerability to time-based "
-                          "SQL injection attacks"))
-            )
+                defect_type="sql_timing",
+                severity=syntribos.MEDIUM,
+                confidence=syntribos.MEDIUM,
+                description=("A response to one of our payload requests has "
+                             "taken too long compared to the baseline "
+                             "request. This could indicate a vulnerability "
+                             "to time-based SQL injection attacks"))
 
 
 class SQLInjectionParams(SQLInjectionBody):

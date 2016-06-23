@@ -135,6 +135,7 @@ class Runner(object):
             start_time = time.time()
             for file_path, req_str in args.input:
                 for test_name, test_class in cls.get_tests(args.test_types):
+                    test_class.send_init_request(file_path, req_str)
                     for test in test_class.get_test_cases(file_path, req_str):
                         if test:
                             cls.run_test(test, result, args.dry_run)

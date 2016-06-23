@@ -11,12 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import six
-
+import os
 import string as t_string
 
 import cafe.drivers.unittest.fixtures
+import six
 from six.moves.urllib.parse import urlparse
+
+import syntribos
+from syntribos.clients.http import client
+from syntribos.clients.http import parser
+from syntribos.signal import SignalHolder
+
 
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 
@@ -71,16 +77,52 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
     """Base class for building new tests
 
-    :attribute test_name: A name like ``XML_EXTERNAL_ENTITY_BODY``, containing
-        the test type and the portion of the request template being tested
+    :attribute str test_name: A name like ``XML_EXTERNAL_ENTITY_BODY``,
+        containing the test type and the portion of the request template being
+        tested
+    :attribute list failures: A collection of "failures" raised by tests
+    :attribute bool dead: Flip this if one of the requests doesn't return a
+        response object
+    :attribute client: HTTP client to be used by the test
+    :attribute init_req: Initial request (loaded from request template)
+    :attribute init_resp: Response to the initial request
+    :attribute test_req: Request sent by the test for analysis
+    :attribute test_resp: Response to the test request
+    :attribute init_signals: Holder for signals on `init_req`
+    :attribute test_signals: Holder for signals on `test_req`
+    :attribute diff_signals: Holder for signals between `init_req` and
+        `test_req`
     """
 
     test_name = None
+    failures = []
+    dead = False
+    client = client()
+
+    init_req = None
+    init_resp = None
+    test_req = None
+    test_resp = None
+
+    init_signals = SignalHolder()
+    test_signals = SignalHolder()
+    diff_signals = SignalHolder()
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
         """Returns tests for given TestCase class (overwritten by children)."""
         yield cls
+
+    @classmethod
+    def send_init_request(cls, filename, file_content, parser=parser):
+        request_obj = parser.create_request(
+            file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
+        prepared_copy = request_obj.get_prepared_copy()
+        cls.init_resp, cls.init_signals = cls.client.send_request(
+            prepared_copy)
+        cls.init_req = request_obj
+        if cls.init_resp is None:
+            cls.dead = True
 
     @classmethod
     def extend_class(cls, new_name, kwargs):
@@ -102,6 +144,15 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         new_cls.__module__ = cls.__module__
         return new_cls
 
+    @classmethod
+    def tearDownClass(cls):
+        super(BaseTestCase, cls).tearDownClass()
+        if not cls.failures:
+            if "EXCEPTION_RAISED" in cls.test_signals:
+                sig = cls.test_signals.get_matching_signals(
+                    tags="EXCEPTION_RAISED")[0]
+                raise sig.data["exception"]
+
     def run_test(self):
         """This kicks off the test(s) for a given TestCase class
 
@@ -110,9 +161,10 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
 
         :raises: :exc:`AssertionError`
         """
-        self.test_case()
-        if self.failures:
-            raise AssertionError
+        if not self.dead:
+            self.test_case()
+            if self.failures:
+                raise AssertionError
 
     def test_case(self):
         """This method is overwritten by individual TestCase classes
@@ -122,40 +174,38 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
         """
         pass
 
-    def register_issue(self, issue):
+    def register_issue(self, defect_type, severity, confidence, description):
         """Adds an issue to the test's list of issues
 
-        Registers a :class:`syntribos.issue.Issue` object as a failure and
-        associates the test's metadata to it.
+        Creates a :class:`syntribos.issue.Issue` object, with given function
+        parameters as instances variables, and registers the issue as a
+        failure and associates the test's metadata to it.
 
-        :param issue: issue object to update
-        :type issue: :class:`syntribos.issue.Issue`
+        :param defect_type: The type of vulnerability that Syntribos believes
+        it has found. This may be something like 500 error or DoS, regardless
+        tof whathe Test Type is.
+        :param severity: "Low", "Medium", or "High", depending on the defect
+        :param description: Description of the defect
+        :param confidence: The confidence of the defect
         :returns: new issue object with metadata associated
-        :rtype: :class:`syntribos.issue.Issue`
+        :rtype: Issue
         """
+
+        issue = syntribos.Issue(defect_type=defect_type,
+                                severity=severity,
+                                confidence=confidence,
+                                description=description)
 
         # Still associating request and response objects with issue in event of
         # debug log
-        req = self.resp.request
-        issue.request = req
-        issue.response = self.resp
+        issue.request = self.test_req
+        issue.response = self.test_resp
 
-        issue.defect_type = self.test_name
-        url_components = urlparse(self.resp.request.url)
+        issue.test_type = self.test_name
+        url_components = urlparse(self.init_resp.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
-        if self.test_type:
-            issue.test_type = self.test_type
 
         self.failures.append(issue)
 
         return issue
-
-    def test_issues(self):
-        """(DEPRECATED) Run assertions for each test in test_case."""
-        for issue in self.issues:
-            try:
-                issue.run_tests()
-            except AssertionError:
-                self.failures.append(issue)
-                raise

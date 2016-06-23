@@ -24,8 +24,8 @@ class XSSBody(base_fuzz.BaseFuzzTestCase):
         self.test_default_issues()
         self.failure_keys = self._get_strings()
         failed_strings = self.data_driven_failure_cases()
-        if 'content-type' in self.init_request.headers:
-            content_type = self.init_request.headers['content-type']
+        if 'content-type' in self.init_req.headers:
+            content_type = self.init_req.headers['content-type']
             if 'html' in content_type:
                 sev = syntribos.MEDIUM
             else:
@@ -34,13 +34,11 @@ class XSSBody(base_fuzz.BaseFuzzTestCase):
             sev = syntribos.LOW
         if failed_strings:
             self.register_issue(
-                syntribos.Issue(
-                    test="xss_strings",
-                    severity=sev,
-                    confidence=syntribos.LOW,
-                    text=("The string(s): \'{0}\', known to be commonly "
-                          "returned after a successful XSS "
-                          "attack, have been found in the response. This "
-                          "could indicate a vulnerability to XSS "
-                          "attacks.").format(failed_strings))
-            )
+                defect_type="xss_strings",
+                severity=sev,
+                confidence=syntribos.LOW,
+                description=("The string(s): \'{0}\', known to be commonly "
+                             "returned after a successful XSS "
+                             "attack, have been found in the response. This "
+                             "could indicate a vulnerability to XSS "
+                             "attacks.").format(failed_strings))

@@ -41,10 +41,8 @@ class SSLTestCase(base.BaseTestCase):
 
         if "HTTP_LINKS_PRESENT" in self.test_signals:
             self.register_issue(
-                syntribos.Issue(
-                    test="SSL_ERROR",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.HIGH,
-                    text=("Make sure that all the returned endpoint URIs"
-                          " use 'https://' and not 'http://'"))
-            )
+                defect_type="SSL_ERROR",
+                severity=syntribos.MEDIUM,
+                confidence=syntribos.HIGH,
+                description=("Make sure that all the returned endpoint URIs"
+                             " use 'https://' and not 'http://'"))

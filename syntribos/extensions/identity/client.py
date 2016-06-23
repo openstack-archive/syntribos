@@ -43,16 +43,16 @@ def authenticate_v2(
     if password is not None:
         password_creds = v2.PasswordCredentials(
             username=username, password=password
-            )
+        )
 
     request_entity = v2.Auth(
         tenant_name=tenant_name, tenant_id=tenant_id,
         password_creds=password_creds
-        )
+    )
 
     data = request_entity.serialize(serialize_format)
     try:
-        r = HTTPClient().request(
+        r, signals = HTTPClient().request(
             "POST", url, headers=headers,
             data=data).json()
     except RequestException as e:
@@ -106,7 +106,7 @@ def authenticate_v3(
         domain = v3.Domain(name=domain_name, id_=domain_id)
     password = v3.Password(user=v3.User(
         name=username, password=password, id_=user_id, domain=domain
-        ))
+    ))
 
     if token is not None:
         kwargs = {"token": v3.Token(id_=token), "methods": ["token"]}
@@ -115,7 +115,7 @@ def authenticate_v3(
     request_entity = v3.Auth(identity=v3.Identity(**kwargs))
     data = request_entity.serialize(serialize_format)
     try:
-        r = HTTPClient().request(
+        r, signals = HTTPClient().request(
             "POST", url, headers=headers,
             data=data)
     except RequestException as e:

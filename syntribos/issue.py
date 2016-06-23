@@ -24,7 +24,7 @@ class Issue(object):
         found. This may be something like 500 error or DoS, regardless of what
         the Test Type is.
     :ivar severity: "Low", "Medium", or "High", depending on the defect
-    :ivar text: Description of the defect
+    :ivar description: Description of the defect
     :ivar confidence: The confidence of the defect
     :ivar request: The request object sent that generated this defect
     :ivar response: The response object returned after sending the request
@@ -40,11 +40,11 @@ class Issue(object):
         data about what part of the request was affected by the fuzz test.
     """
 
-    def __init__(self, test, severity, text, confidence,
+    def __init__(self, defect_type, severity, description, confidence,
                  request=None, response=None, impacted_parameter=None):
-        self.defect_type = test
+        self.defect_type = defect_type
         self.severity = severity
-        self.text = text
+        self.description = description
         self.confidence = confidence
         self.request = request
         self.response = response

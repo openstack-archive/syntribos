@@ -82,17 +82,19 @@ def _log_transaction(log, level=logging.DEBUG):
                 response = func(*args, **kwargs)
             except requests.exceptions.RequestException as exc:
                 signals.register(http_checks.check_fail(exc))
+                log.critical('Call to requests FAILED')
+                log.exception(exc)
+                # raise exc
             except Exception as exc:
                 log.critical('Call to Requests failed due to exception')
-                log.exception(exception)
+                log.exception(exc)
                 signals.register(syntribos.signal.from_generic_exception(exc))
                 raise exc
 
-            elapsed = time() - start
-
-            if response is None:
-                log.log(level, "COULD NOT RETRIEVE RESPONSE FOR REQUEST")
+            if len(signals) > 0 and response is None:
                 return (response, signals)
+
+            elapsed = time() - start
 
             # requests lib 1.0.0 renamed body to data in the request object
             request_body = ''

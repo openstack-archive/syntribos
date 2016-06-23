@@ -14,6 +14,7 @@
 import os
 
 import syntribos
+from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
 import syntribos.tests.fuzz.datagen
 
@@ -50,19 +51,15 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         prepared_copy_xml = prepared_copy.get_prepared_copy()
         prepared_copy_xml.headers['content-type'] = "application/xml"
 
-        init_response = cls.client.send_request(prepared_copy)
-        init_response_xml = cls.client.send_request(prepared_copy_xml)
+        init_response, init_signals = cls.client.send_request(prepared_copy)
+        init_response_xml, xml_signals = cls.client.send_request(
+            prepared_copy_xml)
 
-        cls.init_response = init_response
+        cls.init_resp = init_response
+        cls.init_signals = init_signals
 
-        content_type = init_response.headers['content-type']
-        content_type_xml_request = init_response_xml.headers['content-type']
-        if ('xml' not in content_type and
-                'xml' not in content_type_xml_request):
-            return
-
-        if (init_response.status_code in (400, 415) or
-                init_response_xml.status_code in (400, 415)):
+        if ("HTTP_CONTENT_TYPE_XML" not in init_signals and
+                "HTTP_CONTENT_TYPE_XML" not in xml_signals):
             return
 
         # iterate through permutations of doctype declarations and fuzz fields
@@ -84,28 +81,23 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         failed_strings = self.data_driven_failure_cases()
         if failed_strings:
             self.register_issue(
-                syntribos.Issue(
-                    test="xml_strings",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.LOW,
-                    text=("The string(s): \'{0}\', known to be commonly "
-                          "returned after a successful XML external entity "
-                          "attack, have been found in the response. This "
-                          "could indicate a vulnerability to XML external "
-                          "entity attacks.").format(failed_strings))
-            )
+                defect_type="xml_strings",
+                severity=syntribos.MEDIUM,
+                confidence=syntribos.LOW,
+                description=("The string(s): \'{0}\', known to be commonly "
+                             "returned after a successful XML external entity "
+                             "attack, have been found in the response. This "
+                             "could indicate a vulnerability to XML external "
+                             "entity attacks.").format(failed_strings))
 
-        time_diff = self.config.time_difference_percent / 100
-        # Timing attacks for requesting invalid url in dtd
-        if (self.resp.elapsed.total_seconds() >
-                time_diff * self.init_response.elapsed.total_seconds()):
+        self.diff_signals.register(time_diff(self.init_resp, self.test_resp))
+        if "TIME_DIFF_OVER" in self.diff_signals:
             self.register_issue(
-                syntribos.Issue(
-                    test="xml_timing",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.MEDIUM,
-                    text=("The time it took to resolve a request with an "
-                          "invalid URL in the DTD takes too long compared "
-                          "to the baseline request. This could reflect a "
-                          "vulnerability to an XML external entity attack."))
+                defect_type="xml_timing",
+                severity=syntribos.MEDIUM,
+                confidence=syntribos.MEDIUM,
+                description=("The time it took to resolve a request with an "
+                             "invalid URL in the DTD takes too long compared "
+                             "to the baseline request. This could reflect a "
+                             "vulnerability to an XML external entity attack.")
             )

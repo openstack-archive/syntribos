@@ -129,7 +129,7 @@ class RequestHelperMixin(object):
         return copy.deepcopy(self)
 
 
-class RequestObject(object):
+class RequestObject(RequestHelperMixin):
 
     """An object that holds information about an HTTP request.
 

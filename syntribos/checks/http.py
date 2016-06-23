@@ -85,7 +85,6 @@ def check_status_code(response):
 
     data = {
         "response": response,
-        "request": response.request,
         "status_code": response.status_code,
         "reason": response.reason,
     }

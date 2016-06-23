@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import syntribos
+from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
 
 
@@ -21,19 +22,16 @@ class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
     data_key = "integer-overflow.txt"
 
     def test_case(self):
-        time_diff = self.config.time_difference_percent / 100
-        if (self.resp.elapsed.total_seconds() >
-                time_diff * self.init_response.elapsed.total_seconds()):
+        self.diff_signals.register(time_diff(self.init_resp, self.test_resp))
+        if "TIME_DIFF_OVER" in self.diff_signals:
             self.register_issue(
-                syntribos.Issue(
-                    test="int_timing",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.MEDIUM,
-                    text=("The time it took to resolve a request with an "
-                          "invalid integer was too long compared to the "
-                          "baseline request. This could indicate a "
-                          "vulnerability to buffer overflow attacks"))
-            )
+                defect_type="int_timing",
+                severity=syntribos.MEDIUM,
+                confidence=syntribos.MEDIUM,
+                description=("The time it took to resolve a request with an "
+                             "invalid integer was too long compared to the "
+                             "baseline request. This could indicate a "
+                             "vulnerability to buffer overflow attacks"))
 
 
 class IntOverflowParams(IntOverflowBody):
