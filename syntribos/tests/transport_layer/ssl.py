@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import re
-
-from six.moves.urllib.parse import urlparse
 
 import syntribos
+from syntribos.checks import https_check
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
 from syntribos.tests import base
@@ -35,17 +33,13 @@ class SSLTestCase(base.BaseTestCase):
         request_obj = parser.create_request(
             file_content, os.environ.get("SYNTRIBOS_ENDPOINT")
         )
-        cls.resp = cls.client.send_request(request_obj)
+        cls.test_resp, cls.test_signals = cls.client.send_request(request_obj)
         yield cls
 
     def test_case(self):
+        self.test_signals.register(https_check(self.test_resp))
 
-        target = self.resp.url
-        domain = urlparse(target).hostname
-        regex = r"\bhttp://{0}".format(domain)
-        response_text = self.resp.text
-
-        if re.search(regex, response_text):
+        if "HTTP_LINKS_PRESENT" in self.test_signals:
             self.register_issue(
                 syntribos.Issue(
                     test="SSL_ERROR",
