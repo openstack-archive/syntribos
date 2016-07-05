@@ -11,19 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
+from oslo_config import cfg
 
 import syntribos
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
 import syntribos.tests.fuzz.datagen
 
+CONF = cfg.CONF
+
 
 class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
     test_name = "XML_EXTERNAL_ENTITY_BODY"
     test_type = "data"
     dtds_data_key = "xml-external.txt"
-    config = syntribos.tests.fuzz.config.BaseFuzzConfig()
     failure_keys = [
         'root:',
         'root@',
@@ -44,7 +45,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         """
         # Send request for different content-types
         request_obj = syntribos.tests.fuzz.datagen.FuzzParser.create_request(
-            file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
+            file_content, CONF.syntribos.endpoint)
 
         prepared_copy = request_obj.get_prepared_copy()
         prepared_copy.headers['content-type'] = "application/json"

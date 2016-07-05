@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
+from oslo_config import cfg
 
 import syntribos
 from syntribos.clients.http import client
+import syntribos.extensions.identity.client
 import syntribos.tests.auth.datagen
 from syntribos.tests import base
 
-data_dir = os.environ.get("CAFE_DATA_DIR_PATH")
+
+CONF = cfg.CONF
 
 
 class BaseAuthTestCase(base.BaseTestCase):
@@ -61,14 +63,14 @@ class BaseAuthTestCase(base.BaseTestCase):
         is created (in addition to the base case, that is)
         """
 
-        alt_user_config = syntribos.extensions.identity.config.UserConfig(
-            section_name='alt_user')
-        alt_user_id = alt_user_config.user_id
+        # TODO(cneill): FIX THIS!
+        alt_user_id = "1"
+
         if alt_user_id is None:
             return
 
         request_obj = syntribos.tests.auth.datagen.AuthParser.create_request(
-            file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
+            file_content, CONF.syntribos.endpoint)
 
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_response = cls.client.send_request(prepared_copy)
@@ -76,8 +78,8 @@ class BaseAuthTestCase(base.BaseTestCase):
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
             filename=filename, test_name=cls.test_name, fuzz_file='auth')
 
-        main_config = syntribos.config.MainConfig()
-        version = main_config.version
+        # TODO(cneill): FIX THIS
+        version = "v2"
 
         if version is None or version == 'v2':
             alt_token = syntribos.extensions.identity.client.get_token_v2(

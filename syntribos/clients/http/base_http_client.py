@@ -82,9 +82,9 @@ def _log_transaction(log, level=logging.DEBUG):
                 response = func(*args, **kwargs)
             except requests.exceptions.RequestException as exc:
                 signals.register(http_checks.check_fail(exc))
-                log.critical('Call to requests FAILED')
+                log.log(level, "A call to request() failed.")
                 log.exception(exc)
-                # raise exc
+                log.log(level, "=" * 80)
             except Exception as exc:
                 log.critical('Call to Requests failed due to exception')
                 log.exception(exc)

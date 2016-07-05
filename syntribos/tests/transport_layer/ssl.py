@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
+from oslo_config import cfg
 
 import syntribos
 from syntribos.checks import https_check
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
 from syntribos.tests import base
+
+
+CONF = cfg.CONF
 
 
 class SSLTestCase(base.BaseTestCase):
@@ -31,7 +34,7 @@ class SSLTestCase(base.BaseTestCase):
     def get_test_cases(cls, filename, file_content):
 
         request_obj = parser.create_request(
-            file_content, os.environ.get("SYNTRIBOS_ENDPOINT")
+            file_content, CONF.syntribos.endpoint
         )
         cls.test_resp, cls.test_signals = cls.client.send_request(request_obj)
         yield cls

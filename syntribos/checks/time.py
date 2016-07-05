@@ -11,17 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
+from oslo_config import cfg
 
 import syntribos.signal
-import syntribos.tests.fuzz.config
 
-
-if not os.environ.get("CAFE_CONFIG_FILE_PATH"):
-    os.environ["CAFE_CONFIG_FILE_PATH"] = "./"
-
-
-config = syntribos.tests.fuzz.config.BaseFuzzConfig()
+CONF = cfg.CONF
 
 
 def percentage_difference(resp1, resp2):
@@ -49,7 +43,7 @@ def percentage_difference(resp1, resp2):
     if data["resp1_time"] < data["resp2_time"]:
         data["dir"] = "OVER"
 
-    if data["percent_diff"] < config.time_difference_percent:
+    if data["percent_diff"] < CONF.test.time_diff_percent:
         # Difference not larger than configured percentage
         return None
 
@@ -62,7 +56,7 @@ def percentage_difference(resp1, resp2):
         "\tDifference direction: {4}"
         "\tConfig percent: {5}\n").format(
         data["resp1_time"], data["resp2_time"], data["time_diff"],
-        data["percent_diff"], data["dir"], config.percent)
+        data["percent_diff"], data["dir"], CONF.test.time_diff_percent)
 
     slug = "TIME_DIFF_{dir}".format(dir=data["dir"])
 
@@ -75,14 +69,14 @@ def absolute_time(response):
 
     :returns: SynSignal or None
     """
-    if response.elapsed.total_seconds() < config.absolute_time:
+    if response.elapsed.total_seconds() < CONF.test.max_time:
         return None
 
     data = {
         "request": response.request,
         "response": response,
         "elapsed": response.elapsed.total_seconds(),
-        "max_time": config.absolute_time
+        "max_time": CONF.test.max_time
     }
 
     text = (

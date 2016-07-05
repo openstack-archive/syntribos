@@ -11,26 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import datetime
+import logging
 import os
 import pkgutil
 import sys
 import time
 import unittest
 
-from cafe.common.reporting.cclogging import init_root_log_handler
-from cafe.configurator.managers import TestEnvManager
-import cafe.drivers.base
+from oslo_config import cfg
 
-import syntribos.arguments
 import syntribos.config
 from syntribos.result import IssueTestResult
 import syntribos.tests as tests
 import syntribos.tests.base
 
 result = None
+CONF = cfg.CONF
+LOG = logging.getLogger(__name__)
 
 
 class Runner(object):
+
+    log_file = ""
 
     @classmethod
     def print_tests(cls):
@@ -44,8 +47,6 @@ class Runner(object):
 
         :param package: a package of tests for pkgutil to load
         """
-        if not os.environ.get("CAFE_CONFIG_FILE_PATH"):
-            os.environ["CAFE_CONFIG_FILE_PATH"] = "./"
         for importer, modname, ispkg in pkgutil.walk_packages(
             path=package.__path__,
             prefix=package.__name__ + '.',
@@ -70,7 +71,6 @@ class Runner(object):
     @staticmethod
     def print_symbol():
         """Syntribos radiation symbol."""
-        border = '-' * 40
         symbol = """               Syntribos
                 xxxxxxx
            x xxxxxxxxxxxxx x
@@ -90,62 +90,69 @@ class Runner(object):
                    x
       === Automated API Scanning  ==="""
 
-        print(border)
+        print(syntribos.SEP)
         print(symbol)
-        print(border)
+        print(syntribos.SEP)
 
-    @staticmethod
-    def print_log():
+    @classmethod
+    def print_log(cls):
         """Print the path to the log folder for this run."""
-        test_log = os.environ.get("CAFE_TEST_LOG_PATH")
+        test_log = cls.get_log_file_name()
         if test_log:
-            print("=" * 70)
-            print("LOG PATH..........: {0}".format(test_log))
-            print("=" * 70)
+            print(syntribos.SEP)
+            print("LOG PATH..........: {path}".format(path=test_log))
+            print(syntribos.SEP)
+
+    @classmethod
+    def get_default_conf_files(cls):
+        return ["~/.syntribos/syntribos.conf"]
+
+    @classmethod
+    def get_log_file_name(cls):
+        if not cls.log_file:
+            log_dir = CONF.syntribos.log_dir
+            time_str = datetime.datetime.now().strftime("%Y-%m-%d_%X.%f")
+            file_name = "{time}.log".format(time=time_str)
+            cls.log_file = os.path.join(log_dir, file_name)
+        return cls.log_file
 
     @classmethod
     def run(cls):
         global result
         try:
+            try:
+                syntribos.config.register_opts()
+                CONF(sys.argv[1:],
+                     default_config_files=cls.get_default_conf_files())
+                logging.basicConfig(filename=cls.get_log_file_name(),
+                                    level=logging.DEBUG)
+            except Exception as exc:
+                syntribos.config.handle_config_exception(exc)
+
             cls.print_symbol()
-            usage = """
-                syntribos <config> <input_file> --test-types=TEST_TYPES
-                syntribos <config> <input_file> -t TEST_TYPE TEST_TYPE ...
-                syntribos <config> <input_file>
-                """
-            args, unknown = syntribos.arguments.SyntribosCLI(
-                usage=usage).parse_known_args()
-            test_env_manager = TestEnvManager(
-                "", args.config, test_repo_package_name="os")
-            test_env_manager.finalize()
-            cls.set_env()
-            init_root_log_handler()
 
-            cls.print_log()
-
-            if not args.output_file:
-                result = IssueTestResult(
-                    unittest.runner._WritelnDecorator(sys.stdout),
-                    True, 2 if args.verbose else 1)
+            # 2 == higher verbosity, 1 == normal
+            verbosity = 2 if CONF.verbose else 1
+            if not CONF.outfile:
+                decorator = unittest.runner._WritelnDecorator(sys.stdout)
             else:
-                result = IssueTestResult(
-                    unittest.runner._WritelnDecorator(
-                        open(args.output_file, 'w')),
-                    True, 2 if args.verbose else 1)
+                decorator = unittest.runner._WritelnDecorator(
+                    open(CONF.outfile, 'w'))
+            result = IssueTestResult(decorator, True, verbosity)
+
             start_time = time.time()
-            for file_path, req_str in args.input:
-                for test_name, test_class in cls.get_tests(args.test_types):
+
+            for file_path, req_str in CONF.syntribos.templates:
+                for test_name, test_class in cls.get_tests(CONF.test_types):
                     test_class.send_init_request(file_path, req_str)
                     for test in test_class.get_test_cases(file_path, req_str):
                         if test:
-                            cls.run_test(test, result, args.dry_run)
-            cls.print_result(result, start_time, args)
+                            cls.run_test(test, result, CONF.dry_run)
+
+            cls.print_result(result, start_time)
         except KeyboardInterrupt:
-            cls.print_result(result, start_time, args)
-            cafe.drivers.base.print_exception(
-                "Runner",
-                "run",
-                "Keyboard Interrupt, exiting...")
+            cls.print_result(result, start_time)
+            print("Keyboard interrupt, exiting...")
             exit(0)
 
     @classmethod
@@ -167,31 +174,23 @@ class Runner(object):
             suite.run(result)
 
     @classmethod
-    def set_env(cls):
-        """Set environment variables for this run."""
-        config = syntribos.config.MainConfig()
-        os.environ["SYNTRIBOS_ENDPOINT"] = config.endpoint
-
-    @classmethod
-    def print_result(cls, result, start_time, args):
+    def print_result(cls, result, start_time):
         """Prints test summary/stats (e.g. # failures) to stdout
 
         :param result: Global result object with all issues/etc.
         :type result: :class:`syntribos.result.IssueTestResult`
         :param float start_time: Time this run started
-        :param args: Parsed CLI arguments
-        :type args: ``argparse.Namespace``
         """
-        result.printErrors(args.output_format, args.min_severity,
-                           args.min_confidence)
+        result.printErrors(
+            CONF.output_format, CONF.min_severity, CONF.min_confidence)
         run_time = time.time() - start_time
         tests = result.testsRun
         failures = len(result.failures)
         errors = len(result.errors)
 
-        print("\n{0}".format("-" * 70))
-        print("Ran {0} test{1} in {2:.3f}s".format(
-            tests, "s" * bool(tests - 1), run_time))
+        print("\n{sep}\nRan {num} test{suff} in {time:.3f}s".format(
+            sep=syntribos.SEP, num=tests, suff="s" * bool(tests - 1),
+            time=run_time))
         if failures or errors:
             print("\nFAILED ({0}{1}{2})".format(
                 "failures={0}".format(failures) if failures else "",

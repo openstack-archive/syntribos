@@ -13,25 +13,26 @@
 # limitations under the License.
 import os
 
+from oslo_config import cfg
 from six.moves.urllib.parse import urlparse
 
 import syntribos
 from syntribos.checks import length_diff as length_diff
 from syntribos.tests import base
-import syntribos.tests.fuzz.config
 import syntribos.tests.fuzz.datagen
 
-data_dir = os.environ.get("CAFE_DATA_DIR_PATH", "")
+CONF = cfg.CONF
+payload_dir = CONF.syntribos.payload_dir
 
 
 class BaseFuzzTestCase(base.BaseTestCase):
-    config = syntribos.tests.fuzz.config.BaseFuzzConfig()
     failure_keys = None
     success_keys = None
 
     @classmethod
     def _get_strings(cls, file_name=None):
-        path = os.path.join(data_dir, file_name or cls.data_key)
+        path = os.path.join(payload_dir, file_name or cls.data_key)
+
         with open(path, "rb") as fp:
             return fp.read().splitlines()
 
@@ -120,7 +121,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
                                "returned when sending an attack string "
                                "exceeds {0} percent, which could indicate a "
                                "vulnerability to injection attacks"
-                               ).format(self.config.percent)
+                               ).format(CONF.test.length_diff_percent)
                 self.register_issue(
                     defect_type="length_diff", severity=syntribos.LOW,
                     confidence=syntribos.LOW, description=description

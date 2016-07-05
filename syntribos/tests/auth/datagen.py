@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from oslo_config import cfg
+
 from syntribos.clients.http.models import RequestHelperMixin
 from syntribos.clients.http.models import RequestObject
 from syntribos.clients.http import parser
-from syntribos.extensions.identity.config import UserConfig
+
+CONF = cfg.CONF
 
 
 class AuthMixin(object):
@@ -42,8 +45,7 @@ class AuthRequest(RequestObject, AuthMixin, RequestHelperMixin):
         super(AuthRequest, self).prepare_request()
         if auth_type != "url":
             self.url = self.remove_braces(self.url)
-        user_config = UserConfig(section_name='user')
-        user_id = user_config.user_id
+        user_id = CONF.user.project
         self.url = self.url.replace('USER_ID', user_id)
 
 

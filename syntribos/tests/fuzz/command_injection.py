@@ -50,7 +50,7 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
                              "the request and the arrival of the res"
                              "ponse exceeds the expected amount of time, "
                              "suggesting a vulnerability to command "
-                             "injection attacks.").format(self.resp.elapsed))
+                             "injection attacks."))
 
 
 class CommandInjectionParams(CommandInjectionBody):
