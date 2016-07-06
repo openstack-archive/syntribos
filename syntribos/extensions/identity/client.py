@@ -52,9 +52,10 @@ def authenticate_v2(
 
     data = request_entity.serialize(serialize_format)
     try:
-        r, signals = HTTPClient().request(
+        resp, signals = HTTPClient().request(
             "POST", url, headers=headers,
-            data=data).json()
+            data=data)
+        r = resp.json()
     except RequestException as e:
         LOG.debug(e)
     else:
