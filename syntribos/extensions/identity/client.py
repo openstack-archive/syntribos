@@ -32,8 +32,12 @@ def authenticate_v2(
     headers = {}
     kwargs = {}
     password_creds = None
-
-    url = '{0}/v2.0/tokens'.format(url)
+    if url.endswith('/v2.0/'):
+        url = '{0}tokens'.format(url)
+    elif url.endswith('/v2.0'):
+        url = '{0}/tokens'.format(url)
+    else:
+        url = '{0}/v2.0/tokens'.format(url)
     headers["Content-Type"] = "application/{0}".format(serialize_format)
     headers["Accept"] = "application/{0}".format(deserialize_format)
 
@@ -94,8 +98,12 @@ def authenticate_v3(
 
     headers = {}
     kwargs = {}
-
-    url = '{0}/v3/auth/tokens'.format(url)
+    if url.endswith('/v3/'):
+        url = '{0}auth/tokens'.format(url)
+    elif url.endswith('/v3'):
+        url = '{0}/auth/tokens'.format(url)
+    else:
+        '{0}/v3/auth/tokens'.format(url)
     headers["Content-Type"] = "application/json"
     headers["Accept"] = "application/json"
 
