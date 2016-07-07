@@ -104,7 +104,7 @@ def authenticate_v3(
     elif url.endswith('/v3'):
         url = '{0}/auth/tokens'.format(url)
     else:
-        '{0}/v3/auth/tokens'.format(url)
+        url = '{0}/v3/auth/tokens'.format(url)
     headers["Content-Type"] = "application/json"
     headers["Accept"] = "application/json"
 
