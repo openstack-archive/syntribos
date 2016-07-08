@@ -148,7 +148,7 @@ Example configuration file:
 
     [auth]
     #
-    # Config for authorization enpoint, so that the service can
+    # Config for authorization endpoint, so that the service can
     # obtain a valid token, enter your keystone auth endpoint.
     #
 
