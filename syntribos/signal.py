@@ -196,7 +196,8 @@ def from_generic_exception(exception):
         "exception_text": exc_text,
         "exception": exception
     }
-    slug = "GENERIC_EXCEPTION_{name}".format(data["exception_name"].upper())
+    slug = "GENERIC_EXCEPTION_{name}".format(
+        name=data["exception_name"].upper())
     tags = ["EXCEPTION_RAISED"]
 
     return SynSignal(text=text, slug=slug, strength=1.0, tags=tags, data=data)
