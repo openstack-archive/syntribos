@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import string as t_string
+import unittest
 
-import cafe.drivers.unittest.fixtures
+from oslo_config import cfg
 import six
 from six.moves.urllib.parse import urlparse
 
@@ -27,6 +27,7 @@ from syntribos.signal import SignalHolder
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 
 """test_table is the master list of tests to be run by the runner"""
+CONF = cfg.CONF
 test_table = {}
 
 
@@ -73,7 +74,7 @@ class TestType(type):
 
 
 @six.add_metaclass(TestType)
-class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
+class BaseTestCase(unittest.TestCase):
 
     """Base class for building new tests
 
@@ -109,6 +110,10 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
     diff_signals = SignalHolder()
 
     @classmethod
+    def register_opts(cls):
+        pass
+
+    @classmethod
     def get_test_cases(cls, filename, file_content):
         """Returns tests for given TestCase class (overwritten by children)."""
         yield cls
@@ -116,7 +121,7 @@ class BaseTestCase(cafe.drivers.unittest.fixtures.BaseTestFixture):
     @classmethod
     def send_init_request(cls, filename, file_content, parser=parser):
         request_obj = parser.create_request(
-            file_content, os.environ.get("SYNTRIBOS_ENDPOINT"))
+            file_content, CONF.syntribos.endpoint)
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_resp, cls.init_signals = cls.client.send_request(
             prepared_copy)

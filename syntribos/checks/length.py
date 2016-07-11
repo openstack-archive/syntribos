@@ -11,16 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
+from oslo_config import cfg
 
 import syntribos.signal
-import syntribos.tests.fuzz.config
 
-
-if not os.environ.get("CAFE_CONFIG_FILE_PATH"):
-    os.environ["CAFE_CONFIG_FILE_PATH"] = "./"
-
-config = syntribos.tests.fuzz.config.BaseFuzzConfig()
+CONF = cfg.CONF
 
 
 def percentage_difference(resp1, resp2):
@@ -54,7 +49,7 @@ def percentage_difference(resp1, resp2):
     elif data["req_diff"] == data["resp_diff"]:
         # Response difference accounted for by difference in request lengths
         return None
-    elif data["percent_diff"] < config.percent:
+    elif data["percent_diff"] < CONF.test.length_diff_percent:
         # Difference not larger than configured percentage
         return None
 
@@ -71,7 +66,7 @@ def percentage_difference(resp1, resp2):
         "\tConfig percent: {8}\n").format(
         data["req1_len"], data["resp1_len"], data["req2_len"],
         data["resp2_len"], data["req_diff"], data["resp_diff"],
-        data["percent_diff"], data["dir"], config.percent)
+        data["percent_diff"], data["dir"], CONF.test.length_diff_percent)
 
     slug = "LENGTH_DIFF_{dir}".format(dir=data["dir"])
 
