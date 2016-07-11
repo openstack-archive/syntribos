@@ -73,3 +73,37 @@ def percentage_difference(test):
 
     return syntribos.signal.SynSignal(
         text=text, slug=slug, strength=1.0, data=data, check_name=check_name)
+
+
+def max_body_length(test):
+    """Checks if the response body length is more than max size in the config.
+
+    Checks the response body to see if the length is more than the given length
+     in the config. If it is, returns a Signal.
+
+    :returns: SynSignal or None
+    """
+    check_name = "MAX_LENGTH"
+    if test.init_signals.ran_check(check_name):
+        resp = test.init_resp
+    else:
+        resp = test.test_resp
+    data = {
+        "req": resp.request,
+        "resp": resp,
+        "req_len": len(resp.request.body or ""),
+        "resp_len": len(resp.content or ""),
+    }
+    text = (
+        "Length:\n"
+        "\tRequest length: {0}\n"
+        "\tResponse length: {1}\n".format(
+            data["req_len"], data["resp_len"]
+        )
+    )
+    slug = "OVER_MAX_LENGTH"
+
+    if data["resp_len"] > CONF.test.max_length:
+        return syntribos.signal.SynSignal(
+            text=text, slug=slug, strength=1.0, data=data,
+            check_name=check_name)

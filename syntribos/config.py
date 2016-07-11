@@ -215,5 +215,7 @@ def list_test_opts():
                           "time and test response time to trigger a signal"),
         cfg.IntOpt("max_time", default=10,
                    help="Maximum absolute time (in seconds) to wait for a "
-                        "response before triggering a timeout signal")
+                        "response before triggering a timeout signal"),
+        cfg.IntOpt("max_length", default=500,
+                   help="Maximum length (in characters) of the response text")
     ]

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # flake8: noqa
+from syntribos.checks.length import max_body_length as max_length
 from syntribos.checks.length import percentage_difference as length_diff
 from syntribos.checks.ssl import https_check as https_check
 from syntribos.checks.time import percentage_difference as time_diff
