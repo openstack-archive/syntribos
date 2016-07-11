@@ -154,7 +154,7 @@ class BaseTestCase(unittest.TestCase):
         super(BaseTestCase, cls).tearDownClass()
         if not cls.failures:
             if "EXCEPTION_RAISED" in cls.test_signals:
-                sig = cls.test_signals.get_matching_signals(
+                sig = cls.test_signals.find(
                     tags="EXCEPTION_RAISED")[0]
                 raise sig.data["exception"]
 

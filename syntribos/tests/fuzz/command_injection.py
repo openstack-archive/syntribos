@@ -40,7 +40,7 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
                              "included in the response. This could indicate "
                              "a vulnerability to command injection "
                              "attacks.").format(failed_strings))
-        self.diff_signals.register(time_diff(self.init_resp, self.test_resp))
+        self.diff_signals.register(time_diff(self))
         if "TIME_DIFF_OVER" in self.diff_signals:
             self.register_issue(
                 defect_type="command_injection",

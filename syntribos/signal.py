@@ -101,7 +101,7 @@ class SignalHolder(object):
         else:
             raise TypeError()
 
-    def get_matching_signals(self, slugs=None, tags=None):
+    def find(self, slugs=None, tags=None):
         """Get the signals that are matched by `slugs` and/or `tags`
 
         :param list slugs: A `list` of slugs to search for
@@ -130,6 +130,11 @@ class SignalHolder(object):
     def _is_duplicate(self, signal):
         return signal.slug in self.all_slugs
 
+    def ran_check(self, check_name):
+        for signal in self.signals:
+            if signal.check_name == check_name:
+                return True
+
 
 class SynSignal(object):
 
@@ -142,9 +147,13 @@ class SynSignal(object):
     :ivar dict data: Information about the results of the check
     """
 
-    def __init__(self, text="", slug="", strength=0.0, tags=None, data=None):
+    def __init__(self, text="", slug="",
+                 strength=0.0, tags=None,
+                 data=None, check_name=None):
         self.text = text if text else ""
         self.slug = slug if slug else ""
+        self.check_name = check_name if check_name else ""
+
         if self.__dict__.get("strength", None):
             self.strength = self.strength
         else:

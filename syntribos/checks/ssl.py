@@ -12,22 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
-from urlparse import urlparse
+
+from six.moves.urllib.parse import urlparse
 
 import syntribos.signal
 
 
-def https_check(resp):
+def https_check(test):
     """Checks if the returned response consists of non-secure endpoint URIs
 
     :returns: syntribos.signal.SynSignal
     """
-    target = resp.request.url
+    check_name = "HTTPS_CHECK"
+    if not test.init_signals.ran_check(check_name):
+        response_text = test.init_resp.text
+    else:
+        response_text = test.test_resp.text
+    target = test.init_req.url
     domain = urlparse(target).hostname
     regex = r"\bhttp://{0}".format(domain)
-    response_text = resp.text
 
     if re.search(regex, response_text):
-        text = ("Make sure that all the returned endpoint URIs are https://")
+        text = "Non https endpoint URIs present in the response text"
         slug = "HTTP_LINKS_PRESENT"
-        return syntribos.signal.SynSignal(text=text, slug=slug, strength=1.0)
+        return syntribos.signal.SynSignal(text=text, slug=slug,
+                                          strength=1.0, check_name=check_name)

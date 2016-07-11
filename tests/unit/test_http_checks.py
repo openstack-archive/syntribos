@@ -33,7 +33,7 @@ class HTTPCheckUnittest(testtools.TestCase):
 
         elif isinstance(signals, syntribos.signal.SignalHolder):
             slugs = [slug] if slug else None
-            matching = signals.get_matching_signals(slugs=slugs, tags=tags)
+            matching = signals.find(slugs=slugs, tags=tags)
             self.assertEqual(1, len(matching))
             to_search = matching[0]
 

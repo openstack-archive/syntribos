@@ -113,7 +113,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
                              "{0}, which might indicate some server-side "
                              "fault that could lead to further vulnerabilities"
                              ).format(self.test_resp.status_code))
-        self.diff_signals.register(length_diff(self.init_resp, self.test_resp))
+        self.diff_signals.register(length_diff(self))
         if "LENGTH_DIFF_OVER" in self.diff_signals:
             if self.init_resp.status_code == self.test_resp.status_code:
                 description = ("The difference in length between the response "

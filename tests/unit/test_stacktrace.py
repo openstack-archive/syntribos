@@ -20,6 +20,22 @@ import testtools
 from syntribos.checks.stacktrace import stacktrace
 
 
+class FakeInitSignals(object):
+    def ran_check(self, name):
+        pass
+
+
+class FakeTestObject(object):
+    """A class to generate fake test objects."""
+
+    def __init__(self, resp):
+        self.init_resp = resp
+        self.init_req = resp.request
+        self.test_resp = resp
+        self.test_req = resp.request
+        self.init_signals = FakeInitSignals()
+
+
 class TestStackTrace(testtools.TestCase):
 
     @requests_mock.Mocker()
@@ -36,6 +52,7 @@ class TestStackTrace(testtools.TestCase):
         m.register_uri("GET", "http://example.com",
                        content=textwrap.dedent(content))
         resp = requests.get("http://example.com")
-        signal = stacktrace(resp)
+        test = FakeTestObject(resp)
+        signal = stacktrace(test)
         self.assertEqual("STACKTRACE_PRESENT", signal.slug)
         self.assertIn("APPLICATION_FAIL", signal.tags)
