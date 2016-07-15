@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from oslo_config import cfg
 
 import syntribos
+from syntribos.checks.header import cors
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
 from syntribos.tests import base
@@ -24,7 +26,11 @@ CONF = cfg.CONF
 
 class CorsHeader(base.BaseTestCase):
 
-    """Test to check if CORS header variables are set to wild characters."""
+    """Adds the CORS header response to test_signals (a list of signals)
+
+    If any Cross Origin Resource Sharing (CORS) header check fails then
+    it is registered as a signal and an issue is raised.
+    """
 
     test_name = "CORS_HEADER"
     test_type = "headers"
@@ -37,43 +43,25 @@ class CorsHeader(base.BaseTestCase):
         request_obj = parser.create_request(
             file_content, CONF.syntribos.endpoint
         )
-        request_obj.headers['Origin'] = 'http://example.com'
         cls.test_resp, cls.test_signals = cls.client.send_request(request_obj)
         yield cls
 
     def test_case(self):
+        self.test_signals.register(cors(self))
 
-        if 'Access-Control-Allow-Origin' in self.test_resp.headers:
-            if self.test_resp.headers['Access-Control-Allow-Origin'] == "*":
-                self.register_issue(
-                    defect_type="CORS_HEADER",
-                    severity=syntribos.MEDIUM,
-                    confidence=syntribos.HIGH,
-                    description=(
-                        "CORS header `Access-Control-Allow-Origin` set"
-                        " to a wild character, this header should"
-                        " always be set to a white listed set of URIs"))
-
-        if 'Access-Control-Allow-Methods' in self.test_resp.headers:
-            if self.test_resp.headers['Access-Control-Allow-Methods'] == "*":
-                self.register_issue(
-                    defect_type="CORS_HEADER",
-                    severity=syntribos.LOW,
-                    confidence=syntribos.HIGH,
-                    description=(
-                        "CORS header `Access-Control-Allow-Methods`"
-                        " set to a wild character,it is a good"
-                        " practice to give a white list of allowed"
-                        " methods."))
-
-        if 'Access-Control-Allow-Headers' in self.test_resp.headers:
-            if self.test_resp.headers['Access-Control-Allow-Headers'] == "*":
-                self.register_issue(
-                    defect_type="CORS_HEADER",
-                    severity=syntribos.LOW,
-                    confidence=syntribos.HIGH,
-                    description=(
-                        "CORS header `Access-Control-Allow-Headers`"
-                        " set to a wild character,it is a good"
-                        " practice to give a white list of allowed"
-                        " headers"))
+        cors_slugs = [
+            slugs for slugs in self.test_signals.all_slugs
+            if "HEADER_CORS" in slugs]
+        for slug in cors_slugs:
+            if "ORIGIN" in slug:
+                test_severity = syntribos.HIGH
+            else:
+                test_severity = syntribos.MEDIUM
+            self.register_issue(
+                defect_type="CORS_HEADER",
+                severity=test_severity,
+                confidence=syntribos.HIGH,
+                description=(
+                    "CORS header vulnerability found.\n"
+                    "Make sure that the header is not assigned "
+                    "a wildcard character."))
