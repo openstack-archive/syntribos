@@ -181,6 +181,8 @@ def list_syntribos_opts():
 
 def list_user_opts():
     return [
+        cfg.StrOpt("version", default="v2.0",
+                   help="Keystone verson", choices=["v2.0", "v3"]),
         cfg.StrOpt("username", default="", help="Keystone username"),
         cfg.StrOpt("password", default="", help="Keystone user password",
                    secret=True),
