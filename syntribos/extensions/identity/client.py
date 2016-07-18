@@ -13,15 +13,16 @@
 # limitations under the License.
 import logging
 
+from oslo_config import cfg
 from requests import RequestException as RequestException
 
 from syntribos.clients.http.base_http_client import HTTPClient
-import syntribos.extensions.identity.config
 import syntribos.extensions.identity.models.v2 as v2
 import syntribos.extensions.identity.models.v3 as v3
 
 logging.basicConfig(level=logging.CRITICAL)
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 
 def authenticate_v2(
@@ -44,10 +45,8 @@ def authenticate_v2(
     kwargs["tenant_name"] = tenant_name
     kwargs["tenant_id"] = tenant_id
 
-    if password is not None:
-        password_creds = v2.PasswordCredentials(
-            username=username, password=password
-        )
+    password_creds = v2.PasswordCredentials(
+        username=username, password=password)
 
     request_entity = v2.Auth(
         tenant_name=tenant_name, tenant_id=tenant_id,
@@ -71,24 +70,29 @@ def authenticate_v2(
         return r['access']
 
 
-def authenticate_v2_config(user_config, userauth_config):
+def authenticate_v2_config(user_section):
+    endpoint = CONF.get(user_section).endpoint or CONF.user.endpoint
+    password = CONF.get(user_section).password or CONF.user.password
+    if not endpoint or not password:
+        msg = "Required config parameters not present: {0}".format(
+            [x for x in [endpoint, password] if not x])
+        raise KeyError(msg)
+
     return authenticate_v2(
-        url=user_config.endpoint or userauth_config.endpoint,
-        username=user_config.username,
-        password=user_config.password,
-        tenant_name=user_config.tenant_name,
-        tenant_id=user_config.tenant_id,
-        serialize_format=userauth_config.serialize_format,
-        deserialize_format=userauth_config.deserialize_format)
+        url=endpoint,
+        username=CONF.get(user_section).username or CONF.user.username,
+        password=password,
+        tenant_name=CONF.get(user_section).tenant_name or
+        CONF.user.tenant_name,
+        tenant_id=CONF.get(user_section).tenant_id or CONF.user.tenant_id,
+        serialize_format=CONF.get(user_section).serialize_format or
+        CONF.user.serialize_format,
+        deserialize_format=CONF.get(user_section).deserialize_format or
+        CONF.user.deserialize_format)
 
 
-def get_token_v2(user_section_name=None, endpoint_section_name=None):
-    access_data = authenticate_v2_config(
-        syntribos.extensions.identity.config.UserConfig(
-            section_name=user_section_name),
-        syntribos.extensions.identity.config.EndpointConfig(
-            section_name=endpoint_section_name
-        ))
+def get_token_v2(user_section='user'):
+    access_data = authenticate_v2_config(user_section)
     return access_data['token']['id']
 
 
@@ -108,16 +112,17 @@ def authenticate_v3(
     headers["Content-Type"] = "application/json"
     headers["Accept"] = "application/json"
 
-    if user_id is not None:
+    if user_id:
         domain = None
         username = None
     else:
         domain = v3.Domain(name=domain_name, id_=domain_id)
+
     password = v3.Password(user=v3.User(
         name=username, password=password, id_=user_id, domain=domain
     ))
 
-    if token is not None:
+    if token:
         kwargs = {"token": v3.Token(id_=token), "methods": ["token"]}
     else:
         kwargs = {"password": password, "methods": ["password"]}
@@ -135,21 +140,21 @@ def authenticate_v3(
         return r
 
 
-def authenticate_v3_config(user_config, endpoint_config):
+def authenticate_v3_config(user_section):
+    endpoint = CONF.get(user_section).endpoint or CONF.user.endpoint
+    if not endpoint:
+        raise KeyError("Required config parameters not present: endpoint")
     return authenticate_v3(
-        url=user_config.endpoint or endpoint_config.endpoint,
-        username=user_config.username,
-        password=user_config.password,
-        user_id=user_config.user_id,
-        domain_id=user_config.domain_id,
-        domain_name=user_config.domain_name,
-        token=user_config.token)
+        url=endpoint,
+        username=CONF.get(user_section).username or CONF.user.username,
+        password=CONF.get(user_section).password or CONF.user.password,
+        user_id=CONF.get(user_section).user_id or CONF.user.user_id,
+        domain_id=CONF.get(user_section).domain_id or CONF.user.domain_id,
+        domain_name=CONF.get(user_section).domain_name or
+        CONF.user.domain_name,
+        token=CONF.get(user_section).token or CONF.user.token)
 
 
-def get_token_v3(user_section_name=None, endpoint_section_name=None):
-    r = authenticate_v3_config(
-        syntribos.extensions.identity.config.UserConfig(
-            section_name=user_section_name),
-        syntribos.extensions.identity.config.EndpointConfig(
-            section_name=endpoint_section_name))
+def get_token_v3(user_section='user'):
+    r = authenticate_v3_config(user_section)
     return r.headers["X-Subject-Token"]

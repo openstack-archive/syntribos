@@ -184,10 +184,21 @@ def list_user_opts():
         cfg.StrOpt("username", default="", help="Keystone username"),
         cfg.StrOpt("password", default="", help="Keystone user password",
                    secret=True),
+        cfg.StrOpt("user_id", default="",
+                   help="Keystone user ID", secret=True),
         cfg.StrOpt("project", default="", help="Keystone project ID"),
         cfg.StrOpt("token", default="", help="Keystone auth token",
                    secret=True),
-        cfg.StrOpt("endpoint", default="", help="Keystone endpoint URI")
+        cfg.StrOpt("endpoint", default="", help="Keystone endpoint URI"),
+        cfg.StrOpt("domain_name", default="", help="Keystone domain name"),
+        cfg.StrOpt("domain_id", default="", help="Keystone domain id"),
+        cfg.StrOpt("tenant_name", default="", help="Keystone tenant name"),
+        cfg.StrOpt("tenant_id", default="", help="Keystone tenant id"),
+        cfg.StrOpt("serialize_format", default="json",
+                   help="Type of request body"),
+        cfg.StrOpt("deserialize_format", default="json",
+                   help="Type of response body"),
+
     ]
 
 
