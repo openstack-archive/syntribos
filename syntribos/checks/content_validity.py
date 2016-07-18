@@ -17,7 +17,7 @@ import xml.etree.ElementTree as etree
 import syntribos.signal
 
 
-def valid_content(resp):
+def valid_content(test):
     """Checks if the response.content is valid.
 
     Checks if the response.content is either xml or json
@@ -26,11 +26,17 @@ def valid_content(resp):
 
     :returns: SynSignal
     """
-
-    data = {"response_content": resp.content}
+    check_name = "VALID_CONTENT"
     strength = 1.0
     tags = []
     validity = "VALID"
+
+    if not test.init_signals.ran_check(check_name):
+        resp = test.init_resp
+    else:
+        resp = test.test_resp
+
+    data = {"response_content": resp.content}
 
     if "Content-type" in resp.headers:
         content_type = resp.headers["Content-type"]
@@ -61,4 +67,5 @@ def valid_content(resp):
     else:
         return None
     return syntribos.signal.SynSignal(data=data, tags=tags, text=text,
-                                      slug=slug, strength=strength)
+                                      slug=slug, strength=strength,
+                                      check_name=check_name)

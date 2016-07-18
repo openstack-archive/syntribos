@@ -18,7 +18,7 @@ import syntribos.signal
 CONF = cfg.CONF
 
 
-def percentage_difference(resp1, resp2):
+def percentage_difference(test):
     """Validates time taken for two responses
 
     Compares the elapsed time of a fuzzed response with a response to the
@@ -27,13 +27,14 @@ def percentage_difference(resp1, resp2):
 
     :returns: SynSignal or None
     """
+    check_name = "TIME_DIFF"
     data = {
-        "req1": resp1.request,
-        "req2": resp2.request,
-        "resp1": resp1,
-        "resp2": resp2,
-        "resp1_time": resp1.elapsed.total_seconds(),
-        "resp2_time": resp2.elapsed.total_seconds()
+        "req1": test.init_req,
+        "req2": test.test_req,
+        "resp1": test.init_resp,
+        "resp2": test.test_resp,
+        "resp1_time": test.init_resp.elapsed.total_seconds(),
+        "resp2_time": test.test_resp.elapsed.total_seconds()
     }
     data["time_diff"] = data["resp2_time"] - data["resp1_time"]
     # CCNEILL: This is hacky. Exact match != 100% (due to +1)
@@ -61,26 +62,32 @@ def percentage_difference(resp1, resp2):
     slug = "TIME_DIFF_{dir}".format(dir=data["dir"])
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1, data=data)
+        text=text, slug=slug, strength=1.0, data=data, check_name=check_name)
 
 
-def absolute_time(response):
+def absolute_time(test):
     """Checks response takes less than `config.max_time` seconds
 
     :returns: SynSignal or None
     """
-    if response.elapsed.total_seconds() < CONF.test.max_time:
+    check_name = "ABSOLUTE_TIME"
+
+    if not test.init_signals.ran_check(check_name):
+        resp = test.init_resp
+    else:
+        resp = test.test_resp
+
+    data = {"request": resp.request,
+            "response": resp,
+            "elapsed": resp.elapsed.total_seconds(),
+            "max_time": CONF.test.max_time
+            }
+
+    if data["elapsed"] < data["max_time"]:
         return None
 
-    data = {
-        "request": response.request,
-        "response": response,
-        "elapsed": response.elapsed.total_seconds(),
-        "max_time": CONF.test.max_time
-    }
-
     text = (
-        "Check that response time doesn't exceed config.max_time:\n"
+        "Check that response time doesn't exceed test.max_time:\n"
         "\tMax time: {0}\n"
         "\tElapsed time: {1}\n").format(data["elapsed"], data["max_time"])
 
@@ -88,4 +95,5 @@ def absolute_time(response):
     tags = ["CONNECTION_TIMEOUT"]
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1, tags=tags, data=data)
+        text=text, slug=slug, strength=1.0,
+        tags=tags, data=data, check_name=check_name)

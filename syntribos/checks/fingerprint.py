@@ -14,7 +14,7 @@
 import syntribos.signal
 
 
-def server_software(resp):
+def server_software(test):
     """Fingerprints the server and possible version.
 
     Reads response headers and if server software information is present,
@@ -22,7 +22,14 @@ def server_software(resp):
 
     :returns: SynSignal
     """
-    strength = 1
+    check_name = "FINGERPRINT"
+    strength = 1.0
+
+    if not test.init_signals.ran_check(check_name):
+        resp = test.init_resp
+    else:
+        resp = test.test_resp
+
     servers = {
         'Apache': 'APACHE',
         'nginx': 'NGINX',
@@ -61,18 +68,20 @@ def server_software(resp):
 
     slug = "SERVER_SOFTWARE_{0}".format(server_name)
 
-    return syntribos.signal.SynSignal(text=text, slug=slug, strength=strength)
+    return syntribos.signal.SynSignal(text=text, slug=slug,
+                                      strength=strength, check_name=check_name)
 
 
-def remote_os(resp):
+def remote_os(test):
     """Returns remote OS info.
 
     Tries to identiy which OS is running on the remote server
 
     :returns: SynSignal
     """
-    strength = 1
-    remote_os = resp.headers.get('X-Distribution', 'UNKNOWN')
+    check_name = "REMOTE_OS"
+    strength = 1.0
+    remote_os = test.init_resp.headers.get('X-Distribution', 'UNKNOWN')
     remote_os = remote_os.replace(' ', '_').upper()
 
     text = (
@@ -80,4 +89,5 @@ def remote_os(resp):
         '\tServer OS: {0}\n').format(remote_os)
     slug = 'SERVER_OS_{0}'.format(remote_os)
 
-    return syntribos.signal.SynSignal(text=text, slug=slug, strength=strength)
+    return syntribos.signal.SynSignal(text=text, slug=slug,
+                                      strength=strength, check_name=check_name)

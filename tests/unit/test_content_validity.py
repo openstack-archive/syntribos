@@ -20,16 +20,33 @@ import testtools
 from syntribos.checks.content_validity import valid_content
 
 
+class FakeInitSignals(object):
+    def ran_check(self, name):
+        pass
+
+
+class FakeTestObject(object):
+    """A class to generate fake test objects."""
+
+    def __init__(self, resp):
+        self.init_resp = resp
+        self.init_req = resp.request
+        self.test_resp = resp
+        self.test_req = resp.request
+        self.init_signals = FakeInitSignals()
+
+
 @requests_mock.Mocker()
 class TestValidContent(testtools.TestCase):
-
+    """Tests valid_content check for both valid and invalid json/xml."""
     def test_valid_json(self, m):
         content = '{"text": "Sample json"}'
         headers = {"Content-type": "application/json"}
         m.register_uri("GET", "http://example.com",
                        content=content, headers=headers)
         resp = requests.get("http://example.com")
-        signal = valid_content(resp)
+        test = FakeTestObject(resp)
+        signal = valid_content(test)
         self.assertEqual("VALID_JSON", signal.slug)
 
     def test_invalid_json(self, m):
@@ -38,7 +55,8 @@ class TestValidContent(testtools.TestCase):
         m.register_uri("GET", "http://example.com",
                        content=content, headers=headers)
         resp = requests.get("http://example.com")
-        signal = valid_content(resp)
+        test = FakeTestObject(resp)
+        signal = valid_content(test)
         self.assertEqual("INVALID_JSON", signal.slug)
         self.assertIn("APPLICATION_FAIL", signal.tags)
 
@@ -53,7 +71,8 @@ class TestValidContent(testtools.TestCase):
         m.register_uri("GET", "http://example.com",
                        content=textwrap.dedent(content), headers=headers)
         resp = requests.get("http://example.com")
-        signal = valid_content(resp)
+        test = FakeTestObject(resp)
+        signal = valid_content(test)
         self.assertEqual("VALID_XML", signal.slug)
 
     def test_invalid_xml(self, m):
@@ -69,6 +88,7 @@ class TestValidContent(testtools.TestCase):
         m.register_uri("GET", "http://example.com",
                        content=textwrap.dedent(content), headers=headers)
         resp = requests.get("http://example.com")
-        signal = valid_content(resp)
+        test = FakeTestObject(resp)
+        signal = valid_content(test)
         self.assertEqual("INVALID_XML", signal.slug)
         self.assertIn("APPLICATION_FAIL", signal.tags)

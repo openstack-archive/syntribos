@@ -18,7 +18,7 @@ import syntribos.signal
 CONF = cfg.CONF
 
 
-def percentage_difference(resp1, resp2):
+def percentage_difference(test):
     """Validates length of two responses
 
     Compares the length of a fuzzed response with a response to the
@@ -27,15 +27,16 @@ def percentage_difference(resp1, resp2):
 
     :returns: SynSignal or None
     """
+    check_name = "LENGTH_DIFF"
     data = {
-        "req1": resp1.request,
-        "req2": resp2.request,
-        "resp1": resp1,
-        "resp2": resp2,
-        "req1_len": len(resp1.request.body or ""),
-        "req2_len": len(resp2.request.body or ""),
-        "resp1_len": len(resp1.content or ""),
-        "resp2_len": len(resp2.content or ""),
+        "req1": test.init_req,
+        "req2": test.test_req,
+        "resp1": test.init_resp,
+        "resp2": test.test_resp,
+        "req1_len": len(test.init_req.body or ""),
+        "req2_len": len(test.test_req.body or ""),
+        "resp1_len": len(test.init_resp.content or ""),
+        "resp2_len": len(test.test_resp.content or ""),
     }
     data["req_diff"] = data["req2_len"] - data["req1_len"]
     data["resp_diff"] = data["resp2_len"] - data["resp1_len"]
@@ -71,4 +72,4 @@ def percentage_difference(resp1, resp2):
     slug = "LENGTH_DIFF_{dir}".format(dir=data["dir"])
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1, data=data)
+        text=text, slug=slug, strength=1.0, data=data, check_name=check_name)

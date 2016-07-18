@@ -148,7 +148,7 @@ class SignalHolderUnittest(testtools.TestCase):
     def test_matching(self):
         """Creates SH with signal, attempts to retrieve w/ search."""
         SH = SignalHolder(self.test_signal)
-        matching = SH.get_matching_signals(slugs=self.test_signal.slug)
+        matching = SH.find(slugs=self.test_signal.slug)
         self.assertIsInstance(matching, SignalHolder)
         self.assertEqual(1, len(matching))
         self._assert_same_signal(self.test_signal, matching[0])

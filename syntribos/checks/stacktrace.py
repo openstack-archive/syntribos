@@ -14,7 +14,7 @@
 import syntribos.signal
 
 
-def stacktrace(resp):
+def stacktrace(test):
     """Checks if a stacktrace is returned by the response.
 
     If a stacktrace is returned, attempts to identity if it was an
@@ -29,9 +29,14 @@ def stacktrace(resp):
     strength = 1.0
     tags = ["APPLICATION_FAIL"]
     slug = "STACKTRACE_PRESENT"
-
+    check_name = "STACKTRACE"
+    if not test.init_signals.ran_check(check_name):
+        resp = test.init_resp
+    else:
+        resp = test.test_resp
     if error_string in resp.text:
         text = ("Stacktrace detected: {0}\n".format(
             resp.text[resp.text.index(error_string):]))
         return syntribos.signal.SynSignal(text=text, tags=tags,
-                                          slug=slug, strength=strength)
+                                          slug=slug, strength=strength,
+                                          check_name=check_name)

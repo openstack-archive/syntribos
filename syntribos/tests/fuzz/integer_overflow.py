@@ -22,7 +22,7 @@ class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
     data_key = "integer-overflow.txt"
 
     def test_case(self):
-        self.diff_signals.register(time_diff(self.init_resp, self.test_resp))
+        self.diff_signals.register(time_diff(self))
         if "TIME_DIFF_OVER" in self.diff_signals:
             self.register_issue(
                 defect_type="int_timing",

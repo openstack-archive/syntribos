@@ -40,7 +40,7 @@ class SSLTestCase(base.BaseTestCase):
         yield cls
 
     def test_case(self):
-        self.test_signals.register(https_check(self.test_resp))
+        self.test_signals.register(https_check(self))
 
         if "HTTP_LINKS_PRESENT" in self.test_signals:
             self.register_issue(
