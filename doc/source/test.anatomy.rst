@@ -53,7 +53,7 @@ To use this extension, you can add the following to your template file:
     X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 
 The "user" string indicates the data from the configuration file we
-added in ``opencafe/configs/keystone.config``
+added in ``examples/configs/keystone.config``
 
 Another example is found in ``random_data/client.py`` . This returns a
 UUID when random but unique data is needed. This can be used in place of

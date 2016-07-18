@@ -7,9 +7,6 @@ Contributing Guidelines
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
 3. All new code should have appropriate unittests (place them in the
    ``tests/unit`` folder)
-4. No new code will be accepted if it adds a new dependency on OpenCAFE, or adds
-   on top of existing CAFE functionality IF it cannot stand on its own without
-   CAFE.
 
 Anyone wanting to contribute to OpenStack must follow
 `the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__

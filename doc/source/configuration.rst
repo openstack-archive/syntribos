@@ -1,22 +1,12 @@
 Configuration
 =============
 
-Copy the data files from Syntribos data directory to ``.opencafe/data``
-directory created during ``cafe-config init``. This directory contains the fuzz
-string files. Next, copy the example configuration file to the
-``.opencafe/configs`` directory.
-
-::
-
-    $ cp data/* .opencafe/data/
-    $ cp examples/configs/keystone.config  .opencafe/configs/
-
 Modify the configuration files to update your Keystone URL, API endpoint
 and user credentials.
 
 ::
 
-    $ vi .opencafe/configs/keystone.config
+    $ vi examples/configs/keystone.config
 
 Example configuration file:
 
@@ -62,8 +52,3 @@ Example configuration file:
     #
 
     endpoint=http://localhost:5000
-
-
-You can create a templates directory inside .opencafe directory to store the request templates for the resources
-being tested. The templates under the `examples` directory can give you a quick
-start.

@@ -1,5 +1,6 @@
 Syntribos logging
 =================
+(**This section will be updated shortly**)
 
 Syntribos takes advantage of the OpenCafe logging facility. Logs are
 found in ``.opencafe/logs/`` Logs are then arranged in directories based
