@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import syntribos
+from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
 
@@ -38,17 +39,20 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
 
     def test_case(self):
         self.test_default_issues()
-        failed_strings = self.data_driven_failure_cases()
-        if failed_strings:
+        self.test_signals.register(has_string(self))
+        if "FAILURE_KEYS_PRESENT" in self.test_signals:
+            failed_strings = self.test_signals.find(
+                slugs="FAILURE_KEYS_PRESENT")[0].data["failed_strings"]
             self.register_issue(
                 defect_type="bof_strings",
                 severity=syntribos.MEDIUM,
                 confidence=syntribos.LOW,
-                description=("The string(s): \'{0}\', known to be commonly "
+                description=("The string(s): '{0}', known to be commonly "
                              "returned after a successful buffer overflow "
                              "attack, have been found in the response. This "
                              "could indicate a vulnerability to buffer "
                              "overflow attacks.").format(failed_strings))
+
         self.diff_signals.register(time_diff(self))
         if "TIME_DIFF_OVER" in self.diff_signals:
             self.register_issue(
