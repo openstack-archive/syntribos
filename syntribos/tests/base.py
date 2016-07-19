@@ -125,8 +125,12 @@ class BaseTestCase(unittest.TestCase):
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_resp, cls.init_signals = cls.client.send_request(
             prepared_copy)
-        cls.init_req = request_obj
-        if cls.init_resp is None:
+        cls.init_req = prepared_copy
+        if cls.init_resp is not None:
+            # Get the computed body and add it to our RequestObject
+            # TODO(cneill): Figure out a better way to handle this discrepancy
+            cls.init_req.body = cls.init_resp.request.body
+        else:
             cls.dead = True
 
     @classmethod
