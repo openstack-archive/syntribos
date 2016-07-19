@@ -146,6 +146,11 @@ def list_cli_opts():
         cfg.MultiStrOpt("test-types", dest="test_types", short="t",
                         default=[""],
                         help="Test types to run against the target API"),
+        cfg.MultiStrOpt("excluded-types", dest="excluded_types", short="e",
+                        default=[""],
+                        help="Test types to be excluded from current run"
+                             "against the target API"
+                        ),
         cfg.BoolOpt("verbose", short="v", default=False,
                     help="Print more information to output"),
         cfg.BoolOpt("dry-run", dest="dry_run", short="D", default=False,

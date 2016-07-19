@@ -54,7 +54,7 @@ class Runner(object):
             __import__(modname, fromlist=[])
 
     @classmethod
-    def get_tests(cls, test_types=None):
+    def get_tests(cls, test_types=None, excluded_types=None):
         """Yields relevant tests based on test type (from ```syntribos.arguments```)
 
         :param list test_types: Test types to be run
@@ -64,9 +64,15 @@ class Runner(object):
         """
         cls.load_modules(tests)
         test_types = test_types or [""]
-        for k, v in sorted(syntribos.tests.base.test_table.items()):
-            if any([True for t in test_types if t in k]):
-                yield k, v
+        excluded_types = excluded_types or [""]
+        for k, v in sorted(syntribos.tests.base.test_table.iteritems()):
+            for e in excluded_types:
+                if e and e in k:
+                    break
+                else:
+                    for t in test_types:
+                        if t in k:
+                            yield k, v
 
     @staticmethod
     def print_symbol():
@@ -143,7 +149,8 @@ class Runner(object):
             start_time = time.time()
 
             for file_path, req_str in CONF.syntribos.templates:
-                for test_name, test_class in cls.get_tests(CONF.test_types):
+                for test_name, test_class in cls.get_tests(
+                        CONF.test_types, CONF.excluded_types):
                     test_class.send_init_request(file_path, req_str)
                     for test in test_class.get_test_cases(file_path, req_str):
                         if test:
