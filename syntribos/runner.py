@@ -138,7 +138,7 @@ class Runner(object):
             cls.print_symbol()
 
             # 2 == higher verbosity, 1 == normal
-            verbosity = 2 if CONF.verbose else 1
+            verbosity = 1
             if not CONF.outfile:
                 decorator = unittest.runner._WritelnDecorator(sys.stdout)
             else:
