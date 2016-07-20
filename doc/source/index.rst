@@ -1,8 +1,7 @@
 Syntribos
 =========
 
-Syntribos is an Automated API Security Testing Tool utilizing the `Open
-CAFE Framework <https://github.com/stackforge/opencafe>`__.
+Syntribos is an automated API security testing tool
 
 Given a simple configuration file and an example HTTP request, Syntribos
 can replace any API URL, URL parameter, HTTP header and request body

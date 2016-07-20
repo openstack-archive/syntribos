@@ -31,8 +31,8 @@ Syntribos, An Automated API Security Testing Tool
     :target: https://pypi.python.org/pypi/syntribos/
     :alt: Downloads
 
-Syntribos is an Automated API Security Testing Tool utilizing the `Open
-CAFE Framework <https://github.com/stackforge/opencafe>`__.
+Syntribos is an automated API security testing tool that is maintained by
+members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`__.
 
 Given a simple configuration file and an example HTTP request, Syntribos
 can replace any API URL, URL parameter, HTTP header and request body
@@ -80,34 +80,15 @@ pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
 
    $ . scripts/syntribos-completion
 
--  Create a directory named .opencafe in the user's home directory, or in the case of a python virtualenv, in the virtualenv root folder.
-
-::
-
-   $ cafe-config init
-
--  Install the http library that gives you the minimum plugins required to use Syntribos.
-
-::
-
-   $ cafe-config plugins install http
-
 Configuration
 -------------
-
-Copy the data files from Syntribos data directory to .opencafe/data directory created during "cafe-config init". This directory contains the fuzz string files. Copy the example configuration file to .opencafe/configs directory created during "cafe-config init".
-
-::
-
-    $ cp syntribos/data/* .opencafe/data/
-    $ cp syntribos/examples/configs/keystone.config  .opencafe/configs/.
 
 Modify the configuration files to update your keystone URL, API endpoint
 and user credentials.
 
 ::
 
-    $ vi .opencafe/configs/keystone.config
+    $ vi syntribos/examples/configs/keystone.config
 
 Example configuration file:
 
@@ -155,18 +136,9 @@ Example configuration file:
     endpoint=http://localhost:5000
 
 
-You can create a templates directory inside .opencafe directory to store the request templates for the resources
-being tested. The templates under the `examples` directory can give you a quick
-start.
-
-::
-
-    $ mkdir .opencafe/templates
-    $ mkdir .opencafe/templates/keystone
-    $ cp syntribos/examples/templates/keystone/* .opencafe/templates/keystone
-
 Running Syntribos
 -----------------
+(**This section will be updated shortly**)
 
 To execute a Syntribos test, run ``syntribos`` specifying the configuration
 file and template file(s) you want to use.
@@ -184,6 +156,7 @@ directory:
 
 Syntribos Logging
 -----------------
+(**This section will be updated shortly**)
 
 Syntribos takes advantage of the OpenCafe logging facility. Logs are
 found in ``.opencafe/logs/`` Logs are then arranged in directories based
@@ -297,13 +270,13 @@ For SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos keystone.config template/keystone/domains_post.txt -t SQL_INJECTION_BODY
+    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos keystone.config template/keystone/domains_post.txt -t HEADERS
+    $ syntribos keystone.config templates/keystone/domains_post.txt -t HEADERS
 
 **Call External**
 
