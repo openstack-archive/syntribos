@@ -15,14 +15,55 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import base64
 import logging
 from time import time
+import zlib
 
+from oslo_config import cfg
 import requests
+from requests.structures import CaseInsensitiveDict
 import six
 
 import syntribos.checks.http as http_checks
 import syntribos.signal
+
+CONF = cfg.CONF
+
+
+def compress(content, threshold=512):
+    """Uses zlib to do basic compression of content.
+
+    Mostly used for compressing long fuzz strings in request body and
+    response content. The threshold to start data compression is set at 512,
+    if the content length is more than 512, it would be compressed using a
+    default level of 6.
+
+    :params: content, threshold
+    :ptype: String, int
+    :returns: Compressed String
+    :rtype: String
+    """
+    is_dict = isinstance(content, CaseInsensitiveDict) or isinstance(
+        content, dict)
+    is_string = isinstance(content, six.string_types)
+    compression_enabled = CONF.logging.http_request_compression
+
+    if is_dict:
+        for key in content:
+                content[key] = compress(content[key])
+    if is_string and compression_enabled:
+        if len(content) > threshold:
+            less_data = content[:50]
+            compressed_data = base64.b64encode(zlib.compress(content))
+            return ("******Content compressed by Syntribos.******\n"
+                    "First fifty characters of the content:\n"
+                    "       {data}\n       "
+                    "Base64 encoded compressed content:\n"
+                    "       {compressed}\n      "
+                    "******End of compressed content.******\n").format(
+                        data=less_data, compressed=compressed_data)
+    return content
 
 
 def log_http_transaction(log, level=logging.DEBUG):
@@ -57,7 +98,7 @@ def log_http_transaction(log, level=logging.DEBUG):
             log level.
             """
 
-            logline = '{0} {1}'.format(args, kwargs)
+            logline = '{0} {1}'.format(args, compress(kwargs))
 
             try:
                 log.debug(_safe_decode(logline))
@@ -110,14 +151,14 @@ def log_http_transaction(log, level=logging.DEBUG):
                 request_params = response.request.params
             elif '?' in request_url:
                 request_url, request_params = request_url.split('?')
-
             logline = ''.join([
                 '\n{0}\nREQUEST SENT\n{0}\n'.format('-' * 12),
                 'request method..: {0}\n'.format(response.request.method),
-                'request url.....: {0}\n'.format(request_url),
-                'request params..: {0}\n'.format(request_params),
-                'request headers.: {0}\n'.format(response.request.headers),
-                'request body....: {0}\n'.format(request_body)])
+                'request url.....: {0}\n'.format(compress(request_url)),
+                'request params..: {0}\n'.format(compress(request_params)),
+                'request headers.: {0}\n'.format(compress(
+                    response.request.headers)),
+                'request body....: {0}\n'.format(compress(request_body))])
             try:
                 log.log(level, _safe_decode(logline))
             except Exception as exception:

@@ -116,6 +116,7 @@ class TemplateType(ExistingPathType):
 syntribos_group = cfg.OptGroup(name="syntribos", title="Main Syntribos Config")
 user_group = cfg.OptGroup(name="user", title="Identity Config")
 test_group = cfg.OptGroup(name="test", title="Test Config")
+logger_group = cfg.OptGroup(name="logging", title="Logger config")
 
 
 def list_opts():
@@ -124,6 +125,7 @@ def list_opts():
     results.append((None, list_syntribos_opts()))
     results.append((user_group, list_user_opts()))
     results.append((test_group, list_test_opts()))
+    results.append((logger_group, list_logger_opts()))
     return results
 
 
@@ -139,6 +141,9 @@ def register_opts():
     # Test options
     CONF.register_group(test_group)
     CONF.register_opts(list_test_opts(), group=test_group)
+    # Logger options
+    CONF.register_group(logger_group)
+    CONF.register_opts(list_logger_opts(), group=logger_group)
 
 
 def list_cli_opts():
@@ -221,4 +226,15 @@ def list_test_opts():
                         "response before triggering a timeout signal"),
         cfg.IntOpt("max_length", default=500,
                    help="Maximum length (in characters) of the response text")
+    ]
+
+
+def list_logger_opts():
+    # TODO(unrahul): Add log formating and verbosity options
+    return [
+        cfg.BoolOpt("http_request_compression", default=True,
+                    help="Request content compression to compress fuzz "
+                    "strings present in the http request content."),
+        cfg.StrOpt("log_dir", default="", required=True,
+                   help="Where to save debug log files for a Syntribos run")
     ]

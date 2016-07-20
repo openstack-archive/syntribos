@@ -116,7 +116,7 @@ class Runner(object):
     @classmethod
     def get_log_file_name(cls):
         if not cls.log_file:
-            log_dir = CONF.syntribos.log_dir
+            log_dir = CONF.logging.log_dir
             time_str = datetime.datetime.now().strftime("%Y-%m-%d_%X.%f")
             file_name = "{time}.log".format(time=time_str)
             cls.log_file = os.path.join(log_dir, file_name)
