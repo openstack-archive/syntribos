@@ -151,8 +151,6 @@ def list_cli_opts():
                         help="Test types to be excluded from current run"
                              "against the target API"
                         ),
-        cfg.BoolOpt("verbose", short="v", default=False,
-                    help="Print more information to output"),
         cfg.BoolOpt("dry-run", dest="dry_run", short="D", default=False,
                     help="Don't run tests, just print them out to console"),
         cfg.StrOpt("outfile", short="o", default=None,
