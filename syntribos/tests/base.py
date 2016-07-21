@@ -168,7 +168,6 @@ class BaseTestCase(unittest.TestCase):
     def tearDown(cls):
         get_slugs = [sig.slug for sig in cls.test_signals]
         get_checks = [sig.check_name for sig in cls.test_signals]
-
         test_signals_used = "Signals: " + str(get_slugs)
         LOG.debug(test_signals_used)
         test_checks_used = "Checks used: " + str(get_checks)

@@ -154,10 +154,12 @@ def list_cli_opts():
         cfg.MultiStrOpt("excluded-types", dest="excluded_types", short="e",
                         default=[""],
                         help="Test types to be excluded from current run"
-                             "against the target API"
-                        ),
+                             "against the target API"),
         cfg.BoolOpt("list-tests", dest="list_tests", short="L", default=False,
-                    help="List all available test types that can be run"),
+                    help="List all available test types that can be run"
+                    " against the target API"),
+        cfg.BoolOpt("colorize", dest="colorize", short="cl", default=False,
+                    help="Enable color in Syntribos terminal output"),
         cfg.BoolOpt("dry-run", dest="dry_run", short="D", default=False,
                     help="Don't run tests, just print them out to console"),
         cfg.StrOpt("outfile", short="o", default=None,

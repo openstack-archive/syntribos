@@ -32,7 +32,7 @@ class CorsHeader(base.BaseTestCase):
     it is registered as a signal and an issue is raised.
     """
 
-    test_name = "CORS_HEADER"
+    test_name = "CORS_WILDCARD_HEADERS"
     test_type = "headers"
     client = client()
     failures = []

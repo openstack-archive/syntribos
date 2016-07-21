@@ -113,6 +113,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         string used as a fuzz test payload entails the generation of a new
         subclass for each parameter fuzzed. See :func:`base.extend_class`.
         """
+        cls.failures = []
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
             filename=filename, test_name=cls.test_name, fuzz_file=cls.data_key)
 
