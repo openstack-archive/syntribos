@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import base64
+from copy import deepcopy
 import logging
 from time import time
 import zlib
@@ -97,8 +98,8 @@ def log_http_transaction(log, level=logging.DEBUG):
             sent to the request() method, to the provided log at the provided
             log level.
             """
-
-            logline = '{0} {1}'.format(args, compress(kwargs))
+            kwargs_copy = deepcopy(kwargs)
+            logline = '{0} {1}'.format(args, compress(kwargs_copy))
 
             try:
                 log.debug(_safe_decode(logline))
