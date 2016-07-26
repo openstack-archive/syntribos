@@ -24,7 +24,7 @@ def cors(test):
     :returns: Signal if cors vulnerability is found, other wise None
     :rtype: :class:`syntribos.signal.SynSignal, None`
     """
-
+    check_name = "HEADER_CORS"
     strength = 1.0
     slug = "HEADER_CORS{0}_WILDCARD"
     cors_type = ""
@@ -42,4 +42,5 @@ def cors(test):
         return None
 
     slug = slug.format(cors_type)
-    return syntribos.signal.SynSignal(text=text, slug=slug, strength=strength)
+    return syntribos.signal.SynSignal(text=text, slug=slug, strength=strength,
+                                      check_name=check_name)

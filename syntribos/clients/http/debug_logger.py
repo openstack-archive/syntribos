@@ -112,7 +112,7 @@ def log_http_transaction(log, level=logging.DEBUG):
 
             # Make the request and time its execution
             response = None
-            elapsed = None
+            no_resp_time = None
             signals = syntribos.signal.SignalHolder()
 
             try:
@@ -130,9 +130,11 @@ def log_http_transaction(log, level=logging.DEBUG):
                 raise exc
 
             if len(signals) > 0 and response is None:
+                no_resp_time = time() - start
+                log.log(level,
+                        'Request failed, elapsed time....: {0:.5f} sec.\n'.
+                        format(no_resp_time))
                 return (response, signals)
-
-            elapsed = time() - start
 
             # requests lib 1.0.0 renamed body to data in the request object
             request_body = ''
@@ -152,14 +154,27 @@ def log_http_transaction(log, level=logging.DEBUG):
                 request_params = response.request.params
             elif '?' in request_url:
                 request_url, request_params = request_url.split('?')
+
+            req_body_len = 0
+            req_header_len = 0
+            if response.request.headers:
+                req_header_len = len(response.request.headers)
+            if response.request.body:
+                req_body_len = len(response.request.body)
+
             logline = ''.join([
                 '\n{0}\nREQUEST SENT\n{0}\n'.format('-' * 12),
-                'request method..: {0}\n'.format(response.request.method),
-                'request url.....: {0}\n'.format(compress(request_url)),
-                'request params..: {0}\n'.format(compress(request_params)),
-                'request headers.: {0}\n'.format(compress(
+                'request method.......: {0}\n'.format(response.request.method),
+                'request url..........: {0}\n'.format(compress(request_url)),
+                'request params.......: {0}\n'.format(compress
+                                                      (request_params)),
+                'request headers size.: {0}\n'.format(req_header_len),
+                'request headers......: {0}\n'.format(compress(
                     response.request.headers)),
-                'request body....: {0}\n'.format(compress(request_body))])
+                'request body size....: {0}\n'.format(req_body_len),
+                'request body.........: {0}\n'.format(compress
+                                                      (request_body))])
+
             try:
                 log.log(level, _safe_decode(logline))
             except Exception as exception:
@@ -170,8 +185,10 @@ def log_http_transaction(log, level=logging.DEBUG):
             logline = ''.join([
                 '\n{0}\nRESPONSE RECEIVED\n{0}\n'.format('-' * 17),
                 'response status..: {0}\n'.format(response),
-                'response time....: {0}\n'.format(elapsed),
                 'response headers.: {0}\n'.format(response.headers),
+                'response time....: {0}\n'.format
+                (response.elapsed.total_seconds()),
+                'response size....: {0}\n'.format(len(response.content)),
                 'response body....: {0}\n'.format(response.content),
                 '-' * 79])
             try:

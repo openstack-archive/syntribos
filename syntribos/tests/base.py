@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import logging
 import string as t_string
 import unittest
 
@@ -23,6 +24,7 @@ from syntribos.clients.http import client
 from syntribos.clients.http import parser
 from syntribos.signal import SignalHolder
 
+LOG = logging.getLogger(__name__)
 
 ALLOWED_CHARS = "().-_{0}{1}".format(t_string.ascii_letters, t_string.digits)
 
@@ -161,6 +163,16 @@ class BaseTestCase(unittest.TestCase):
                 sig = cls.test_signals.find(
                     tags="EXCEPTION_RAISED")[0]
                 raise sig.data["exception"]
+
+    @classmethod
+    def tearDown(cls):
+        get_slugs = [sig.slug for sig in cls.test_signals]
+        get_checks = [sig.check_name for sig in cls.test_signals]
+
+        test_signals_used = "Signals: " + str(get_slugs)
+        LOG.debug(test_signals_used)
+        test_checks_used = "Checks used: " + str(get_checks)
+        LOG.debug(test_checks_used)
 
     def run_test_case(self):
         """This kicks off the test(s) for a given TestCase class
