@@ -38,7 +38,7 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
         ]
 
     def test_case(self):
-        self.test_default_issues()
+        self.run_default_checks()
         self.test_signals.register(has_string(self))
         if "FAILURE_KEYS_PRESENT" in self.test_signals:
             failed_strings = self.test_signals.find(

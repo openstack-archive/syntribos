@@ -173,7 +173,7 @@ class Runner(object):
         """
         suite = unittest.TestSuite()
 
-        suite.addTest(test("run_test"))
+        suite.addTest(test("run_test_case"))
         if dry_run:
             for test in suite:
                 print(test)

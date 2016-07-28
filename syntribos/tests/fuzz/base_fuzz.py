@@ -60,7 +60,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
     def tearDownClass(cls):
         super(BaseFuzzTestCase, cls).tearDownClass()
 
-    def test_default_issues(self):
+    def run_default_checks(self):
         """Tests for some default issues
 
         These issues are not specific to any test type, and can be raised as a
@@ -69,7 +69,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         by test cases that inherit from BaseFuzzTestCase.
 
         Any extension to this class should call
-        self.test_default_issues() in order to test for the Issues
+        self.run_default_checks() in order to test for the Issues
         defined here
         """
 
@@ -102,7 +102,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         The test runner will call test_case on every TestCase class, and will
         report any AssertionError raised by this method to the results.
         """
-        self.test_default_issues()
+        self.run_default_checks()
 
     @classmethod
     def get_test_cases(cls, filename, file_content):

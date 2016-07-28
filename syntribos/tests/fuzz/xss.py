@@ -22,7 +22,7 @@ class XSSBody(base_fuzz.BaseFuzzTestCase):
     data_key = "xss.txt"
 
     def test_case(self):
-        self.test_default_issues()
+        self.run_default_checks()
         self.failure_keys = self._get_strings()
         self.test_signals.register(has_string(self))
 

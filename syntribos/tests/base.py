@@ -162,7 +162,7 @@ class BaseTestCase(unittest.TestCase):
                     tags="EXCEPTION_RAISED")[0]
                 raise sig.data["exception"]
 
-    def run_test(self):
+    def run_test_case(self):
         """This kicks off the test(s) for a given TestCase class
 
         After running the tests, an `AssertionError` is raised if any tests
@@ -178,7 +178,7 @@ class BaseTestCase(unittest.TestCase):
     def test_case(self):
         """This method is overwritten by individual TestCase classes
 
-        It represents the actual test that is called in :func:`run_test`,
+        It represents the actual test that is called in :func:`run_test_case`,
         and handles populating `self.failures`
         """
         pass
