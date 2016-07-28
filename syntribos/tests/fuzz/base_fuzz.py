@@ -208,6 +208,9 @@ class BaseFuzzTestCase(base.BaseTestCase):
         url_components = urlparse(self.init_resp.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
+        issue.init_signals = self.init_signals
+        issue.test_signals = self.test_signals
+        issue.diff_signals = self.diff_signals
         if 'content-type' in self.init_req.headers:
             issue.content_type = self.init_req.headers['content-type']
         else:

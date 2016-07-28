@@ -214,6 +214,9 @@ class BaseTestCase(unittest.TestCase):
         url_components = urlparse(self.init_resp.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
+        issue.init_signals = self.init_signals
+        issue.test_signals = self.test_signals
+        issue.diff_signals = self.diff_signals
 
         self.failures.append(issue)
 

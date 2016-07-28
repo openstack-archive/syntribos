@@ -54,7 +54,13 @@ class JSONFormatter(object):
 
             defect_obj = {
                 'description': issue.description,
-                'severity': sev_rating
+                'severity': sev_rating,
+                'signals': {
+                    'init_signals': [s.slug for s in issue.init_signals],
+                    'test_signals': [s.slug for s in issue.test_signals],
+                    'diff_signals': [s.slug for s in issue.diff_signals]
+                }
+
             }
 
             if defect_type not in severity_counter_dict:
