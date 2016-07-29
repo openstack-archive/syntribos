@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import syntribos
+from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
 
@@ -29,8 +30,10 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
 
     def test_case(self):
         self.test_default_issues()
-        failed_strings = self.data_driven_failure_cases()
-        if failed_strings:
+        self.test_signals.register(has_string(self))
+        if "FAILURE_KEYS_PRESENT" in self.test_signals:
+            failed_strings = self.test_signals.find(
+                slugs="FAILURE_KEYS_PRESENT")[0].data["failed_strings"]
             self.register_issue(
                 defect_type="command_injection",
                 severity=syntribos.HIGH,

@@ -44,37 +44,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
         )
 
     @classmethod
-    def data_driven_failure_cases(cls):
-        """Checks if response contains known bad strings
-
-        :returns: a list of strings that show up in the response that are also
-        defined in cls.failure_strings.
-        failed_strings = []
-        """
-        failed_strings = []
-        if cls.failure_keys is None:
-            return []
-        for line in cls.failure_keys:
-            if line in cls.test_resp.content:
-                failed_strings.append(line)
-        return failed_strings
-
-    @classmethod
-    def data_driven_pass_cases(cls):
-        """Checks if response contains expected strings
-
-        :returns: a list of assertions that fail if the response doesn't
-        contain a string defined in cls.success_keys as a string expected in
-        the response.
-        """
-        if cls.success_keys is None:
-            return True
-        for s in cls.success_keys:
-            if s in cls.test_resp.content:
-                return True
-        return False
-
-    @classmethod
     def setUpClass(cls):
         """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()
