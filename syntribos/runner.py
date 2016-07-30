@@ -36,10 +36,13 @@ class Runner(object):
     log_file = ""
 
     @classmethod
-    def print_tests(cls):
-        """Print out all the tests that will be run."""
-        for name, test in cls.get_tests():
-            print(name)
+    def print_tests(cls, list_tests=False):
+        """Print out the list of available tests types that can be run."""
+        if list_tests:
+            testlist = []
+            print("Test types...:")
+            testlist = [name for name, _ in cls.get_tests()]
+            print(testlist)
 
     @classmethod
     def load_modules(cls, package):
@@ -148,15 +151,19 @@ class Runner(object):
 
             start_time = time.time()
 
-            for file_path, req_str in CONF.syntribos.templates:
-                for test_name, test_class in cls.get_tests(
-                        CONF.test_types, CONF.excluded_types):
-                    test_class.send_init_request(file_path, req_str)
-                    for test in test_class.get_test_cases(file_path, req_str):
-                        if test:
-                            cls.run_test(test, result, CONF.dry_run)
+            if not CONF.list_tests:
+                for file_path, req_str in CONF.syntribos.templates:
+                    for test_name, test_class in cls.get_tests(
+                            CONF.test_types, CONF.excluded_types):
+                        test_class.send_init_request(file_path, req_str)
+                        for test in test_class.get_test_cases(file_path,
+                                                              req_str):
+                            if test:
+                                cls.run_test(test, result, CONF.dry_run)
 
-            cls.print_result(result, start_time)
+                cls.print_result(result, start_time)
+            else:
+                cls.print_tests(CONF.list_tests)
         except KeyboardInterrupt:
             cls.print_result(result, start_time)
             print("Keyboard interrupt, exiting...")
