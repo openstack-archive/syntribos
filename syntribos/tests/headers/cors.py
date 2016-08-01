@@ -43,7 +43,9 @@ class CorsHeader(base.BaseTestCase):
         request_obj = parser.create_request(
             file_content, CONF.syntribos.endpoint
         )
-        cls.test_resp, cls.test_signals = cls.client.send_request(request_obj)
+        prepared_copy = request_obj.get_prepared_copy()
+        cls.test_resp, cls.test_signals = cls.client.send_request(
+            prepared_copy)
         yield cls
 
     def test_case(self):

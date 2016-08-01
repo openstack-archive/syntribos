@@ -30,7 +30,7 @@ def cors(test):
     cors_type = ""
     places = ['Origin', 'Methods', 'Headers']
     cors_headers = ["Access-Control-Allow-{0}".format(p) for p in places]
-    headers = test.init_resp.headers
+    headers = test.test_resp.headers
 
     for cors_header in cors_headers:
         if headers.get(cors_header) == '*':
