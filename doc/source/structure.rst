@@ -17,4 +17,5 @@ Project Structure
     - ``tests/`` (location of tests that Syntribos can run against a target)
         - ``auth/`` (tests related to authentication/authorization)
         - ``fuzz/`` (tests that "fuzz" API requests)
+    - ``utils/`` (utility methods)
 - ``tests/unit/`` (unittests for testing Syntribos itself)

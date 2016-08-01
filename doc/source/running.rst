@@ -2,15 +2,15 @@ Running syntribos
 =================
 
 To execute a Syntribos test, run ``syntribos`` specifying the configuration
-file and template file(s) you want to use.
+file and the test you want to run:
 
 ::
 
-    $ syntribos keystone.config .opencafe/templates/keystone/roles_get.txt
+    $ syntribos --config-file keystone.config  -t SQL
 
-To run ``syntribos`` against all template files, just specify the template
-directory:
+To run ``syntribos`` against all available tests, just run ``syntribos``
+specifying the configuration file:
 
 ::
 
-    $ syntribos keystone.config .opencafe/templates/keystone/
+    $ syntribos --config-file keystone.config
