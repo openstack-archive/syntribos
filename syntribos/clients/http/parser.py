@@ -27,7 +27,6 @@ from syntribos.clients.http.models import RequestObject
 class RequestCreator(object):
     ACTION_FIELD = "ACTION_FIELD:"
     EXTERNAL = r"CALL_EXTERNAL\|([^:]+?):([^:]+?):([^|]+?)\|"
-    request_model_type = RequestObject
 
     @classmethod
     def create_request(cls, string, endpoint):
@@ -52,7 +51,7 @@ class RequestCreator(object):
         method, url, params, version = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
         data = cls._parse_data(lines[index + 1:])
-        return cls.request_model_type(
+        return RequestObject(
             method=method, url=url, headers=headers, params=params, data=data,
             action_field=action_field)
 
@@ -66,6 +65,10 @@ class RequestCreator(object):
         :rtype: tuple
         :returns: HTTP method, URL, request parameters, HTTP version
         """
+        valid_methods = ["GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE",
+                         "TRACE", "CONNECT", "PATCH"]
+        valid_versions = ["HTTP/1.1", "HTTP/1.0", "HTTP/0.9"]
+
         params = {}
         method, url, version = line.split()
         url = url.split("?", 1)
@@ -78,6 +81,13 @@ class RequestCreator(object):
                     params[param[0]] = ""
         url = url[0]
         url = urlparse.urljoin(endpoint, url)
+
+        if method not in valid_methods:
+            raise ValueError("Invalid HTTP method: {0}".format(method))
+
+        if version not in valid_versions:
+            raise ValueError("Invalid HTTP version: {0}".format(version))
+
         return method, url, params, version
 
     @classmethod
@@ -103,6 +113,7 @@ class RequestCreator(object):
 
         :returns: object representation of body data (JSON or XML)
         """
+        postdat_regex = "([\w%]+=[\w%]+&?)+"
         data = "\n".join(lines).strip()
         if not data:
             return ""
@@ -112,7 +123,8 @@ class RequestCreator(object):
             try:
                 data = ElementTree.fromstring(data)
             except Exception:
-                raise Exception("Unknown Data format")
+                if not re.match(postdat_regex, data):
+                    raise TypeError("Unknown data format")
         return data
 
     @classmethod
