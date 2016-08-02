@@ -25,16 +25,16 @@ def has_string(test):
     data = {
         "req": test.test_resp.request,
         "resp": test.test_resp,
-        "failure_strings": []
+        "failed_strings": []
     }
 
     failure_keys = test.failure_keys
     if failure_keys:
-        data["failure_strings"] = [key for key in failure_keys
-                                   if key in test.test_resp.content]
+        data["failed_strings"] = [key for key in failure_keys
+                                  if key in test.test_resp.content]
 
-    if len(data["failure_strings"]) > 0:
-        keys = "\n".join(map(str, data["failure_strings"]))
-        text = "Failure strings present " + keys
+    if len(data["failed_strings"]) > 0:
+        keys = "\n".join(map(str, data["failed_strings"]))
+        text = "Failed strings present " + keys
         return syntribos.signal.SynSignal(check_name="has_string", text=text,
                                           slug=slug, data=data, strength=1.0)
