@@ -27,6 +27,7 @@ from syntribos.clients.http.models import RequestObject
 class RequestCreator(object):
     ACTION_FIELD = "ACTION_FIELD:"
     EXTERNAL = r"CALL_EXTERNAL\|([^:]+?):([^:]+?):([^|]+?)\|"
+    request_model_type = RequestObject
 
     @classmethod
     def create_request(cls, string, endpoint):
@@ -51,7 +52,7 @@ class RequestCreator(object):
         method, url, params, version = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
         data = cls._parse_data(lines[index + 1:])
-        return RequestObject(
+        return cls.request_model_type(
             method=method, url=url, headers=headers, params=params, data=data,
             action_field=action_field)
 
