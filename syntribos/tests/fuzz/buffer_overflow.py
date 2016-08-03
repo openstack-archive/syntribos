@@ -18,6 +18,8 @@ from syntribos.tests.fuzz import base_fuzz
 
 
 class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
+    """Test for buffer overflow vulnerabilities in HTTP body."""
+
     test_name = "BUFFER_OVERFLOW_BODY"
     test_type = "data"
     data_key = "buffer-overflow.txt"
@@ -66,16 +68,22 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
 
 
 class BufferOverflowParams(BufferOverflowBody):
+    """Test for buffer overflow vulnerabilities in HTTP params."""
+
     test_name = "BUFFER_OVERFLOW_PARAMS"
     test_type = "params"
 
 
 class BufferOverflowHeaders(BufferOverflowBody):
+    """Test for buffer overflow vulnerabilities in HTTP header."""
+
     test_name = "BUFFER_OVERFLOW_HEADERS"
     test_type = "headers"
 
 
 class BufferOverflowURL(BufferOverflowBody):
+    """Test for buffer overflow vulnerabilities in HTTP URL."""
+
     test_name = "BUFFER_OVERFLOW_URL"
     test_type = "url"
     url_var = "FUZZ"

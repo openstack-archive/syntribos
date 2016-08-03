@@ -17,6 +17,8 @@ from syntribos.tests.fuzz import base_fuzz
 
 
 class XSSBody(base_fuzz.BaseFuzzTestCase):
+    """Test for cross-site-scripting vulnerabilities in HTTP body."""
+
     test_name = "XSS_BODY"
     test_type = "data"
     data_key = "xss.txt"

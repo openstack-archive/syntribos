@@ -12,11 +12,55 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from __future__ import division
 from __future__ import unicode_literals
 from math import ceil
 import sys
+
+from oslo_config import cfg
+
+import syntribos
+
+CONF = cfg.CONF
+
+
+def print_symbol():
+    """Syntribos radiation symbol."""
+    symbol = """               Syntribos
+                xxxxxxx
+           x xxxxxxxxxxxxx x
+        x     xxxxxxxxxxx     x
+               xxxxxxxxx
+     x          xxxxxxx          x
+                 xxxxx
+    x             xxx             x
+                   x
+   xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
+    xxxxxxxxxxxxx     xxxxxxxxxxxxx
+     xxxxxxxxxxx       xxxxxxxxxxx
+      xxxxxxxxx         xxxxxxxxx
+        xxxxxx           xxxxxx
+          xxx             xxx
+              x         x
+                   x
+      === Automated API Scanning  ==="""
+    print(syntribos.SEP)
+    print(symbol)
+    print(syntribos.SEP)
+
+
+def colorize(string, color="nocolor"):
+    """Method to add ascii colors to the terminal."""
+
+    color_names = ["red", "green", "yellow", "blue"]
+    colors = dict(zip(color_names, range(31, 35)))
+    colors["nocolor"] = 0  # No Color
+
+    if not CONF.colorize:
+        return string
+    return "\033[0;{color}m{string}\033[0;m".format(string=string,
+                                                    color=colors.setdefault(
+                                                        color, 0))
 
 
 class ProgressBar(object):

@@ -16,22 +16,30 @@ from syntribos.tests.fuzz import base_fuzz
 
 
 class StringValidationBody(base_fuzz.BaseFuzzTestCase):
+    """Test for string validation vulnerabilities in HTTP body."""
+
     test_name = "STRING_VALIDATION_BODY"
     test_type = "data"
     data_key = "string_validation.txt"
 
 
 class StringValidationParams(StringValidationBody):
+    """Test for string validation vulnerabilities in HTTP params."""
+
     test_name = "STRING_VALIDATION_PARAMS"
     test_type = "params"
 
 
 class StringValidationHeaders(StringValidationBody):
+    """Test for string validation vulnerabilities in HTTP header."""
+
     test_name = "STRING_VALIDATION_HEADERS"
     test_type = "headers"
 
 
 class StringValidationURL(StringValidationBody):
+    """Test for string validation vulnerabilities in HTTP URL."""
+
     test_name = "STRING_VALIDATION_URL"
     test_type = "url"
     url_var = "FUZZ"

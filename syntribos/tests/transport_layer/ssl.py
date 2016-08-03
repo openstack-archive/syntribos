@@ -24,6 +24,7 @@ CONF = cfg.CONF
 
 
 class SSLTestCase(base.BaseTestCase):
+    """Test if response body contains non-https links."""
 
     test_name = "SSL_ENDPOINT_BODY"
     test_type = "body"

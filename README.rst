@@ -143,24 +143,78 @@ Example configuration file:
     http_request_compression=True
 
 
+Syntribos Commands
+------------------
+
+Below are the set of commands that should be specified while
+using Syntribos.
+
+
+### run
+
+
+This command runs Syntribos with the given config options
+
+::
+
+    $ syntribos --config-file keystone.config -t SQL run
+
+
+### dry_run
+
+This command prepares all the test cases that would be executed by
+the ```run``` command based on the configuration options passed to
+Syntribos, but simply prints their details to the screen instead
+of actually running them.
+
+::
+
+    $ syntribos --config-file keystone.config -t SQL dry_run
+
+
+### list_tests
+
+
+This command will list the names and description of all the tests
+that can be executed by the ```run``` command.
+
+
+::
+
+    $ syntribos --config-file keystone.config list_tests
+
+
+All these commands will only work if the config file or directory is
+specified.
+
+
 Running Syntribos
 -----------------
-(**This section will be updated shortly**)
 
-To execute a Syntribos test, run ``syntribos`` specifying the configuration
-file and the type of test  you want to use.
 
-::
-
-    $ syntribos --config-file keystone.config -t SQL
-
-To run ``syntribos`` against all available tests, just specify command
+To run Syntribos against all the available tests, just specify command
  ```syntribos``` with the configuration file without specifying any
- test type.
+test type.
 
 ::
 
-    $ syntribos --config-file keystone.config
+    $ syntribos --config-file keystone.config run
+
+####Fuzzy-matching test names
+
+It is possible to limit Syntribos to run a specific test type using
+the ```-t``` flag.
+
+For example,
+
+
+::
+
+    $ syntribos --config-file keystone.config -t SQL run
+
+
+This will match all tests that contain the string 'SQL' in their name,
+like SQL_INJECTION_HEADERS, SQL_INJECTION_BODY etc.
 
 Syntribos Logging
 -----------------
@@ -273,19 +327,19 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL
+    $ syntribos --config-file keystone.config -t SQL run
 
 For SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL_INJECTION_BODY
+    $ syntribos --config-file keystone.config -t SQL_INJECTION_BODY run
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t HEADERS
+    $ syntribos --config-file keystone.config -t HEADERS run
 
 **Call External**
 

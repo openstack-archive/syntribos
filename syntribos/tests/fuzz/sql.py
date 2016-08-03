@@ -18,6 +18,8 @@ from syntribos.tests.fuzz import base_fuzz
 
 
 class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
+    """Test for SQL injection vulnerabilities in HTTP body."""
+
     test_name = "SQL_INJECTION_BODY"
     test_type = "data"
     data_key = "sql-injection.txt"
@@ -71,16 +73,22 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
 
 
 class SQLInjectionParams(SQLInjectionBody):
+    """Test for SQL injection vulnerabilities in HTTP params."""
+
     test_name = "SQL_INJECTION_PARAMS"
     test_type = "params"
 
 
 class SQLInjectionHeaders(SQLInjectionBody):
+    """Test for SQL injection vulnerabilities in HTTP header."""
+
     test_name = "SQL_INJECTION_HEADERS"
     test_type = "headers"
 
 
 class SQLInjectionURL(SQLInjectionBody):
+    """Test for SQL injection vulnerabilities in HTTP URL."""
+
     test_name = "SQL_INJECTION_URL"
     test_type = "url"
     url_var = "FUZZ"
