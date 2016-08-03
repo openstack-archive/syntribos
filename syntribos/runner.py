@@ -135,6 +135,7 @@ class Runner(object):
                      default_config_files=cls.get_default_conf_files())
                 logging.basicConfig(filename=cls.get_log_file_name(),
                                     level=logging.DEBUG)
+                CONF.log_opt_values(LOG, logging.DEBUG)
             except Exception as exc:
                 syntribos.config.handle_config_exception(exc)
 
