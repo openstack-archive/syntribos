@@ -13,6 +13,7 @@
 # limitations under the License.
 import copy
 import json
+import re
 import xml.etree.ElementTree as ElementTree
 
 from six.moves import html_parser
@@ -39,6 +40,7 @@ class RequestHelperMixin(object):
         elif isinstance(data, ElementTree.Element):
             return cls._run_iters_xml(data, action_field)
         elif isinstance(data, basestring):
+            data = data.replace(action_field, "")
             return cls._replace_iter(data)
         else:
             return data
@@ -103,6 +105,21 @@ class RequestHelperMixin(object):
                 string = string.replace(k, v.next())
         return string
 
+    @staticmethod
+    def _remove_braces(string):
+        """Remove braces from strings (in request templates)."""
+        return re.sub(r"{([^}]*)}", "\\1", string)
+
+    @staticmethod
+    def _remove_attr_names(string):
+        """removes identifiers from string substitution
+
+        If we are fuzzing example.com/{userid:123}, this method removes the
+        identifier name so that the client only sees example.com/{123} when
+        it sends the request
+        """
+        return re.sub(r"{[\w]+:", "{", string)
+
     def prepare_request(self):
         """Prepare a request for sending off
 
@@ -114,6 +131,8 @@ class RequestHelperMixin(object):
         self.headers = self._run_iters(self.headers, self.action_field)
         self.params = self._run_iters(self.params, self.action_field)
         self.data = self._string_data(self.data)
+        self.url = self._run_iters(self.url, self.action_field)
+        self.url = self._remove_braces(self._remove_attr_names(self.url))
 
     def get_prepared_copy(self):
         """Create a copy of `self`, and prepare it for use by a fuzzer

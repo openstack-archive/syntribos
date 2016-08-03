@@ -119,13 +119,13 @@ class BaseTestCase(unittest.TestCase):
         yield cls
 
     @classmethod
-    def send_init_request(cls, filename, file_content, parser=parser):
+    def send_init_request(cls, filename, file_content):
         request_obj = parser.create_request(
             file_content, CONF.syntribos.endpoint)
         prepared_copy = request_obj.get_prepared_copy()
         cls.init_resp, cls.init_signals = cls.client.send_request(
             prepared_copy)
-        cls.init_req = prepared_copy
+        cls.init_req = request_obj
         if cls.init_resp is not None:
             # Get the computed body and add it to our RequestObject
             # TODO(cneill): Figure out a better way to handle this discrepancy

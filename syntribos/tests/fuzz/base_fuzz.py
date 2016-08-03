@@ -38,10 +38,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def send_init_request(cls, filename, file_content):
-        super(BaseFuzzTestCase, cls).send_init_request(
-            filename, file_content,
-            parser=syntribos.tests.fuzz.datagen.FuzzParser
-        )
+        super(BaseFuzzTestCase, cls).send_init_request(filename, file_content)
 
     @classmethod
     def setUpClass(cls):
@@ -118,8 +115,9 @@ class BaseFuzzTestCase(base.BaseTestCase):
         """
         prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
             filename=filename, test_name=cls.test_name, fuzz_file=cls.data_key)
-        fr = cls.init_req.fuzz_request(
-            cls._get_strings(), cls.test_type, prefix_name)
+
+        fr = syntribos.tests.fuzz.datagen.fuzz_request(
+            cls.init_req, cls._get_strings(), cls.test_type, prefix_name)
         for fuzz_name, request, fuzz_string, param_path in fr:
             yield cls.extend_class(fuzz_name, fuzz_string, param_path,
                                    {"request": request})
@@ -174,7 +172,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         issue.response = self.test_resp
 
         issue.test_type = self.test_name
-        url_components = urlparse(self.init_resp.url)
+        url_components = urlparse(self.init_req.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
         issue.init_signals = self.init_signals

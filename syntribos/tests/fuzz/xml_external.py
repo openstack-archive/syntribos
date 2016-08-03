@@ -16,6 +16,7 @@ from oslo_config import cfg
 import syntribos
 from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
+from syntribos.clients.http import parser
 from syntribos.tests.fuzz import base_fuzz
 import syntribos.tests.fuzz.datagen
 
@@ -45,7 +46,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         XML, do not generate tests.
         """
         # Send request for different content-types
-        request_obj = syntribos.tests.fuzz.datagen.FuzzParser.create_request(
+        request_obj = parser.create_request(
             file_content, CONF.syntribos.endpoint)
 
         prepared_copy = request_obj.get_prepared_copy()
@@ -71,8 +72,8 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
             prefix_name = prefix_name.format(
                 filename=filename, test_name=cls.test_name,
                 fuzz_file=cls.dtds_data_key, d_index=d_num)
-            fr = request_obj.fuzz_request(
-                ["&xxe;"], cls.test_type, prefix_name)
+            fr = syntribos.tests.fuzz.datagen.fuzz_request(
+                request_obj, ["&xxe;"], cls.test_type, prefix_name)
             for fuzz_name, request, fuzz_string, param_path in fr:
                 request.data = "{0}\n{1}".format(dtd, request.data)
                 yield cls.extend_class(fuzz_name, fuzz_string, param_path,
