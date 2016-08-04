@@ -160,8 +160,11 @@ class Runner(object):
                         for test in test_class.get_test_cases(file_path,
                                                               req_str):
                             if test:
-                                cls.run_test(test, result, CONF.dry_run)
-
+                                test_time = cls.run_test(test, result,
+                                                         CONF.dry_run)
+                                test_time = "Test run time: {} sec.".format(
+                                    test_time)
+                                LOG.debug(test_time)
                 cls.print_result(result, start_time)
             else:
                 cls.print_tests(CONF.list_tests)
@@ -180,6 +183,7 @@ class Runner(object):
         :param bool dry_run: (OPTIONAL) Only print out test names
         """
         suite = unittest.TestSuite()
+        test_start_time = time.time()
 
         suite.addTest(test("run_test_case"))
         if dry_run:
@@ -187,6 +191,9 @@ class Runner(object):
                 print(test)
         else:
             suite.run(result)
+        test_end_time = time.time() - test_start_time
+        test_end_time = '%.5f' % test_end_time
+        return test_end_time
 
     @classmethod
     def print_result(cls, result, start_time):

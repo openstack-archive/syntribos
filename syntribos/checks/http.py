@@ -30,6 +30,7 @@ def check_fail(exception):
     :returns: Signal with exception details
     :rtype: :class:`syntribos.signal.SynSignal`
     """
+    check_name = "HTTP_CHECK_FAIL"
 
     def uncamel(string):
         string = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", string)
@@ -69,7 +70,8 @@ def check_fail(exception):
         tags.update(["INVALID_REQUEST", "CLIENT_FAIL"])
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1.0, tags=list(tags), data=data)
+        text=text, slug=slug, strength=1.0, tags=list(tags), data=data,
+        check_name=check_name)
 
 
 def check_status_code(response):
@@ -80,7 +82,7 @@ def check_status_code(response):
     :returns: Signal with status code details
     :rtype: :class:`syntribos.signal.SynSignal`
     """
-
+    check_name = "HTTP_STATUS_CODE"
     codes = httplib.responses
 
     data = {
@@ -123,7 +125,8 @@ def check_status_code(response):
     slug = (slug + "_{code}").format(code=data["status_code"])
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1, tags=tags, data=data)
+        text=text, slug=slug, strength=1, tags=tags, data=data,
+        check_name=check_name)
 
 
 def check_content_type(response):
@@ -135,6 +138,7 @@ def check_content_type(response):
     :rtype: :class:`syntribos.signal.SynSignal`
     """
 
+    check_name = "HTTP_CONTENT_TYPE"
     # LOOKUP MAPS
     known_subtypes = ["xml", "json", "javascript", "html", "plain"]
     known_suffixes = ["xml", "json"]  # RFC6838
@@ -180,4 +184,4 @@ def check_content_type(response):
     data = {"raw_type": raw_type, "fuzzy_type": fuzzy_type}
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1.0, data=data)
+        text=text, slug=slug, strength=1.0, data=data, check_name=check_name)
