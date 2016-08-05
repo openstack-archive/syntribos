@@ -156,7 +156,7 @@ file and the type of test  you want to use.
 
 To run ``syntribos`` against all available tests, just specify command
  ```syntribos``` with the configuration file without specifying any
-  test type.
+ test type.
 
 ::
 
@@ -267,7 +267,7 @@ injection, integer overflow, buffer overflow, Cross Origin
 
 In order to run a specific test, simply use the ``-t, --test-types``
 option and provide `syntribos` with a keyword or keywords to match from
-the test files located in ``syntribos/tests/fuzz/``.
+the test files located in ``syntribos/tests/``.
 
 For SQL injection tests, use:
 
