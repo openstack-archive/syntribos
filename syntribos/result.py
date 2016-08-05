@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
 import unittest
 
 from syntribos.formatters.json_formatter import JSONFormatter
@@ -38,11 +37,6 @@ class IssueTestResult(unittest.TextTestResult):
         """
         self.failures.append((test, test.failures))
         self.stats["failures"] += len(test.failures)
-        if self.showAll:
-            sys.stdout.write("FAIL\n")
-        elif self.dots:
-            sys.stdout.write('F')
-            sys.stdout.flush()
 
     def addError(self, test, err):
         """Duplicates parent class addError functionality.
@@ -54,11 +48,6 @@ class IssueTestResult(unittest.TextTestResult):
         """
         self.errors.append((test, self._exc_info_to_string(err, test)))
         self.stats["errors"] += 1
-        if self.showAll:
-            sys.stdout.write("ERROR\n")
-        elif self.dots:
-            sys.stdout.write('E')
-            sys.stdout.flush()
 
     def addSuccess(self, test):
         """Duplicates parent class addSuccess functionality.
@@ -67,11 +56,6 @@ class IssueTestResult(unittest.TextTestResult):
         :type test: :class:`syntribos.tests.base.BaseTestCase`
         """
         self.stats["successes"] += 1
-        if self.showAll:
-            sys.stdout.write("ok\n")
-        elif self.dots:
-            sys.stdout.write('.')
-            sys.stdout.flush()
 
     def printErrors(self, output_format, min_severity, min_confidence):
         """Print out each :class:`syntribos.issue.Issue` that was encountered
@@ -82,8 +66,6 @@ class IssueTestResult(unittest.TextTestResult):
             "json": JSONFormatter(self)
         }
         formatter = formatter_types[output_format]
-        if self.dots or self.showAll:
-            self.stream.writeln()
         formatter.report(min_severity, min_confidence)
 
     def stopTestRun(self):

@@ -25,6 +25,8 @@ import syntribos.config
 from syntribos.result import IssueTestResult
 import syntribos.tests as tests
 import syntribos.tests.base
+from syntribos.utils.ascii_colors import colorize
+from syntribos.utils.progress_bar import ProgressBar
 
 result = None
 CONF = cfg.CONF
@@ -36,13 +38,13 @@ class Runner(object):
     log_file = ""
 
     @classmethod
-    def print_tests(cls, list_tests=False):
+    def print_tests(cls):
         """Print out the list of available tests types that can be run."""
-        if list_tests:
-            testlist = []
-            print("Test types...:")
-            testlist = [name for name, _ in cls.get_tests()]
-            print(testlist)
+        testlist = []
+        print("Test types...:")
+        testlist = [name for name, _ in cls.get_tests()]
+        print(testlist)
+        exit(0)
 
     @classmethod
     def load_modules(cls, package):
@@ -109,7 +111,7 @@ class Runner(object):
         test_log = cls.get_log_file_name()
         if test_log:
             print(syntribos.SEP)
-            print("LOG PATH..........: {path}".format(path=test_log))
+            print("LOG PATH...: {path}".format(path=test_log))
             print(syntribos.SEP)
 
     @classmethod
@@ -128,6 +130,7 @@ class Runner(object):
     @classmethod
     def run(cls):
         global result
+        test_id = 1000
         try:
             try:
                 syntribos.config.register_opts()
@@ -142,32 +145,66 @@ class Runner(object):
             cls.print_symbol()
 
             # 2 == higher verbosity, 1 == normal
-            verbosity = 1
+            verbosity = 0
             if not CONF.outfile:
                 decorator = unittest.runner._WritelnDecorator(sys.stdout)
             else:
                 decorator = unittest.runner._WritelnDecorator(
                     open(CONF.outfile, 'w'))
             result = IssueTestResult(decorator, True, verbosity)
-
             start_time = time.time()
-
-            if not CONF.list_tests:
-                for file_path, req_str in CONF.syntribos.templates:
-                    for test_name, test_class in cls.get_tests(
-                            CONF.test_types, CONF.excluded_types):
-                        test_class.send_init_request(file_path, req_str)
-                        for test in test_class.get_test_cases(file_path,
-                                                              req_str):
+            if CONF.list_tests:
+                cls.print_tests()
+            print("\nRunning Tests...:")
+            for file_path, req_str in CONF.syntribos.templates:
+                print(syntribos.SEP)
+                print("Template File...: {}".format(file_path))
+                print(syntribos.SEP)
+                print("\n  ID \t\tTest Name      \t\t\t\t\t\tProgress")
+                list_of_tests = list(cls.get_tests(CONF.test_types,
+                                                   CONF.excluded_types))
+                for test_name, test_class in list_of_tests:
+                    test_id += 5
+                    log_string = "[{test_id}]  :  {name}".format(
+                        test_id=test_id, name=test_name)
+                    result_string = "[{test_id}]  :  {name}".format(
+                        test_id=colorize(test_id, color="green"),
+                        name=test_name.replace("_", " ").capitalize())
+                    if not CONF.colorize:
+                        result_string = result_string.ljust(55)
+                    else:
+                        result_string = result_string.ljust(60)
+                    LOG.debug(log_string)
+                    test_class.send_init_request(file_path, req_str)
+                    test_cases = list(
+                        test_class.get_test_cases(file_path, req_str))
+                    if len(test_cases) > 0:
+                        bar = ProgressBar(message=result_string,
+                                          max=len(test_cases))
+                        for test in test_cases:
                             if test:
                                 test_time = cls.run_test(test, result,
                                                          CONF.dry_run)
                                 test_time = "Test run time: {} sec.".format(
                                     test_time)
                                 LOG.debug(test_time)
+                                bar.increment(1)
+                            bar.print_bar()
+                            failures = len(test.failures)
+                            total_tests = len(test_cases)
+                            if failures > total_tests * 0.90:
+                                # More than 90 percent failure
+                                failures = colorize(failures, "red")
+                            elif failures > total_tests * 0.45:
+                                # More than 45 percent failure
+                                failures = colorize(failures, "yellow")
+                            elif failures > total_tests * 0.15:
+                                # More than 15 percent failure
+                                failures = colorize(failures, "blue")
+                        print("  :  {} Failure(s)\r".format(failures))
+                print(syntribos.SEP)
+                print("\nResults...:\n")
                 cls.print_result(result, start_time)
-            else:
-                cls.print_tests(CONF.list_tests)
         except KeyboardInterrupt:
             cls.print_result(result, start_time)
             print("Keyboard interrupt, exiting...")
@@ -184,7 +221,6 @@ class Runner(object):
         """
         suite = unittest.TestSuite()
         test_start_time = time.time()
-
         suite.addTest(test("run_test_case"))
         if dry_run:
             for test in suite:

@@ -53,8 +53,8 @@ class RunnerUnittest(testtools.TestCase):
 
     def test_get_int_overflow_tests(self):
         """Check that we get the proper integer overflow tests."""
-        expected = ["INT_OVERFLOW_" + x for x in self.common_endings]
-        loaded_tests = self.r.get_tests(["INT_OVERFLOW"])
+        expected = ["INTEGER_OVERFLOW_" + x for x in self.common_endings]
+        loaded_tests = self.r.get_tests(["INTEGER_OVERFLOW"])
         self._compare_tests(expected, loaded_tests)
 
     def test_get_buffer_overflow_tests(self):
@@ -72,7 +72,7 @@ class RunnerUnittest(testtools.TestCase):
     def test_get_string_validation_tests(self):
         """Check that we get the proper string validation tests."""
         expected = [
-            "STRING_VALIDATION_VULNERABILITY_" + x for x in self.common_endings
+            "STRING_VALIDATION_" + x for x in self.common_endings
         ]
         loaded_tests = self.r.get_tests(["STRING_VALIDATION"])
         self._compare_tests(expected, loaded_tests)
@@ -85,14 +85,14 @@ class RunnerUnittest(testtools.TestCase):
 
     def test_get_ssl_test(self):
         """Check that we get only the SSL test from get_tests."""
-        expected = ["SSL"]
+        expected = ["SSL_ENDPOINT_BODY"]
         loaded_tests = self.r.get_tests(["SSL"])
         self._compare_tests(expected, loaded_tests)
 
     def test_get_cors_test(self):
         """Check that we get only the CORS_HEADER test from get_tests."""
-        expected = ["CORS_HEADER"]
-        loaded_tests = self.r.get_tests(["CORS_HEADER"])
+        expected = ["CORS_WILDCARD_HEADERS"]
+        loaded_tests = self.r.get_tests(["CORS_WILDCARD_HEADERS"])
         self._compare_tests(expected, loaded_tests)
 
     def test_log_path_caching(self):

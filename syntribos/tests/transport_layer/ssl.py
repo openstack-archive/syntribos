@@ -25,8 +25,8 @@ CONF = cfg.CONF
 
 class SSLTestCase(base.BaseTestCase):
 
-    test_name = "SSL"
-    test_type = "headers"
+    test_name = "SSL_ENDPOINT_BODY"
+    test_type = "body"
     client = client()
     failures = []
 
