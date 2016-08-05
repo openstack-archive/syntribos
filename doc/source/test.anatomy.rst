@@ -4,8 +4,9 @@ Basic Syntribos Test Anatomy
 **Test Types**
 
 The tests included at release time include LDAP injection, SQL
-injection, integer overflow, command injection, XML external entity, and
-reflected cross-site scripting.
+injection, integer overflow, command injection, XML external entity,
+reflected cross-site scripting, Cross Origin Resource Sharing (CORS)
+ wildcard and Ssl.
 
 In order to run a specific test, simply use the ``-t, --test-types``
 option and provide `syntribos` with a keyword or keywords to match from
@@ -15,19 +16,19 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL
+    $ syntribos --config-file keystone.config -t SQL
 
-For SQL injection tests against the template body only, use:
+Another example, to run SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL_INJECTION_BODY
+    $ syntribos --config-file keystone.config -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt -t HEADERS
+    $ syntribos --config-file keystone.config -t HEADERS
 
 **Call External**
 

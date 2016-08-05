@@ -74,11 +74,6 @@ pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
    $ cd syntribos
    $ pip install . --upgrade
 
--  To enable autocomplete for Syntribos, run the command.
-
-::
-
-   $ . scripts/syntribos-completion
 
 Configuration
 -------------
@@ -153,18 +148,19 @@ Running Syntribos
 (**This section will be updated shortly**)
 
 To execute a Syntribos test, run ``syntribos`` specifying the configuration
-file and template file(s) you want to use.
+file and the type of test  you want to use.
 
 ::
 
-    $ syntribos keystone.config .opencafe/templates/keystone/roles_get.txt
+    $ syntribos --config-file keystone.config -t SQL
 
-To run ``syntribos`` against all template files, just specify the template
-directory:
+To run ``syntribos`` against all available tests, just specify command
+ ```syntribos``` with the configuration file without specifying any
+  test type.
 
 ::
 
-    $ syntribos keystone.config .opencafe/templates/keystone/
+    $ syntribos --config-file keystone.config
 
 Syntribos Logging
 -----------------
@@ -266,7 +262,8 @@ Basic Syntribos Test Anatomy
 **Test Types**
 
 The tests included at release time include LDAP injection, SQL
-injection, integer overflow and the generic all\_attacks.
+injection, integer overflow, buffer overflow, Cross Origin
+ Resource Sharing(CORS) wild card  vulnerability and SSL.
 
 In order to run a specific test, simply use the ``-t, --test-types``
 option and provide `syntribos` with a keyword or keywords to match from
@@ -276,19 +273,19 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL
+    $ syntribos --config-file keystone.config -t SQL
 
 For SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt -t SQL_INJECTION_BODY
+    $ syntribos --config-file keystone.config -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos keystone.config templates/keystone/domains_post.txt -t HEADERS
+    $ syntribos --config-file keystone.config -t HEADERS
 
 **Call External**
 
@@ -308,7 +305,7 @@ To use this extension, you can add the following to your template file:
     X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 
 The "user" string indicates the data from the configuration file we
-added in ``opencafe/configs/keystone.config``
+added in ``configs/keystone.config``
 
 Another example is found in ``random_data/client.py`` . This returns a
 UUID when random but unique data is needed. This can be used in place of
