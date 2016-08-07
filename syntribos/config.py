@@ -26,6 +26,9 @@ LOG = logging.getLogger(__name__)
 def handle_config_exception(exc):
     msg = ""
 
+    if not any(LOG.handlers):
+        logging.basicConfig(level=logging.DEBUG)
+
     if isinstance(exc, cfg.RequiredOptError):
         msg = "Missing option '{opt}'".format(opt=exc.opt_name)
         if exc.group:
@@ -39,7 +42,7 @@ def handle_config_exception(exc):
 
     if msg:
         LOG.warning(msg)
-        print("=" * 80)
+        print(syntribos.SEP)
         sys.exit(0)
     else:
         raise exc
