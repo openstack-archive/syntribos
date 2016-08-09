@@ -125,7 +125,7 @@ logger_group = cfg.OptGroup(name="logging", title="Logger config")
 def list_opts():
     results = []
     results.append((None, list_cli_opts()))
-    results.append((None, list_syntribos_opts()))
+    results.append((syntribos_group, list_syntribos_opts()))
     results.append((user_group, list_user_opts()))
     results.append((test_group, list_test_opts()))
     results.append((logger_group, list_logger_opts()))
@@ -137,7 +137,7 @@ def register_opts():
     CONF.register_cli_opts(list_cli_opts())
     # Syntribos options
     CONF.register_group(syntribos_group)
-    CONF.register_opts(list_syntribos_opts(), group=syntribos_group)
+    CONF.register_cli_opts(list_syntribos_opts(), group=syntribos_group)
     # Keystone options
     CONF.register_group(user_group)
     CONF.register_opts(list_user_opts(), group=user_group)
@@ -190,7 +190,8 @@ def list_syntribos_opts():
         cfg.StrOpt("payload_dir", default="", required=True,
                    help="The location where we can find Syntribos' payloads"),
         cfg.StrOpt("log_dir", default="", required=True,
-                   help="Where to save debug log files for a Syntribos run")
+                   help="Where to save debug log files for a Syntribos run"),
+
     ]
 
 
@@ -214,7 +215,7 @@ def list_user_opts():
         cfg.StrOpt("serialize_format", default="json",
                    help="Type of request body"),
         cfg.StrOpt("deserialize_format", default="json",
-                   help="Type of response body"),
+                   help="Type of response body")
 
     ]
 
