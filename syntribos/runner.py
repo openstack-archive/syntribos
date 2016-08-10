@@ -70,14 +70,16 @@ class Runner(object):
         cls.load_modules(tests)
         test_types = test_types or [""]
         excluded_types = excluded_types or [""]
-        for k, v in sorted(syntribos.tests.base.test_table.iteritems()):
-            for e in excluded_types:
-                if e and e in k:
-                    break
-                else:
-                    for t in test_types:
-                        if t in k:
-                            yield k, v
+        items = sorted(syntribos.tests.base.test_table.iteritems())
+        included = []
+        # Only include tests allowed by value in -t params
+        for t in test_types:
+            included += [x for x in items if t in x[0]]
+        # Exclude any tests that meet the above but are excluded by -e params
+        for e in excluded_types:
+            if e:
+                included = [x for x in included if e not in x[0]]
+        return (i for i in included)
 
     @staticmethod
     def print_symbol():

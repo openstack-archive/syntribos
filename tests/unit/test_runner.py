@@ -27,10 +27,8 @@ class RunnerUnittest(testtools.TestCase):
 
     def _compare_tests(self, expected, loaded):
         """Compare list of expected test names with those that were loaded."""
-        loaded_test_names = []
-        for name, test in loaded:
-            self.assertIn(name, expected)
-            loaded_test_names.append(name)
+        # loaded_test_names = []
+        loaded_test_names = [x[0] for x in loaded]
         self.assertEqual(expected, loaded_test_names)
 
     def test_get_LDAP_tests(self):
@@ -100,3 +98,31 @@ class RunnerUnittest(testtools.TestCase):
         res1 = self.r.get_log_file_name()
         res2 = self.r.get_log_file_name()
         self.assertEqual(res1, res2)
+
+    def test_get_sql_tests_exclude_header(self):
+        """Check that we get the right SQL tests when "HEADER" is excluded."""
+        expected = [
+            "SQL_INJECTION_BODY", "SQL_INJECTION_PARAMS", "SQL_INJECTION_URL"]
+        loaded_tests = self.r.get_tests(["SQL"], ["HEADER"])
+        self._compare_tests(expected, loaded_tests)
+
+    def test_get_sql_tests_exclude_header_url(self):
+        """Check that we get the right SQL tests, excluding HEADER/URL."""
+        expected = [
+            "SQL_INJECTION_BODY", "SQL_INJECTION_PARAMS"]
+        loaded_tests = self.r.get_tests(["SQL"], ["HEADER", "URL"])
+        self._compare_tests(expected, loaded_tests)
+
+    def test_get_sql_tests_exclude_header_url_body(self):
+        """Check that we get the right SQL tests, excluding HEADER/URL/BODY."""
+        expected = ["SQL_INJECTION_PARAMS"]
+        loaded_tests = self.r.get_tests(["SQL"], ["HEADER", "URL", "BODY"])
+        self._compare_tests(expected, loaded_tests)
+
+    def test_get_rce_sql_tests_exclude_url_body(self):
+        """Check that we get the right SQL tests, excluding HEADER/URL/BODY."""
+        expected = [
+            "SQL_INJECTION_HEADERS", "SQL_INJECTION_PARAMS",
+            "COMMAND_INJECTION_HEADERS", "COMMAND_INJECTION_PARAMS"]
+        loaded_tests = self.r.get_tests(["SQL", "COMMAND"], ["URL", "BODY"])
+        self._compare_tests(expected, loaded_tests)
