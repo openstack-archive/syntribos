@@ -106,7 +106,7 @@ def log_http_transaction(log, level=logging.DEBUG):
             except Exception as exception:
                 # Ignore all exceptions that happen in logging, then log them
                 log.info(
-                    'Exception occured while logging signature of calling'
+                    'Exception occurred while logging signature of calling'
                     'method in http client')
                 log.exception(exception)
 

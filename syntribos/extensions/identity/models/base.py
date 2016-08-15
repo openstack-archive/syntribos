@@ -59,7 +59,7 @@ class BaseIdentityModel(object):
                     " using type: {0}".format(format_type.decode(
                         encoding='UTF-8', errors='ignore')))
                 cls._log.debug(
-                    "Deserialization Error: Unble to deserialize the "
+                    "Deserialization Error: Unable to deserialize the "
                     "following:\n{0}".format(serialized_str.decode(
                         encoding='UTF-8', errors='ignore')))
 
