@@ -197,7 +197,7 @@ def list_syntribos_opts():
 def list_user_opts():
     return [
         cfg.StrOpt("version", default="v2.0",
-                   help="Keystone verson", choices=["v2.0", "v3"]),
+                   help="Keystone version", choices=["v2.0", "v3"]),
         cfg.StrOpt("username", default="", help="Keystone username"),
         cfg.StrOpt("password", default="", help="Keystone user password",
                    secret=True),
@@ -226,7 +226,7 @@ def list_test_opts():
                      help="Percentage difference between initial request "
                           "and test request body length to trigger a signal"),
         cfg.FloatOpt("time_diff_percent", default=200.0,
-                     help="Perecentage difference between initial response "
+                     help="Percentage difference between initial response "
                           "time and test response time to trigger a signal"),
         cfg.IntOpt("max_time", default=10,
                    help="Maximum absolute time (in seconds) to wait for a "
