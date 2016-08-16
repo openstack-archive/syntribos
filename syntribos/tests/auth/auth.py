@@ -22,6 +22,7 @@ CONF = cfg.CONF
 
 
 class AuthTestCase(base.BaseTestCase):
+    """Test for possible token misuse in keystone."""
     test_name = "AUTH"
     test_type = "headers"
 

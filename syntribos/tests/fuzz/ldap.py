@@ -15,22 +15,30 @@ from syntribos.tests.fuzz import base_fuzz
 
 
 class LDAPInjectionBody(base_fuzz.BaseFuzzTestCase):
+    """Test for LDAP injection vulnerabilities in HTTP body."""
+
     test_name = "LDAP_INJECTION_BODY"
     test_type = "data"
     data_key = "ldap.txt"
 
 
 class LDAPInjectionParams(LDAPInjectionBody):
+    """Test for LDAP injection vulnerabilities in HTTP params."""
+
     test_name = "LDAP_INJECTION_PARAMS"
     test_type = "params"
 
 
 class LDAPInjectionHeaders(LDAPInjectionBody):
+    """Test for LDAP injection vulnerabilities in HTTP header."""
+
     test_name = "LDAP_INJECTION_HEADERS"
     test_type = "headers"
 
 
 class LDAPInjectionURL(LDAPInjectionBody):
+    """Test for LDAP injection vulnerabilities in HTTP URL."""
+
     test_name = "LDAP_INJECTION_URL"
     test_type = "url"
     url_var = "FUZZ"

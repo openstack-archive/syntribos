@@ -24,6 +24,8 @@ CONF = cfg.CONF
 
 
 class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
+    """Test for XML-external-entity injection vulnerabilities in HTTP body."""
+
     test_name = "XML_EXTERNAL_ENTITY_BODY"
     test_type = "data"
     dtds_data_key = "xml-external.txt"

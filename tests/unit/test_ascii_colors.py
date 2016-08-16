@@ -13,8 +13,8 @@
 # limitations under the License.
 import testtools
 
-from syntribos.utils.ascii_colors import colorize
-from syntribos.utils.ascii_colors import CONF
+from syntribos.utils.cli import colorize
+from syntribos.utils.cli import CONF
 
 
 class TestColorize(testtools.TestCase):

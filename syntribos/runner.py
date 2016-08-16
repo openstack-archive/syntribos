@@ -22,11 +22,10 @@ import unittest
 from oslo_config import cfg
 
 import syntribos.config
-from syntribos.result import IssueTestResult
+import syntribos.result
 import syntribos.tests as tests
 import syntribos.tests.base
-from syntribos.utils.ascii_colors import colorize
-from syntribos.utils.progress_bar import ProgressBar
+from syntribos.utils import cli as cli
 
 result = None
 CONF = cfg.CONF
@@ -38,12 +37,20 @@ class Runner(object):
     log_file = ""
 
     @classmethod
-    def print_tests(cls):
+    def list_tests(cls):
         """Print out the list of available tests types that can be run."""
-        testlist = []
-        print("Test types...:")
-        testlist = [name for name, _ in cls.get_tests()]
-        print(testlist)
+        print("List of available tests...:\n")
+        print("{:<50}{}\n".format("[Test Name]", "[Description]"))
+        testdict = {name: clss.__doc__ for name, clss in cls.get_tests()}
+        for test in testdict:
+            if testdict[test] is None:
+                raise Exception(("No Test description provided"
+                                 " as doc string for:  ".format(test)))
+            else:
+                test_description = testdict[test].split(".")[0]
+            print("{test:<50}{desc}\r".format(
+                test=test, desc=test_description))
+        print("\n")
         exit(0)
 
     @classmethod
@@ -60,7 +67,7 @@ class Runner(object):
 
     @classmethod
     def get_tests(cls, test_types=None, excluded_types=None):
-        """Yields relevant tests based on test type (from ```syntribos.arguments```)
+        """Yields relevant tests based on test type
 
         :param list test_types: Test types to be run
 
@@ -79,41 +86,6 @@ class Runner(object):
                         if t in k:
                             yield k, v
 
-    @staticmethod
-    def print_symbol():
-        """Syntribos radiation symbol."""
-        symbol = """               Syntribos
-                xxxxxxx
-           x xxxxxxxxxxxxx x
-        x     xxxxxxxxxxx     x
-               xxxxxxxxx
-     x          xxxxxxx          x
-                 xxxxx
-    x             xxx             x
-                   x
-   xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
-    xxxxxxxxxxxxx     xxxxxxxxxxxxx
-     xxxxxxxxxxx       xxxxxxxxxxx
-      xxxxxxxxx         xxxxxxxxx
-        xxxxxx           xxxxxx
-          xxx             xxx
-              x         x
-                   x
-      === Automated API Scanning  ==="""
-
-        print(syntribos.SEP)
-        print(symbol)
-        print(syntribos.SEP)
-
-    @classmethod
-    def print_log(cls):
-        """Print the path to the log folder for this run."""
-        test_log = cls.get_log_file_name()
-        if test_log:
-            print(syntribos.SEP)
-            print("LOG PATH...: {path}".format(path=test_log))
-            print(syntribos.SEP)
-
     @classmethod
     def get_default_conf_files(cls):
         return ["~/.syntribos/syntribos.conf"]
@@ -129,84 +101,133 @@ class Runner(object):
 
     @classmethod
     def run(cls):
+        """Method sets up logger and decides on Syntribos control flow
+
+        This is the method where control flow of Syntribos is decided
+        based on the commands entered. Depending upon commands such
+        as ```list_tests``` or ```run``` the respective method is called.
+        """
         global result
-        test_id = 1000
         try:
-            try:
-                syntribos.config.register_opts()
-                CONF(sys.argv[1:],
-                     default_config_files=cls.get_default_conf_files())
-                logging.basicConfig(filename=cls.get_log_file_name(),
-                                    level=logging.DEBUG)
-                CONF.log_opt_values(LOG, logging.DEBUG)
-            except Exception as exc:
-                syntribos.config.handle_config_exception(exc)
+            syntribos.config.register_opts()
+            CONF(sys.argv[1:],
+                 default_config_files=cls.get_default_conf_files())
+            logging.basicConfig(filename=cls.get_log_file_name(),
+                                level=logging.DEBUG)
+            CONF.log_opt_values(LOG, logging.DEBUG)
+        except Exception as exc:
+            syntribos.config.handle_config_exception(exc)
 
-            cls.print_symbol()
-
-            # 2 == higher verbosity, 1 == normal
-            verbosity = 0
-            if not CONF.outfile:
-                decorator = unittest.runner._WritelnDecorator(sys.stdout)
-            else:
-                decorator = unittest.runner._WritelnDecorator(
-                    open(CONF.outfile, 'w'))
-            result = IssueTestResult(decorator, True, verbosity)
-            start_time = time.time()
-            if CONF.list_tests:
-                cls.print_tests()
+        cli.print_symbol()
+        if not CONF.outfile:
+            decorator = unittest.runner._WritelnDecorator(sys.stdout)
+        else:
+            decorator = unittest.runner._WritelnDecorator(
+                open(CONF.outfile, 'w'))
+        result = syntribos.result.IssueTestResult(decorator, True, verbosity=1)
+        if CONF.sub_command.name == "list_tests":
+            cls.list_tests()
+        else:
+            list_of_tests = list(cls.get_tests(CONF.test_types,
+                                               CONF.excluded_types))
             print("\nRunning Tests...:")
             for file_path, req_str in CONF.syntribos.templates:
                 print(syntribos.SEP)
                 print("Template File...: {}".format(file_path))
                 print(syntribos.SEP)
-                print("\n  ID \t\tTest Name      \t\t\t\t\t\tProgress")
-                list_of_tests = list(cls.get_tests(CONF.test_types,
-                                                   CONF.excluded_types))
-                for test_name, test_class in list_of_tests:
-                    test_id += 5
-                    log_string = "[{test_id}]  :  {name}".format(
-                        test_id=test_id, name=test_name)
-                    result_string = "[{test_id}]  :  {name}".format(
-                        test_id=colorize(test_id, color="green"),
-                        name=test_name.replace("_", " ").capitalize())
-                    if not CONF.colorize:
-                        result_string = result_string.ljust(55)
-                    else:
-                        result_string = result_string.ljust(60)
-                    LOG.debug(log_string)
-                    test_class.send_init_request(file_path, req_str)
-                    test_cases = list(
-                        test_class.get_test_cases(file_path, req_str))
-                    if len(test_cases) > 0:
-                        bar = ProgressBar(message=result_string,
+                if CONF.sub_command.name == "run":
+                    cls.run_all_tests(list_of_tests, file_path, req_str)
+                elif CONF.sub_command.name == "dry_run":
+                    cls.dry_run(list_of_tests, file_path, req_str)
+
+    @classmethod
+    def dry_run(cls, list_of_tests, file_path, req_str):
+        """Loads all the template and data files and prints out the tests
+
+        This method  does not run any tests, but loads all the templates
+        and payload data files and prints all the loaded tests.
+
+        :param list list_of_tests: A list of all the tests loaded
+        :param str file_path: Path of the  payload file
+        :param str req_str: Request string of each template
+
+        :return: None
+        """
+        for test_name, test_class in list_of_tests:
+            log_string = "Dry ran  :  {name}".format(name=test_name)
+            LOG.debug(log_string)
+            test_class.send_init_request(file_path, req_str)
+            test_cases = list(
+                test_class.get_test_cases(file_path, req_str))
+            if len(test_cases) > 0:
+                for test in test_cases:
+                    if test:
+                        test_time = cls.run_test(test, result,
+                                                 dry_run=True)
+                        test_time = "Run time: {} sec.".format(
+                            test_time)
+                        LOG.debug(test_time)
+
+    @classmethod
+    def run_all_tests(cls, list_of_tests, file_path, req_str):
+        """Loads all the payload data and templates runs all the tests
+
+        This method call run_test method to run each of the tests one
+        by one.
+
+        :param list list_of_tests: A list of all the tests loaded
+        :param str file_path: Path of the  payload file
+        :param str req_str: Request string of each template
+
+        :return: None
+        """
+        try:
+            start_time = time.time()
+            test_id = 1000
+            print("\n  ID \t\tTest Name      \t\t\t\t\t\tProgress")
+            for test_name, test_class in list_of_tests:
+                test_id += 5
+                log_string = "[{test_id}]  :  {name}".format(
+                    test_id=test_id, name=test_name)
+                result_string = "[{test_id}]  :  {name}".format(
+                    test_id=cli.colorize(test_id, color="green"),
+                    name=test_name.replace("_", " ").capitalize())
+                if not CONF.colorize:
+                    result_string = result_string.ljust(55)
+                else:
+                    result_string = result_string.ljust(60)
+                LOG.debug(log_string)
+                test_class.send_init_request(file_path, req_str)
+                test_cases = list(
+                    test_class.get_test_cases(file_path, req_str))
+                if len(test_cases) > 0:
+                    bar = cli.ProgressBar(message=result_string,
                                           max=len(test_cases))
-                        for test in test_cases:
-                            if test:
-                                test_time = cls.run_test(test, result,
-                                                         CONF.dry_run)
-                                test_time = "Test run time: {} sec.".format(
-                                    test_time)
-                                LOG.debug(test_time)
-                                bar.increment(1)
-                            bar.print_bar()
-                            failures = len(test.failures)
-                            total_tests = len(test_cases)
-                            if failures > total_tests * 0.90:
-                                # More than 90 percent failure
-                                failures = colorize(failures, "red")
-                            elif failures > total_tests * 0.45:
-                                # More than 45 percent failure
-                                failures = colorize(failures, "yellow")
-                            elif failures > total_tests * 0.15:
-                                # More than 15 percent failure
-                                failures = colorize(failures, "blue")
-                        print("  :  {} Failure(s)\r".format(failures))
-                print(syntribos.SEP)
-                print("\nResults...:\n")
-                cls.print_result(result, start_time)
+                    for test in test_cases:
+                        if test:
+                            test_time = cls.run_test(test, result)
+                            test_time = "Run time: {} sec.".format(
+                                test_time)
+                            LOG.debug(test_time)
+                            bar.increment(1)
+                        bar.print_bar()
+                        failures = len(test.failures)
+                        total_tests = len(test_cases)
+                        if failures > total_tests * 0.90:
+                            # More than 90 percent failure
+                            failures = cli.colorize(failures, "red")
+                        elif failures > total_tests * 0.45:
+                            # More than 45 percent failure
+                            failures = cli.colorize(failures, "yellow")
+                        elif failures > total_tests * 0.15:
+                            # More than 15 percent failure
+                            failures = cli.colorize(failures, "blue")
+                    print("  :  {} Failure(s)\r".format(failures))
+            print(syntribos.SEP)
+            print("\nResults...:\n")
+            syntribos.result.print_result(result, start_time)
         except KeyboardInterrupt:
-            cls.print_result(result, start_time)
+            syntribos.result.print_result(result, start_time)
             print("Keyboard interrupt, exiting...")
             exit(0)
 
@@ -229,33 +250,6 @@ class Runner(object):
             suite.run(result)
         test_end_time = time.time() - test_start_time
         test_end_time = '%.5f' % test_end_time
-        return test_end_time
-
-    @classmethod
-    def print_result(cls, result, start_time):
-        """Prints test summary/stats (e.g. # failures) to stdout
-
-        :param result: Global result object with all issues/etc.
-        :type result: :class:`syntribos.result.IssueTestResult`
-        :param float start_time: Time this run started
-        """
-        result.printErrors(
-            CONF.output_format, CONF.min_severity, CONF.min_confidence)
-        run_time = time.time() - start_time
-        tests = result.testsRun
-        failures = len(result.failures)
-        errors = len(result.errors)
-
-        print("\n{sep}\nRan {num} test{suff} in {time:.3f}s".format(
-            sep=syntribos.SEP, num=tests, suff="s" * bool(tests - 1),
-            time=run_time))
-        if failures or errors:
-            print("\nFAILED ({0}{1}{2})".format(
-                "failures={0}".format(failures) if failures else "",
-                ", " if failures and errors else "",
-                "errors={0}".format(errors) if errors else ""))
-        cls.print_log()
-        return tests, errors, failures
 
 
 def entry_point():

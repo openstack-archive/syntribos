@@ -13,7 +13,7 @@
 # limitations under the License.
 import testtools
 
-from syntribos.utils.progress_bar import ProgressBar
+from syntribos.utils.cli import ProgressBar
 
 
 class TestProgressBar(testtools.TestCase):

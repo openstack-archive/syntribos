@@ -25,12 +25,7 @@ CONF = cfg.CONF
 
 
 class CorsHeader(base.BaseTestCase):
-
-    """Adds the CORS header response to test_signals (a list of signals)
-
-    If any Cross Origin Resource Sharing (CORS) header check fails then
-    it is registered as a signal and an issue is raised.
-    """
+    """Test for CORS wild character vulnerabilities in HTTP header."""
 
     test_name = "CORS_WILDCARD_HEADERS"
     test_type = "headers"

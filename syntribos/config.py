@@ -122,6 +122,15 @@ test_group = cfg.OptGroup(name="test", title="Test Config")
 logger_group = cfg.OptGroup(name="logging", title="Logger config")
 
 
+def sub_commands(sub_parser):
+    sub_parser.add_parser('list_tests',
+                          help="List all available tests")
+    sub_parser.add_parser('run',
+                          help="Run Syntribos with given config options")
+    sub_parser.add_parser('dry_run',
+                          help="Dry run Syntribos with given config options")
+
+
 def list_opts():
     results = []
     results.append((None, list_cli_opts()))
@@ -151,6 +160,10 @@ def register_opts():
 
 def list_cli_opts():
     return [
+        cfg.SubCommandOpt(name="sub_command",
+                          handler=sub_commands,
+                          help="Available commands",
+                          title="Syntribos Commands"),
         cfg.MultiStrOpt("test-types", dest="test_types", short="t",
                         default=[""],
                         help="Test types to run against the target API"),
@@ -158,13 +171,8 @@ def list_cli_opts():
                         default=[""],
                         help="Test types to be excluded from current run"
                              "against the target API"),
-        cfg.BoolOpt("list-tests", dest="list_tests", short="L", default=False,
-                    help="List all available test types that can be run"
-                    " against the target API"),
         cfg.BoolOpt("colorize", dest="colorize", short="cl", default=False,
                     help="Enable color in Syntribos terminal output"),
-        cfg.BoolOpt("dry-run", dest="dry_run", short="D", default=False,
-                    help="Don't run tests, just print them out to console"),
         cfg.StrOpt("outfile", short="o", default=None,
                    help="File to print output to"),
         cfg.StrOpt("format", dest="output_format", short="f", default="json",

@@ -17,6 +17,8 @@ from syntribos.tests.fuzz import base_fuzz
 
 
 class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
+    """Test for integer overflow vulnerabilities in HTTP body."""
+
     test_name = "INTEGER_OVERFLOW_BODY"
     test_type = "data"
     data_key = "integer-overflow.txt"
@@ -35,16 +37,22 @@ class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
 
 
 class IntOverflowParams(IntOverflowBody):
+    """Test for integer overflow vulnerabilities in HTTP params."""
+
     test_name = "INTEGER_OVERFLOW_PARAMS"
     test_type = "params"
 
 
 class IntOverflowHeaders(IntOverflowBody):
+    """Test for integer overflow vulnerabilities in HTTP header."""
+
     test_name = "INTEGER_OVERFLOW_HEADERS"
     test_type = "headers"
 
 
 class IntOverflowURL(IntOverflowBody):
+    """Test for integer overflow vulnerabilities in HTTP URL."""
+
     test_name = "INTEGER_OVERFLOW_URL"
     test_type = "url"
     url_var = "FUZZ"
