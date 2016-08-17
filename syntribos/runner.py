@@ -44,8 +44,9 @@ class Runner(object):
         testdict = {name: clss.__doc__ for name, clss in cls.get_tests()}
         for test in testdict:
             if testdict[test] is None:
-                raise Exception(("No Test description provided"
-                                 " as doc string for:  ".format(test)))
+                raise Exception(("No test description provided"
+                                 " as doc string for the test: {0}".format(
+                                     test)))
             else:
                 test_description = testdict[test].split(".")[0]
             print("{test:<50}{desc}\r".format(
