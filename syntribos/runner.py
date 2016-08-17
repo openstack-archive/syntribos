@@ -42,7 +42,7 @@ class Runner(object):
         print("List of available tests...:\n")
         print("{:<50}{}\n".format("[Test Name]", "[Description]"))
         testdict = {name: clss.__doc__ for name, clss in cls.get_tests()}
-        for test in testdict:
+        for test in sorted(testdict):
             if testdict[test] is None:
                 raise Exception(("No test description provided"
                                  " as doc string for the test: {0}".format(
