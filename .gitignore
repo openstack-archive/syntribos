@@ -62,3 +62,6 @@ AUTHORS
 
 cover/
 .testrepository/
+
+# other
+.DS_Store
