@@ -31,6 +31,7 @@ class IssueTestResult(unittest.TextTestResult):
     tests as they run
     """
     stats = {"errors": 0, "failures": 0, "successes": 0}
+    testsRunSinceLastPrint = 0
 
     def addFailure(self, test, err):
         """Adds issues to data structures
@@ -81,9 +82,13 @@ class IssueTestResult(unittest.TextTestResult):
         self.printErrors()
 
 
-def print_log_file_path():
+def print_log_path_and_stats(start_time, testsRun):
     """Print the path to the log folder for this run."""
     test_log = Runner.get_log_file_name()
+    run_time = time.time() - start_time
+    print("\n{sep}\nTotal: Ran {num} test{suff} in {time:.3f}s".format(
+        sep=syntribos.SEP, num=testsRun, suff="s" * bool(testsRun - 1),
+        time=run_time))
     if test_log:
         print(syntribos.SEP)
         print("LOG PATH...: {path}".format(path=test_log))
@@ -100,7 +105,7 @@ def print_result(result, start_time):
     result.printErrors(
         CONF.output_format, CONF.min_severity, CONF.min_confidence)
     run_time = time.time() - start_time
-    tests = result.testsRun
+    tests = result.testsRun - result.testsRunSinceLastPrint
     failures = len(result.failures)
     errors = len(result.errors)
 
@@ -112,5 +117,5 @@ def print_result(result, start_time):
             "failures={0}".format(failures) if failures else "",
             ", " if failures and errors else "",
             "errors={0}".format(errors) if errors else ""))
-    print_log_file_path()
+    result.testsRunSinceLastPrint = result.testsRun
     return tests, errors, failures

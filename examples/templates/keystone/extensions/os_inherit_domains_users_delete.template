@@ -1,0 +1,3 @@
+DELETE /v3/OS-INHERIT/domains/{0ffd248c55b443eaac5253b4e9cbf9b5}/users/{d461ba4675294947a8975c29bc1a3d3e}/roles/{622c0e117050412abaa87cc484666ed0}/inherited_to_projects HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|

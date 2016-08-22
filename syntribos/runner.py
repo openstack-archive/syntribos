@@ -129,17 +129,32 @@ class Runner(object):
         if CONF.sub_command.name == "list_tests":
             cls.list_tests()
         else:
+            cls.start_time = time.time()
             list_of_tests = list(cls.get_tests(CONF.test_types,
                                                CONF.excluded_types))
             print("\nRunning Tests...:")
             for file_path, req_str in CONF.syntribos.templates:
+                if not file_path.endswith(".template"):
+                    LOG.debug('file.......: {0} (SKIPPED)'.format(file_path))
+                    continue
+
+                test_names = [t for (t, _) in list_of_tests]
+                log_string = ''.join([
+                    '\n{0}\nTEMPLATE FILE\n{0}\n'.format('-' * 12),
+                    'file.......: {0}\n'.format(file_path),
+                    'tests......: {0}\n'.format(test_names)])
+                LOG.debug(log_string)
+
                 print(syntribos.SEP)
                 print("Template File...: {}".format(file_path))
                 print(syntribos.SEP)
+
                 if CONF.sub_command.name == "run":
                     cls.run_all_tests(list_of_tests, file_path, req_str)
                 elif CONF.sub_command.name == "dry_run":
                     cls.dry_run(list_of_tests, file_path, req_str)
+            syntribos.result.print_log_path_and_stats(cls.start_time,
+                                                      result.testsRun)
 
     @classmethod
     def dry_run(cls, list_of_tests, file_path, req_str):
@@ -183,7 +198,7 @@ class Runner(object):
         :return: None
         """
         try:
-            start_time = time.time()
+            template_start_time = time.time()
             test_id = 1000
             print("\n  ID \t\tTest Name      \t\t\t\t\t\tProgress")
             for test_name, test_class in list_of_tests:
@@ -226,9 +241,10 @@ class Runner(object):
                     print("  :  {} Failure(s)\r".format(failures))
             print(syntribos.SEP)
             print("\nResults...:\n")
-            syntribos.result.print_result(result, start_time)
+            syntribos.result.print_result(result, template_start_time)
         except KeyboardInterrupt:
-            syntribos.result.print_result(result, start_time)
+            syntribos.result.print_result(result, template_start_time)
+            syntribos.result.print_log_file_path(cls.start_time)
             print("Keyboard interrupt, exiting...")
             exit(0)
 

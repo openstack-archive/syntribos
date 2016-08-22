@@ -1,0 +1,3 @@
+HEAD /v3/OS-INHERIT/projects/{0ffd248c55b443eaac5253b4e9cbf9b5}/groups/{622c0e117050412abaa87cc484666ed0}/roles/{fe67f81339094bbdb4b7cea0206a753f}/inherited_to_projects HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
