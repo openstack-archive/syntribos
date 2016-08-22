@@ -65,7 +65,8 @@ class IssueTestResult(unittest.TextTestResult):
         """
         self.stats["successes"] += 1
 
-    def printErrors(self, output_format, min_severity, min_confidence):
+    def printErrors(self, output_format, min_severity, min_confidence,
+                    exclude_results):
         """Print out each :class:`syntribos.issue.Issue` that was encountered
 
         :param str output_format: Either "json" or "xml"
@@ -74,12 +75,13 @@ class IssueTestResult(unittest.TextTestResult):
             "json": JSONFormatter(self)
         }
         formatter = formatter_types[output_format]
-        formatter.report(min_severity, min_confidence)
+        formatter.report(min_severity, min_confidence, exclude_results)
 
     def print_result(self, start_time):
         """Prints test summary/stats (e.g. # failures) to stdout."""
         self.printErrors(
-            CONF.output_format, CONF.min_severity, CONF.min_confidence)
+            CONF.output_format, CONF.min_severity, CONF.min_confidence,
+            CONF.syntribos.exclude_results)
         self.print_log_path_and_stats(start_time)
 
     def print_log_path_and_stats(self, start_time):
