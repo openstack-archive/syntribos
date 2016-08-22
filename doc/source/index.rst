@@ -21,8 +21,10 @@ Index
 .. toctree::
     :maxdepth: 1
 
+    about
     installation
     configuration
+    commands
     running
     logging
     test.anatomy
