@@ -244,7 +244,8 @@ class Runner(object):
             syntribos.result.print_result(result, template_start_time)
         except KeyboardInterrupt:
             syntribos.result.print_result(result, template_start_time)
-            syntribos.result.print_log_file_path(cls.start_time)
+            syntribos.result.print_log_path_and_stats(cls.start_time,
+                                                      result.testsRun)
             print("Keyboard interrupt, exiting...")
             exit(0)
 
