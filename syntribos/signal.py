@@ -58,6 +58,13 @@ class SignalHolder(object):
     def __len__(self):
         return len(self.signals)
 
+    def __eq__(self, other):
+        if len(self) != len(other):
+            return False
+        s1_has_s2 = all([sig in self.signals for sig in other.signals])
+        s2_has_s1 = all([sig in other.signals for sig in self.signals])
+        return s1_has_s2 and s2_has_s1
+
     def __contains__(self, item):
         """This is used to search for signals in the 'if __ in __' pattern."""
         if not isinstance(item, SynSignal) and type(item) is not str:
@@ -135,6 +142,34 @@ class SignalHolder(object):
             if signal.check_name == check_name:
                 return True
 
+    def compare(self, other):
+        """Returns a dict with details of diff between 2 SignalHolders.
+
+        :param: signal_holder1
+        :ptype: :class:  Syntribos.signal.SignalHolder
+        :param: signal_holder2
+        :ptype: :class:  Syntribos.signal.SignalHolder
+        :returns: data
+        :rtype: :dict:
+        """
+        data = {
+            "is_diff": False,
+            "sh1_len": len(self),
+            "sh2_len": len(other),
+            "sh1_not_in_sh2": SignalHolder(),
+            "sh2_not_in_sh1": SignalHolder()}
+        if self == other:
+            return data
+        for signal in self.signals:
+            if signal not in other:
+                data["is_diff"] = True
+                data["sh1_not_in_sh2"].register(signal)
+        for signal in other.signals:
+            if signal not in self:
+                data["is_diff"] = True
+                data["sh2_not_in_sh1"].register(signal)
+        return data
+
 
 class SynSignal(object):
 
@@ -163,6 +198,15 @@ class SynSignal(object):
 
     def __repr__(self):
         return self.slug
+
+    def __eq__(self, other):
+        same_tags = self.tags == other.tags
+        same_slug = self.slug == other.slug
+        same_check_name = self.check_name == other.check_name
+        return same_tags and same_slug and same_check_name
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def matches_tag(self, tag):
         """Checks if a Signal has a given tag

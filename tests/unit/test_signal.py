@@ -53,6 +53,19 @@ class SynSignalUnittest(testtools.TestCase):
         s = SynSignal(tags=["TEST_TAG_LONG"])
         self.assertTrue(s.matches_tag("TEST_TAG"))
 
+    def test_is_equal(self):
+        """Tests 'equality' of two SynSignals."""
+        s1 = SynSignal(tags=["TEST_TAG_1"])
+        s2 = SynSignal(tags=["TEST_TAG_1"])
+        self.assertEqual(s1, s2)
+        self.assertEqual(s2, s1)
+        s2 = SynSignal(tags=["TEST_TAG_2"])
+        self.assertNotEqual(s1, s2)
+        self.assertNotEqual(s2, s1)
+        s2 = SynSignal(tags=["TEST_TAG_2", "TEST_TAG1"])
+        self.assertNotEqual(s1, s2)
+        self.assertNotEqual(s2, s1)
+
 
 class SignalHolderUnittest(testtools.TestCase):
 
@@ -162,3 +175,26 @@ class SignalHolderUnittest(testtools.TestCase):
         SH.register(self.test_signal2)
         self.assertEqual(2, len(SH))
         self.assertEqual('["TEST_SIGNAL", "TEST_SIGNAL2"]', str(SH))
+
+    def test_is_equal(self):
+        """Tests 'equality' of two SignalHolders."""
+        SH1 = SignalHolder(self.test_signal)
+        SH2 = SignalHolder(self.test_signal)
+        self.assertEqual(SH1, SH2)
+        self.assertEqual(SH1, SH2)
+        SH2 = SignalHolder(self.test_signal2)
+        self.assertNotEqual(SH1, SH2)
+        self.assertNotEqual(SH2, SH1)
+
+    def test_compare(self):
+        """Tests 'compare' method to see if two SignalHolders differ."""
+        SH1 = SignalHolder(self.test_signal)
+        SH2 = SignalHolder(self.test_signal)
+        data = {"is_diff": False,
+                "sh1_len": 1,
+                "sh2_len": 1,
+                "sh1_not_in_sh2": SignalHolder(),
+                "sh2_not_in_sh1": SignalHolder()}
+        self.assertEqual(data, SH1.compare(SH2))
+        SH2 = SignalHolder(self.test_signal2)
+        self.assertNotEqual(data, SH1.compare(SH2))
