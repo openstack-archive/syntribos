@@ -59,3 +59,8 @@ Supported Operating Systems
 Syntribos has been developed primarily in Linux and Mac environments,
 however it supports installation and execution on Windows. But it has
 not been tested yet.
+
+.. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
+.. _Launchpad project: https://launchpad.net/syntribos
+.. _Blueprints: https://blueprints.launchpad.net/syntribos
+.. _Bugs: https://bugs.launchpad.net/syntribos

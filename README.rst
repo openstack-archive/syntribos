@@ -60,6 +60,11 @@ Syntribos has been developed primarily in Linux and Mac environments,
 however it supports installation and execution on Windows. But it has
 not been tested yet.
 
+.. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
+.. _Launchpad project: https://launchpad.net/syntribos
+.. _Blueprints: https://blueprints.launchpad.net/syntribos
+.. _Bugs: https://bugs.launchpad.net/syntribos
+
 Installation
 ============
 
@@ -104,7 +109,15 @@ All config files should have the section ``[syntribos]`` and a
     log_dir=<location_to_save_debug_logs>
 
 
+To test any project, just update the endpoint URI under
+``[syntribos]`` to point to the API and also modify the user
+credentials if needed. The endpoint URI in the ``[syntribos]``
+section  is the one being tested by Syntribos and the endpoint URI in
+``[user]`` section is just used to get an AUTH_TOKEN.
+
+
 Testing Keystone API
+--------------------
 
 
 A sample config file is given in ``examples/configs/keystone.conf``.
@@ -133,7 +146,7 @@ necessary fields like user credentials, log, template directory etc.
     endpoint=http://localhost:5000
     username=<yourusername>
     password=<yourpassword>
-    # Optional, unless Keystone V3 API is used
+    # Optional, only needed if Keystone V3 API is used
     #user_id=<youruserid>
     # Optional, api version if required.
     #version=v2.0
@@ -141,7 +154,7 @@ necessary fields like user credentials, log, template directory etc.
 
     #[alt_user]
     #
-    # Optional, only used for cross auth tests (-t AUTH)
+    # Optional, Used for cross auth tests (-t AUTH)
     #
 
     endpoint=http://localhost:5000
@@ -159,35 +172,6 @@ necessary fields like user credentials, log, template directory etc.
     # Optional, compresses http_request_content,
     # if you don't want this, set this option to False.
     http_request_compression=True
-
-
-Another example, to test a keystone v3 API, use a configuration
-similar to the one given below.
-
-::
-
-    [syntribos]
-    endpoint=http://localhost:5000
-    templates=<location_of_template_dir/file>
-    payload_dir=<location_of_payloads data>
-
-    [user]
-    endpoint=http://localhost:5000
-    username=<username>
-    password=<password>
-    domain_name=default
-    domain_id=default
-
-    [logging]
-    log_dir=<location_to_store_log_files>
-    http_request_compression=True
-
-
-To test any other project, just change the endpoint URI under
-``[syntribos]`` to point to the API and also modify the user
-credentials if needed. The endpoint URI in the ``[syntribos]``
-section  is the one being tested by Syntribos and the endpoint URI in
-``[user]`` section is just used to get an AUTH_TOKEN.
 
 Syntribos Commands
 ===================
@@ -353,7 +337,8 @@ above:
 Basic Syntribos Test Anatomy
 ============================
 
-**Test Types**
+Test Types
+----------
 
 The tests included at release time include LDAP injection, SQL
 injection, integer overflow, command injection, XML external entity,
@@ -382,7 +367,9 @@ For all tests against HTTP headers only, use:
 
     $ syntribos --config-file keystone.conf -t HEADERS
 
-**Call External**
+
+Call External
+-------------
 
 Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
@@ -419,7 +406,9 @@ usernames when fuzzing a create user call.
 The extension function can return one value or be used as a generator if
 you want it to change for each test.
 
-**Action Field**
+
+Action Field
+------------
 
 While Syntribos is designed to test all fields in a request, it can also
 ignore specific fields through the use of Action Fields. If you want to
@@ -435,11 +424,25 @@ The ID provided will remain static for every test.
 Executing unittests
 ===================
 
-Navigate to the ``syntribos`` root directory
+To execute unittests automatically, navigate to the ``syntribos`` root
+directory and install the test requirements.
+
+::
+    $ pip install -r test-requirements.txt
+
+Now, run
 
 ::
 
-    $ python -m unittest discover syntribos/ -p ut_*.py
+    $ python -m unittest discover tests/unit -p "test_*.py"
+
+Also, if  you have configured tox you could also do
+
+::
+    $ tox -e py27
+
+This will run all the unittests and give you a result output
+containing the status and coverage details of each test.
 
 Contributing Guidelines
 ========================
