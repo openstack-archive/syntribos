@@ -1,36 +1,39 @@
 Basic Syntribos Test Anatomy
 ============================
 
-**Test Types**
+Test Types
+----------
 
 The tests included at release time include LDAP injection, SQL
 injection, integer overflow, command injection, XML external entity,
 reflected cross-site scripting, Cross Origin Resource Sharing (CORS)
- wildcard and Ssl.
+wildcard and SSL.
 
 In order to run a specific test, simply use the ``-t, --test-types``
 option and provide `syntribos` with a keyword or keywords to match from
-the test files located in ``syntribos/tests/fuzz/``.
+the test files located in ``syntribos/tests/``.
 
 For SQL injection tests, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL
+    $ syntribos --config-file keystone.conf -t SQL
 
 Another example, to run SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL_INJECTION_BODY
+    $ syntribos --config-file keystone.conf -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t HEADERS
+    $ syntribos --config-file keystone.conf -t HEADERS
 
-**Call External**
+
+Call External
+-------------
 
 Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
@@ -54,7 +57,7 @@ To use this extension, you can add the following to your template file:
     X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 
 The "user" string indicates the data from the configuration file we
-added in ``examples/configs/keystone.config``
+added in ``examples/configs/keystone.conf``
 
 Another example is found in ``random_data/client.py`` . This returns a
 UUID when random but unique data is needed. This can be used in place of
@@ -67,7 +70,9 @@ usernames when fuzzing a create user call.
 The extension function can return one value or be used as a generator if
 you want it to change for each test.
 
-**Action Field**
+
+Action Field
+------------
 
 While Syntribos is designed to test all fields in a request, it can also
 ignore specific fields through the use of Action Fields. If you want to

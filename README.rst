@@ -61,7 +61,7 @@ however it supports installation and execution on Windows. But it has
 not been tested yet.
 
 Installation
-------------
+============
 
 Syntribos can be `installed with
 pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
@@ -74,13 +74,12 @@ pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
    $ cd syntribos
    $ pip install . --upgrade
 
-
 Configuration
--------------
+=============
 
 This is the basic structure of a Syntribos configuration file.
-All config files should have a section ```[Syntribos]``` and a
-```[user]``` section, ```[logging]``` is optional.
+All config files should have the section ``[syntribos]`` and a
+``[user]`` section, the ``[logging]`` section is optional.
 
 ::
 
@@ -105,18 +104,19 @@ All config files should have a section ```[Syntribos]``` and a
     log_dir=<location_to_save_debug_logs>
 
 
-Testing the Keystone API
+Testing Keystone API
+
+
+A sample config file is given in ``examples/configs/keystone.conf``.
+Copy this file to a location of your choice (default file path for
+configuration file is:  ``~/.syntribos/syntribos.conf``) and update the
+necessary fields like user credentials, log, template directory etc.
 
 ::
-.
-You can modify the file to add your user credentials, log, template
-directory etc.
 
-::
+    $ vi examples/configs/keystone.conf
 
-    $ vi examples/configs/keystone.config
 
-::
 
     [syntribos]
     # As keystone is being tested in the example, enter your
@@ -125,8 +125,6 @@ directory etc.
     # Set payload and templates path
     templates=<location_of_templates_dir/file>
     payload_dir=<location_of_payload_dir>
-    # Optional, api version if required.
-    #version=v2
 
     [user]
     #
@@ -135,12 +133,15 @@ directory etc.
     endpoint=http://localhost:5000
     username=<yourusername>
     password=<yourpassword>
-    # Optional, only needed if Keystone V3 API is used
+    # Optional, unless Keystone V3 API is used
     #user_id=<youruserid>
+    # Optional, api version if required.
+    #version=v2.0
+
 
     #[alt_user]
     #
-    # Used for cross auth tests (-t AUTH_WITH_SOMEONE_ELSE_TOKEN)
+    # Optional, only used for cross auth tests (-t AUTH)
     #
 
     endpoint=http://localhost:5000
@@ -160,7 +161,8 @@ directory etc.
     http_request_compression=True
 
 
-Another example, to test a keystone v3 API, use a configuration like
+Another example, to test a keystone v3 API, use a configuration
+similar to the one given below.
 
 ::
 
@@ -182,86 +184,80 @@ Another example, to test a keystone v3 API, use a configuration like
 
 
 To test any other project, just change the endpoint URI under
-```[syntribos]``` to point to the API and also modify the user
-credentials if needed. The endpoint URI in the ```[syntribos]```
+``[syntribos]`` to point to the API and also modify the user
+credentials if needed. The endpoint URI in the ``[syntribos]``
 section  is the one being tested by Syntribos and the endpoint URI in
-```[user]``` section is just used to get an AUTH_TOKEN.
+``[user]`` section is just used to get an AUTH_TOKEN.
 
 Syntribos Commands
-------------------
+===================
 
 Below are the set of commands that should be specified while
 using Syntribos.
 
 
-### run
+- **run**
+
+  This command runs Syntribos with the given config options
+
+  ::
+
+    $ syntribos --config-file keystone.conf -t SQL run
+
+- **dry_run**
 
 
-This command runs Syntribos with the given config options
+  This command prepares all the test cases that would be executed by
+  the ```run``` command based on the configuration options passed to
+  Syntribos, but simply prints their details to the screen instead
+  of actually running them.
 
-::
+  ::
 
-    $ syntribos --config-file keystone.config -t SQL run
-
-
-### dry_run
-
-This command prepares all the test cases that would be executed by
-the ```run``` command based on the configuration options passed to
-Syntribos, but simply prints their details to the screen instead
-of actually running them.
-
-::
-
-    $ syntribos --config-file keystone.config -t SQL dry_run
+    $ syntribos --config-file keystone.conf -t SQL dry_run
 
 
-### list_tests
+- **list_tests**
 
 
-This command will list the names and description of all the tests
-that can be executed by the ```run``` command.
+  This command will list the names and description of all the tests
+  that can be executed by the ```run``` command.
+
+  ::
+
+    $ syntribos --config-file keystone.conf list_tests
 
 
-::
-
-    $ syntribos --config-file keystone.config list_tests
-
-
-All these commands will only work if the config file or directory is
-specified.
-
+All these commands will only work if a configuration file
+is specified.
 
 Running Syntribos
------------------
+=================
 
-
-To run Syntribos against all the available tests, just specify command
- ```syntribos``` with the configuration file without specifying any
-test type.
+To run Syntribos against all the available tests, just specify the
+command ``syntribos`` with the configuration file without specifying
+any test type.
 
 ::
 
     $ syntribos --config-file keystone.config run
 
-####Fuzzy-matching test names
+Fuzzy-matching test names
+--------------------------
 
 It is possible to limit Syntribos to run a specific test type using
-the ```-t``` flag.
-
-For example,
-
+the ``-t`` flag..
 
 ::
 
     $ syntribos --config-file keystone.config -t SQL run
 
 
-This will match all tests that contain the string 'SQL' in their name,
+This will match all tests that contain ``SQL`` in their name
 like SQL_INJECTION_HEADERS, SQL_INJECTION_BODY etc.
 
-Syntribos Logging
------------------
+Syntribos logging
+=================
 (**This section will be updated shortly**)
 
 Syntribos takes advantage of the OpenCafe logging facility. Logs are
@@ -355,13 +351,14 @@ above:
     2016-05-19 16:11:52,083: INFO: root: ========================================================
 
 Basic Syntribos Test Anatomy
-----------------------------
+============================
 
 **Test Types**
 
 The tests included at release time include LDAP injection, SQL
-injection, integer overflow, buffer overflow, Cross Origin
- Resource Sharing(CORS) wild card  vulnerability and SSL.
+injection, integer overflow, command injection, XML external entity,
+reflected cross-site scripting, Cross Origin Resource Sharing (CORS)
+wildcard and SSL.
 
 In order to run a specific test, simply use the ``-t, --test-types``
 option and provide `syntribos` with a keyword or keywords to match from
@@ -371,26 +368,32 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL run
+    $ syntribos --config-file keystone.conf -t SQL
 
-For SQL injection tests against the template body only, use:
+Another example, to run SQL injection tests against the template body only, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL_INJECTION_BODY run
+    $ syntribos --config-file keystone.conf -t SQL_INJECTION_BODY
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos --config-file keystone.config -t HEADERS run
+    $ syntribos --config-file keystone.conf -t HEADERS
 
 **Call External**
 
 Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
 
-Extensions are found in ``syntribos/syntribos/extensions/`` .
+Extensions are found in ``syntribos/extensions/`` .
+
+Calls to extensions are made in this form:
+
+::
+
+    CALL_EXTERNAL|{extension dot path}:{function}:{arguments}
 
 One example packaged with Syntribos enables the tester to obtain an auth
 token from keystone/identity. The code is located in
@@ -403,7 +406,7 @@ To use this extension, you can add the following to your template file:
     X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 
 The "user" string indicates the data from the configuration file we
-added in ``configs/keystone.config``
+added in ``examples/configs/keystone.conf``
 
 Another example is found in ``random_data/client.py`` . This returns a
 UUID when random but unique data is needed. This can be used in place of
@@ -411,7 +414,7 @@ usernames when fuzzing a create user call.
 
 ::
 
-    "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+    "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
 
 The extension function can return one value or be used as a generator if
 you want it to change for each test.
@@ -425,12 +428,12 @@ follows:
 
 ::
 
-    "ACTION_FIELD:id": "1a16f348-c8d5-42ec-a474-b1cdf78cf40f",
+    "ACTION_FIELD:id": "1a16f348-c8d5-42ec-a474-b1cdf78cf40f"
 
 The ID provided will remain static for every test.
 
-Executing Unittests
--------------------
+Executing unittests
+===================
 
 Navigate to the ``syntribos`` root directory
 
@@ -438,7 +441,26 @@ Navigate to the ``syntribos`` root directory
 
     $ python -m unittest discover syntribos/ -p ut_*.py
 
-.. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
-.. _Launchpad project: https://launchpad.net/syntribos
-.. _Blueprints: https://blueprints.launchpad.net/syntribos
-.. _Bugs: https://bugs.launchpad.net/syntribos
+Contributing Guidelines
+========================
+
+1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
+   (e.g. PEP8, Py3 compatibility)
+2. All new classes/functions should have appropriate docstrings in
+   `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
+3. All new code should have appropriate unittests (place them in the
+   ``tests/unit`` folder)
+
+Anyone wanting to contribute to OpenStack must follow
+`the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
+
+All changes should be submitted through the code review process in Gerrit
+described above. All pull requests on Github will be closed/ignored.
+
+Bugs should be filed on the `Syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
+and not on Github. All Github issues will be closed/ignored.
+
+Breaking changes, feature requests, and other non prioritized work should
+first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
+for review.
+

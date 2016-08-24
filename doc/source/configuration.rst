@@ -2,8 +2,8 @@ Configuration
 =============
 
 This is the basic structure of a Syntribos configuration file.
-All config files should have a section ```[Syntribos]``` and a
-```[user]``` section, ```[logging]``` is optional.
+All config files should have the section ``[syntribos]`` and a
+``[user]`` section, the ``[logging]`` section is optional.
 
 ::
 
@@ -28,18 +28,27 @@ All config files should have a section ```[Syntribos]``` and a
     log_dir=<location_to_save_debug_logs>
 
 
-Testing the Keystone API
+To test any project, just update the endpoint URI under
+``[syntribos]`` to point to the API and also modify the user
+credentials if needed. The endpoint URI in the ``[syntribos]``
+section  is the one being tested by Syntribos and the endpoint URI in
+``[user]`` section is just used to get an AUTH_TOKEN.
+
+
+Testing Keystone API
+--------------------
+
+
+A sample config file is given in ``examples/configs/keystone.conf``.
+Copy this file to a location of your choice (default file path for
+configuration file is:  ``~/.syntribos/syntribos.conf``) and update the
+necessary fields like user credentials, log, template directory etc.
 
 ::
-.
-You can modify the file to add your user credentials, log, template
-directory etc.
 
-::
+    $ vi examples/configs/keystone.conf
 
-    $ vi examples/configs/keystone.config
 
-::
 
     [syntribos]
     # As keystone is being tested in the example, enter your
@@ -48,8 +57,6 @@ directory etc.
     # Set payload and templates path
     templates=<location_of_templates_dir/file>
     payload_dir=<location_of_payload_dir>
-    # Optional, api version if required.
-    #version=v2
 
     [user]
     #
@@ -60,10 +67,13 @@ directory etc.
     password=<yourpassword>
     # Optional, only needed if Keystone V3 API is used
     #user_id=<youruserid>
+    # Optional, api version if required.
+    #version=v2.0
+
 
     #[alt_user]
     #
-    # Used for cross auth tests (-t AUTH_WITH_SOMEONE_ELSE_TOKEN)
+    # Optional, Used for cross auth tests (-t AUTH)
     #
 
     endpoint=http://localhost:5000
@@ -81,32 +91,3 @@ directory etc.
     # Optional, compresses http_request_content,
     # if you don't want this, set this option to False.
     http_request_compression=True
-
-
-Another example, to test a keystone v3 API, use a configuration like
-
-::
-
-    [syntribos]
-    endpoint=http://localhost:5000
-    templates=<location_of_template_dir/file>
-    payload_dir=<location_of_payloads data>
-
-    [user]
-    endpoint=http://localhost:5000
-    username=<username>
-    password=<password>
-    domain_name=default
-    domain_id=default
-
-    [logging]
-    log_dir=<location_to_store_log_files>
-    http_request_compression=True
-
-
-To test any other project, just change the endpoint URI under
-```[syntribos]``` to point to the API and also modify the user
-credentials if needed. The endpoint URI in the ```[syntribos]```
-section  is the one being tested by Syntribos and the endpoint URI in
-```[user]``` section is just used to get an AUTH_TOKEN.
-

@@ -1,5 +1,5 @@
 Contributing Guidelines
-=================================
+========================
 
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
@@ -17,6 +17,6 @@ described above. All pull requests on Github will be closed/ignored.
 Bugs should be filed on the `Syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
-Breaking changes, feature requests, and other unprioritized work should first be
-submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
+Breaking changes, feature requests, and other non prioritized work should
+first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
