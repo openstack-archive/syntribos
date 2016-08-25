@@ -22,6 +22,7 @@ from time import time
 import zlib
 
 from oslo_config import cfg
+from oslo_utils import strutils
 import requests
 from requests.structures import CaseInsensitiveDict
 import six
@@ -30,6 +31,45 @@ import syntribos.checks.http as http_checks
 import syntribos.signal
 
 CONF = cfg.CONF
+
+
+def is_dict(content=None):
+    return isinstance(content, CaseInsensitiveDict) or isinstance(
+        content, dict)
+
+
+def is_string(content=None):
+    return isinstance(content, six.string_types)
+
+
+def sanitize_secrets(content, mask="****"):
+    """Extends oslo_utils strutils to make mask passwords more robust."""
+
+    def mask_dict_password(dictionary, secret="***"):
+        """Overriding strutils.mask_dict_password.
+
+        Overriding mask_dict_password to accept CaseInsenstiveDict as well.
+        """
+        out = deepcopy(dictionary)
+
+        for k, v in dictionary.items():
+            if is_dict(v):
+                out[k] = mask_dict_password(v, secret=secret)
+                continue
+            for sani_key in strutils._SANITIZE_KEYS:
+                if sani_key in k:
+                    out[k] = secret
+                    break
+            else:
+                if isinstance(v, six.string_types):
+                    out[k] = strutils.mask_password(v, secret=secret)
+        return out
+
+    strutils.mask_dict_password = mask_dict_password
+    if is_dict(content):
+        return strutils.mask_dict_password(content, mask)
+    if is_string(content):
+        return strutils.mask_password(content, mask)
 
 
 def compress(content, threshold=512):
@@ -45,15 +85,12 @@ def compress(content, threshold=512):
     :returns: Compressed String
     :rtype: String
     """
-    is_dict = isinstance(content, CaseInsensitiveDict) or isinstance(
-        content, dict)
-    is_string = isinstance(content, six.string_types)
     compression_enabled = CONF.logging.http_request_compression
 
-    if is_dict:
+    if is_dict(content):
         for key in content:
                 content[key] = compress(content[key])
-    if is_string and compression_enabled:
+    if is_string(content) and compression_enabled:
         if len(content) > threshold:
             less_data = content[:50]
             compressed_data = base64.b64encode(zlib.compress(content))
@@ -99,6 +136,8 @@ def log_http_transaction(log, level=logging.DEBUG):
             log level.
             """
             kwargs_copy = deepcopy(kwargs)
+            if kwargs_copy.get("sanitize"):
+                kwargs_copy = sanitize_secrets(kwargs_copy)
             logline = '{0} {1}'.format(args, compress(kwargs_copy))
 
             try:
@@ -114,7 +153,6 @@ def log_http_transaction(log, level=logging.DEBUG):
             response = None
             no_resp_time = None
             signals = syntribos.signal.SignalHolder()
-
             try:
                 start = time()
                 response = func(*args, **kwargs)
@@ -159,9 +197,15 @@ def log_http_transaction(log, level=logging.DEBUG):
             req_header_len = 0
             if response.request.headers:
                 req_header_len = len(response.request.headers)
+                request_headers = response.request.headers
             if response.request.body:
                 req_body_len = len(response.request.body)
-
+            response_content = response.content
+            if kwargs_copy.get("sanitize"):
+                response_content = sanitize_secrets(response_content)
+                request_params = sanitize_secrets(request_params)
+                request_headers = sanitize_secrets(request_headers)
+                request_body = sanitize_secrets(request_body)
             logline = ''.join([
                 '\n{0}\nREQUEST SENT\n{0}\n'.format('-' * 12),
                 'request method.......: {0}\n'.format(response.request.method),
@@ -170,7 +214,7 @@ def log_http_transaction(log, level=logging.DEBUG):
                                                       (request_params)),
                 'request headers size.: {0}\n'.format(req_header_len),
                 'request headers......: {0}\n'.format(compress(
-                    response.request.headers)),
+                    request_headers)),
                 'request body size....: {0}\n'.format(req_body_len),
                 'request body.........: {0}\n'.format(compress
                                                       (request_body))])
@@ -189,7 +233,7 @@ def log_http_transaction(log, level=logging.DEBUG):
                 'response time....: {0}\n'.format
                 (response.elapsed.total_seconds()),
                 'response size....: {0}\n'.format(len(response.content)),
-                'response body....: {0}\n'.format(response.content),
+                'response body....: {0}\n'.format(response_content),
                 '-' * 79])
             try:
                 log.log(level, _safe_decode(logline))

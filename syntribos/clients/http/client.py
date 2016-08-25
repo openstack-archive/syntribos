@@ -25,7 +25,7 @@ class SynHTTPClient(HTTPClient):
     """
 
     def request(self, method, url, headers=None, params=None, data=None,
-                requestslib_kwargs=None):
+                sanitize=False, requestslib_kwargs=None):
         """Sends a request (passes to `requests.request`)
 
         :param str method: Request method
@@ -43,6 +43,7 @@ class SynHTTPClient(HTTPClient):
 
         response, signals = super(SynHTTPClient, self).request(
             method, url, headers=headers, params=params, data=data,
+            sanitize=sanitize,
             requestslib_kwargs=requestslib_kwargs)
 
         if response is not None:
@@ -63,7 +64,8 @@ class SynHTTPClient(HTTPClient):
         :returns: tuple of (response, signals)
         """
         response, signals = self.request(
-            request_obj.method, request_obj.url, headers=request_obj.headers,
-            params=request_obj.params, data=request_obj.data)
+            request_obj.method, request_obj.url,
+            headers=request_obj.headers, params=request_obj.params,
+            data=request_obj.data, sanitize=request_obj.sanitize)
 
         return (response, signals)

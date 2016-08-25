@@ -158,13 +158,15 @@ class RequestObject(RequestHelperMixin):
     :ivar dict headers: Dictionary of headers in name:value format
     :ivar dict params: Dictionary of params in name:value format
     :ivar data: Data to send as part of request body
+    :ivar bool sanitize: Boolean variable used to filter secrets
     """
 
     def __init__(self, method, url, action_field=None, headers=None,
-                 params=None, data=None):
+                 params=None, data=None, sanitize=False):
         self.method = method
         self.url = url
         self.action_field = action_field
         self.headers = headers
         self.params = params
         self.data = data
+        self.sanitize = sanitize

@@ -16,7 +16,7 @@ import logging
 from oslo_config import cfg
 from requests import RequestException as RequestException
 
-from syntribos.clients.http.base_http_client import HTTPClient
+from syntribos.clients.http.client import SynHTTPClient
 import syntribos.extensions.identity.models.v2 as v2
 import syntribos.extensions.identity.models.v3 as v3
 from syntribos.utils.memoize import memoize
@@ -57,9 +57,9 @@ def authenticate_v2(
 
     data = request_entity.serialize(serialize_format)
     try:
-        resp, signals = HTTPClient().request(
+        resp, signals = SynHTTPClient().request(
             "POST", url, headers=headers,
-            data=data)
+            data=data, sanitize=True)
         r = resp.json()
     except RequestException as e:
         LOG.debug(e)
@@ -134,9 +134,9 @@ def authenticate_v3(
     request_entity = v3.Auth(identity=v3.Identity(**kwargs))
     data = request_entity.serialize(serialize_format)
     try:
-        r, signals = HTTPClient().request(
+        r, signals = SynHTTPClient().request(
             "POST", url, headers=headers,
-            data=data)
+            data=data, sanitize=True)
     except RequestException as e:
         LOG.critical(e)
     else:

@@ -41,9 +41,8 @@ class HTTPClient(object):
         self.default_headers = {}
 
     @log_http_transaction(log=LOG)
-    def request(
-            self, method, url, headers=None, params=None, data=None,
-            requestslib_kwargs=None):
+    def request(self, method, url, headers=None, params=None, data=None,
+                sanitize=False, requestslib_kwargs=None):
 
         # set requestslib_kwargs to an empty dict if None
         requestslib_kwargs = requestslib_kwargs if (
@@ -52,6 +51,7 @@ class HTTPClient(object):
         # Set defaults
         params = params if params is not None else {}
         verify = False
+        sanitize = sanitize
 
         # If headers are provided by both, headers "wins" over default_headers
         headers = dict(self.default_headers, **(headers or {}))
