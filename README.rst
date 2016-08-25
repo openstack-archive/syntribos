@@ -428,6 +428,7 @@ To execute unittests automatically, navigate to the ``syntribos`` root
 directory and install the test requirements.
 
 ::
+
     $ pip install -r test-requirements.txt
 
 Now, run
@@ -439,6 +440,7 @@ Now, run
 Also, if  you have configured tox you could also do
 
 ::
+
     $ tox -e py27
 
 This will run all the unittests and give you a result output
