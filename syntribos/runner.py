@@ -233,8 +233,8 @@ class Runner(object):
                             LOG.debug(test_time)
                             bar.increment(1)
                         bar.print_bar()
-                        failures = len(result.failures) - last_failures
-                        errors = len(result.errors) - last_errors
+                        failures = result.stats["failures"] - last_failures
+                        errors = result.stats["errors"] - last_errors
                         total_tests = len(test_cases)
                         if failures > total_tests * 0.90:
                             # More than 90 percent failure
@@ -246,8 +246,8 @@ class Runner(object):
                             # More than 15 percent failure
                             failures = cli.colorize(failures, "blue")
                     if errors:
-                        last_failures = len(result.failures)
-                        last_errors = len(result.errors)
+                        last_failures = result.stats["failures"]
+                        last_errors = result.stats["errors"]
                         errors = cli.colorize(errors, "red")
                         print ("  :  {0} Failure(s), {1} Error(s)\r".format(
                             failures, errors))

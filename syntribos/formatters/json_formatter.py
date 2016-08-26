@@ -13,123 +13,14 @@
 # limitations under the License.
 import json
 
-import syntribos
-
 
 class JSONFormatter(object):
 
     def __init__(self, results):
         self.results = results
 
-    def report(self, min_severity, min_confidence, exclude_results):
-        min_sev = syntribos.RANKING_VALUES[min_severity]
-        min_conf = syntribos.RANKING_VALUES[min_confidence]
-        machine_output = dict({'failures': {}, 'errors': [], 'stats': {}})
-        machine_output['stats']['severity'] = {
-            'UNDEFINED': 0, 'LOW': 0, 'MEDIUM': 0, 'HIGH': 0
-        }
-
-        severity_counter_dict = {}
-
-        # reports errors
-        for test, error in self.results.errors:
-            machine_output['errors'].append(
-                {
-                    'test': self.results.getDescription(test),
-                    'error': error
-                })
-
-        # reports failures
-        # Gets list of [issues] by flattening list of [(test, [issues])]
-        issues = [issue for test, failures in self.results.failures
-                  for issue in failures]
-
-        for issue in issues:
-            target = issue.target
-            path = issue.path
-            url = "{0}{1}".format(target, path)
-            defect_type = issue.defect_type
-            sev_rating = syntribos.RANKING[issue.severity]
-            conf_rating = syntribos.RANKING[issue.confidence]
-
-            if any([True for x in exclude_results if x and x in defect_type]):
-                continue
-
-            defect_obj = {
-                'description': issue.description,
-                'severity': sev_rating,
-                'signals': {
-                    'init_signals': [s.slug for s in issue.init_signals],
-                    'test_signals': [s.slug for s in issue.test_signals],
-                    'diff_signals': [s.slug for s in issue.diff_signals]
-                }
-
-            }
-
-            if defect_type not in severity_counter_dict:
-                severity_counter_dict[defect_type] = defect_obj
-                machine_output['stats']['severity'][sev_rating] += 1
-
-            if url not in machine_output['failures']:
-                if issue.severity >= min_sev and issue.confidence >= min_conf:
-                    machine_output['failures'][url] = {}
-                else:
-                    continue
-
-            issues_by_url = machine_output['failures'][url]
-            if defect_type not in issues_by_url:
-                if issue.severity >= min_sev and issue.confidence >= min_conf:
-                    issues_by_url[defect_type] = defect_obj
-                else:
-                    continue
-
-            issues_by_defect = issues_by_url[defect_type]
-            if issue.impacted_parameter:
-                # Only fuzz tests have an ImpactedParameter
-                method = issue.impacted_parameter.method
-                loc = issue.impacted_parameter.location
-                name = issue.impacted_parameter.name
-                content_type = issue.content_type
-                payload_string = issue.impacted_parameter.trunc_fuzz_string
-
-                param = {
-                    'method': method,
-                    'location': loc,
-                    'variables': [name],
-                }
-                if loc == "data":
-                    param['type'] = content_type
-
-                payload_obj = {
-                    'strings': [payload_string],
-                    'param': param,
-                    'confidence': conf_rating
-                }
-                if 'payloads' not in issues_by_defect:
-                    issues_by_defect['payloads'] = [payload_obj]
-                else:
-                    is_not_duplicate_payload = True
-
-                    for p in issues_by_defect['payloads']:
-
-                        if (p['param']['method'] == method and
-                                p['param']['location'] == loc):
-
-                            if payload_string not in p['strings']:
-                                p['strings'].append(payload_string)
-
-                            if name not in p['param']['variables']:
-                                p['param']['variables'].append(name)
-
-                            is_not_duplicate_payload = False
-                            break
-                    if is_not_duplicate_payload:
-                        issues_by_defect['payloads'].append(payload_obj)
-
-            else:
-                issues_by_defect['confidence'] = conf_rating
-
-        output = json.dumps(machine_output, sort_keys=True,
+    def report(self, output):
+        output = json.dumps(output, sort_keys=True, cls=SetEncoder,
                             indent=2, separators=(',', ': '))
 
         self.results.stream.write(output)
