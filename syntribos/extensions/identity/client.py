@@ -19,12 +19,14 @@ from requests import RequestException as RequestException
 from syntribos.clients.http.base_http_client import HTTPClient
 import syntribos.extensions.identity.models.v2 as v2
 import syntribos.extensions.identity.models.v3 as v3
+from syntribos.utils.memoize import memoize
 
 logging.basicConfig(level=logging.CRITICAL)
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 
+@memoize
 def authenticate_v2(
     url, username=None, password=None, tenant_name=None,
     tenant_id=None, domain=None, serialize_format="json",
@@ -70,6 +72,7 @@ def authenticate_v2(
         return r['access']
 
 
+@memoize
 def authenticate_v2_config(user_section):
     endpoint = CONF.get(user_section).endpoint or CONF.user.endpoint
     password = CONF.get(user_section).password or CONF.user.password
@@ -91,11 +94,13 @@ def authenticate_v2_config(user_section):
         CONF.user.deserialize_format)
 
 
+@memoize
 def get_token_v2(user_section='user'):
     access_data = authenticate_v2_config(user_section)
     return access_data['token']['id']
 
 
+@memoize
 def authenticate_v3(
     url, username=None, password=None, user_id=None, domain_id=None,
         domain_name=None, token=None, serialize_format="json",
@@ -140,6 +145,7 @@ def authenticate_v3(
         return r
 
 
+@memoize
 def authenticate_v3_config(user_section):
     endpoint = CONF.get(user_section).endpoint or CONF.user.endpoint
     if not endpoint:
@@ -155,6 +161,7 @@ def authenticate_v3_config(user_section):
         token=CONF.get(user_section).token or CONF.user.token)
 
 
+@memoize
 def get_token_v3(user_section='user'):
     r = authenticate_v3_config(user_section)
     return r.headers["X-Subject-Token"]
