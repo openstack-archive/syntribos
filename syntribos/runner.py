@@ -203,7 +203,7 @@ class Runner(object):
             template_start_time = time.time()
             failures = 0
             errors = 0
-            print("\n  ID \t\tTest Name      \t\t\t\t\t\tProgress")
+            print("\n  ID \t\tTest Name      \t\t\t\t\t\t    Progress")
             for test_name, test_class in list_of_tests:
                 test_class.test_id = cls.current_test_id
                 cls.current_test_id += 5
@@ -253,7 +253,8 @@ class Runner(object):
                             failures, errors))
                     else:
                         last_failures = len(result.failures)
-                        print("  :  {} Failure(s)\r".format(failures))
+                        print("  :  {} Failure(s), 0 Error(s)\r".format(
+                            failures))
 
             run_time = time.time() - template_start_time
             num_tests = result.testsRun - result.testsRunSinceLastPrint
