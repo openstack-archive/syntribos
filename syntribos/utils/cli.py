@@ -74,11 +74,11 @@ class ProgressBar(object):
     :param str message: string to be part of the progress bar
     """
 
-    def __init__(self, max=30, width=23, fill_char="", empty_char="-",
+    def __init__(self, max=30, width=23, fill_char="#", empty_char="-",
                  message=""):
         self.width = width
         self.max = max
-        self.fill_char = fill_char if fill_char else "█"
+        self.fill_char = fill_char
         self.empty_char = empty_char
         self.message = message
         self.present_level = 0
