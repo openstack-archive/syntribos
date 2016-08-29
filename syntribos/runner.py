@@ -35,6 +35,7 @@ LOG = logging.getLogger(__name__)
 class Runner(object):
 
     log_file = ""
+    current_test_id = 1000
 
     @classmethod
     def list_tests(cls):
@@ -155,8 +156,7 @@ class Runner(object):
                     cls.run_all_tests(list_of_tests, file_path, req_str)
                 elif CONF.sub_command.name == "dry_run":
                     cls.dry_run(list_of_tests, file_path, req_str)
-            syntribos.result.print_log_path_and_stats(cls.start_time,
-                                                      result.testsRun)
+            result.print_result(cls.start_time)
 
     @classmethod
     def dry_run(cls, list_of_tests, file_path, req_str):
@@ -201,14 +201,16 @@ class Runner(object):
         """
         try:
             template_start_time = time.time()
-            test_id = 1000
+            failures = 0
+            errors = 0
             print("\n  ID \t\tTest Name      \t\t\t\t\t\tProgress")
             for test_name, test_class in list_of_tests:
-                test_id += 5
+                test_class.test_id = cls.current_test_id
+                cls.current_test_id += 5
                 log_string = "[{test_id}]  :  {name}".format(
-                    test_id=test_id, name=test_name)
+                    test_id=test_class.test_id, name=test_name)
                 result_string = "[{test_id}]  :  {name}".format(
-                    test_id=cli.colorize(test_id, color="green"),
+                    test_id=cli.colorize(test_class.test_id, color="green"),
                     name=test_name.replace("_", " ").capitalize())
                 if not CONF.colorize:
                     result_string = result_string.ljust(55)
@@ -221,6 +223,8 @@ class Runner(object):
                 if len(test_cases) > 0:
                     bar = cli.ProgressBar(message=result_string,
                                           max=len(test_cases))
+                    last_errors = len(result.errors)
+                    last_failures = len(result.failures)
                     for test in test_cases:
                         if test:
                             test_time = cls.run_test(test, result)
@@ -229,7 +233,8 @@ class Runner(object):
                             LOG.debug(test_time)
                             bar.increment(1)
                         bar.print_bar()
-                        failures = len(test.failures)
+                        failures = len(result.failures) - last_failures
+                        errors = len(result.errors) - last_errors
                         total_tests = len(test_cases)
                         if failures > total_tests * 0.90:
                             # More than 90 percent failure
@@ -240,14 +245,24 @@ class Runner(object):
                         elif failures > total_tests * 0.15:
                             # More than 15 percent failure
                             failures = cli.colorize(failures, "blue")
-                    print("  :  {} Failure(s)\r".format(failures))
-            print(syntribos.SEP)
-            print("\nResults...:\n")
-            syntribos.result.print_result(result, template_start_time)
+                    if errors:
+                        last_failures = len(result.failures)
+                        last_errors = len(result.errors)
+                        errors = cli.colorize(errors, "red")
+                        print ("  :  {0} Failure(s), {1} Error(s)\r".format(
+                            failures, errors))
+                    else:
+                        last_failures = len(result.failures)
+                        print("  :  {} Failure(s)\r".format(failures))
+
+            run_time = time.time() - template_start_time
+            num_tests = result.testsRun - result.testsRunSinceLastPrint
+            print("\nRan {num} test(s) in {time:.3f}s\n".format(
+                  num=num_tests, time=run_time))
+            result.testsRunSinceLastPrint = result.testsRun
+
         except KeyboardInterrupt:
-            syntribos.result.print_result(result, template_start_time)
-            syntribos.result.print_log_path_and_stats(cls.start_time,
-                                                      result.testsRun)
+            result.print_result(cls.start_time)
             print("Keyboard interrupt, exiting...")
             exit(0)
 
@@ -261,15 +276,12 @@ class Runner(object):
         :param bool dry_run: (OPTIONAL) Only print out test names
         """
         suite = unittest.TestSuite()
-        test_start_time = time.time()
         suite.addTest(test("run_test_case"))
         if dry_run:
             for test in suite:
                 print(test)
         else:
             suite.run(result)
-        test_end_time = time.time() - test_start_time
-        test_end_time = '%.5f' % test_end_time
 
 
 def entry_point():

@@ -99,6 +99,7 @@ class BaseTestCase(unittest.TestCase):
 
     test_name = None
     failures = []
+    errors = []
     dead = False
     client = client()
 
@@ -182,7 +183,11 @@ class BaseTestCase(unittest.TestCase):
         :raises: :exc:`AssertionError`
         """
         if not self.dead:
-            self.test_case()
+            try:
+                self.test_case()
+            except Exception as e:
+                self.errors += e
+                raise e
             if self.failures:
                 raise AssertionError
 
