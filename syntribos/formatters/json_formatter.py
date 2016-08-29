@@ -21,7 +21,7 @@ class JSONFormatter(object):
     def __init__(self, results):
         self.results = results
 
-    def report(self, min_severity, min_confidence):
+    def report(self, min_severity, min_confidence, exclude_results):
         min_sev = syntribos.RANKING_VALUES[min_severity]
         min_conf = syntribos.RANKING_VALUES[min_confidence]
         machine_output = dict({'failures': {}, 'errors': [], 'stats': {}})
@@ -51,6 +51,9 @@ class JSONFormatter(object):
             defect_type = issue.defect_type
             sev_rating = syntribos.RANKING[issue.severity]
             conf_rating = syntribos.RANKING[issue.confidence]
+
+            if any([True for x in exclude_results if x and x in defect_type]):
+                continue
 
             defect_obj = {
                 'description': issue.description,

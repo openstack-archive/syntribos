@@ -165,16 +165,16 @@ def list_cli_opts():
                           help="Available commands",
                           title="Syntribos Commands"),
         cfg.MultiStrOpt("test-types", dest="test_types", short="t",
-                        default=[""],
+                        default=[""], sample_default=["SQL", "XSS"],
                         help="Test types to run against the target API"),
         cfg.MultiStrOpt("excluded-types", dest="excluded_types", short="e",
-                        default=[""],
+                        default=[""], sample_default=["SQL", "XSS"],
                         help="Test types to be excluded from current run"
                              "against the target API"),
         cfg.BoolOpt("colorize", dest="colorize", short="cl", default=False,
                     help="Enable color in Syntribos terminal output"),
         cfg.StrOpt("outfile", short="o", default=None,
-                   help="File to print output to"),
+                   sample_default="out.json", help="File to print output to"),
         cfg.StrOpt("format", dest="output_format", short="f", default="json",
                    choices=["json"], ignore_case=True,
                    help="The format for outputting results"),
@@ -193,13 +193,17 @@ def list_syntribos_opts():
                    sample_default="http://localhost/app", required=True,
                    help="The target host to be tested"),
         cfg.Opt("templates", type=TemplateType('r', 0), required=True,
+                sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
                      "file, to test on the target API"),
         cfg.StrOpt("payload_dir", default="", required=True,
+                   sample_default="~/.syntribos/data",
                    help="The location where we can find Syntribos' payloads"),
-        cfg.StrOpt("log_dir", default="", required=True,
-                   help="Where to save debug log files for a Syntribos run"),
-
+        cfg.MultiStrOpt("exclude_results",
+                        default=[""],
+                        sample_default=["500_errors", "length_diff"],
+                        help="Defect types to exclude from the "
+                             "results output"),
     ]
 
 
@@ -231,10 +235,10 @@ def list_user_opts():
 def list_test_opts():
     # TODO(cneill): Discover other config options from tests dynamically
     return [
-        cfg.FloatOpt("length_diff_percent", default=200.0,
+        cfg.FloatOpt("length_diff_percent", default=1000.0,
                      help="Percentage difference between initial request "
                           "and test request body length to trigger a signal"),
-        cfg.FloatOpt("time_diff_percent", default=200.0,
+        cfg.FloatOpt("time_diff_percent", default=1000.0,
                      help="Percentage difference between initial response "
                           "time and test response time to trigger a signal"),
         cfg.IntOpt("max_time", default=10,
@@ -252,5 +256,6 @@ def list_logger_opts():
                     help="Request content compression to compress fuzz "
                     "strings present in the http request content."),
         cfg.StrOpt("log_dir", default="", required=True,
+                   sample_default="~/.syntribos/logs",
                    help="Where to save debug log files for a Syntribos run")
     ]
