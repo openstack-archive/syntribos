@@ -86,17 +86,27 @@ class TemplateType(ExistingPathType):
     def __init__(self, mode, bufsize):
         self._mode = mode
         self._bufsize = bufsize
+        self._root = ""
 
     def _fetch_from_dir(self, string):
         for path, _, files in os.walk(string):
             for file_ in files:
                 file_path = os.path.join(path, file_)
-                yield self._fetch_from_file(file_path)
+                if path is not self._root:
+                    subdir = os.path.relpath(path, self._root)
+                    yield self._fetch_from_file(file_path, subdir)
+                else:
+                    yield self._fetch_from_file(file_path)
 
-    def _fetch_from_file(self, string):
+    def _fetch_from_file(self, string, subdir=None):
+        # Get the filename here
+        relative_path = os.path.split(string)[1]
+        if subdir:
+            # Path relative to the "templates" directory specified by user
+            relative_path = os.path.join(subdir, relative_path)
         try:
             with open(string, self._mode, self._bufsize) as fp:
-                return os.path.split(fp.name)[1], fp.read()
+                return relative_path, fp.read()
         except IOError as exc:
             self._raise_invalid_file(string, exc=exc)
 
@@ -111,6 +121,7 @@ class TemplateType(ExistingPathType):
         super(TemplateType, self).__call__(string)
 
         if os.path.isdir(string):
+            self._root = string
             return self._fetch_from_dir(string)
         elif os.path.isfile(string):
             return [self._fetch_from_file(string)]
