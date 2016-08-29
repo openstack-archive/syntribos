@@ -22,7 +22,6 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
 
     test_name = "BUFFER_OVERFLOW_BODY"
     test_type = "data"
-    data_key = "buffer-overflow.txt"
     failure_keys = [
         '*** stack smashing detected ***:',
         'Backtrace:',
