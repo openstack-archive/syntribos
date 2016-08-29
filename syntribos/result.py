@@ -86,7 +86,7 @@ class IssueTestResult(unittest.TextTestResult):
 
     def print_log_path_and_stats(self, start_time):
         """Print the path to the log folder for this run."""
-        test_log = Runner.get_log_file_name()
+        test_log = Runner.log_path
         run_time = time.time() - start_time
         print("\n{sep}\nTotal: Ran {num} test{suff} in {time:.3f}s".format(
             sep=syntribos.SEP, num=self.testsRun,
