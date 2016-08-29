@@ -95,8 +95,8 @@ class RunnerUnittest(testtools.TestCase):
 
     def test_log_path_caching(self):
         """Check that we get the same log file name every time."""
-        res1 = self.r.get_log_file_name()
-        res2 = self.r.get_log_file_name()
+        res1 = self.r.get_log_dir_name()
+        res2 = self.r.get_log_dir_name()
         self.assertEqual(res1, res2)
 
     def test_get_sql_tests_exclude_header(self):

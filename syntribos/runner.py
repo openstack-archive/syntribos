@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 
 class Runner(object):
 
-    log_file = ""
+    log_path = ""
     current_test_id = 1000
 
     @classmethod
@@ -95,13 +95,29 @@ class Runner(object):
         return ["~/.syntribos/syntribos.conf"]
 
     @classmethod
-    def get_log_file_name(cls):
-        if not cls.log_file:
+    def get_log_dir_name(cls):
+        """Returns the directory where log files would be saved."""
+        if not cls.log_path:
             log_dir = CONF.logging.log_dir
             time_str = datetime.datetime.now().strftime("%Y-%m-%d_%X.%f")
-            file_name = "{time}.log".format(time=time_str)
-            cls.log_file = os.path.join(log_dir, file_name)
-        return cls.log_file
+            log_path = "{time}".format(time=time_str)
+            cls.log_path = os.path.join(log_dir, log_path)
+            if not os.path.isdir(cls.log_path):
+                os.makedirs(cls.log_path)
+        return cls.log_path
+
+    @classmethod
+    def get_logger(cls, template_name):
+        """Updates the logger handler for LOG."""
+        log_file = "{0}.log".format(template_name)
+        if not cls.log_path:
+            cls.get_log_dir_name()
+        log_file = os.path.join(cls.log_path, log_file)
+        log_handle = logging.FileHandler(log_file, 'w')
+        LOG = logging.getLogger()
+        LOG.handlers = [log_handle]
+        LOG.setLevel(logging.DEBUG)
+        return LOG
 
     @classmethod
     def run(cls):
@@ -116,9 +132,6 @@ class Runner(object):
             syntribos.config.register_opts()
             CONF(sys.argv[1:],
                  default_config_files=cls.get_default_conf_files())
-            logging.basicConfig(filename=cls.get_log_file_name(),
-                                level=logging.DEBUG)
-            CONF.log_opt_values(LOG, logging.DEBUG)
         except Exception as exc:
             syntribos.config.handle_config_exception(exc)
 
@@ -137,6 +150,8 @@ class Runner(object):
                                                CONF.excluded_types))
             print("\nRunning Tests...:")
             for file_path, req_str in CONF.syntribos.templates:
+                LOG = cls.get_logger(file_path)
+                CONF.log_opt_values(LOG, logging.DEBUG)
                 if not file_path.endswith(".template"):
                     LOG.debug('file.......: {0} (SKIPPED)'.format(file_path))
                     continue
@@ -147,7 +162,6 @@ class Runner(object):
                     'file.......: {0}\n'.format(file_path),
                     'tests......: {0}\n'.format(test_names)])
                 LOG.debug(log_string)
-
                 print(syntribos.SEP)
                 print("Template File...: {}".format(file_path))
                 print(syntribos.SEP)
