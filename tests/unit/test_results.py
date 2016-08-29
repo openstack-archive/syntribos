@@ -11,20 +11,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-
 import testtools
 
+import syntribos
+from syntribos.issue import Issue
 from syntribos.result import IssueTestResult
 
 
 class FakeTest(object):
     def __init__(self, name):
-        self.failures = [1, 2]
         self.errors = [3, 4]
         self.successes = [5, 6]
         self.name = name
         self.failureException = Exception
+
+        issue1 = Issue(defect_type="fake",
+                       severity=syntribos.LOW,
+                       description="x",
+                       confidence=syntribos.LOW)
+        issue1.target = "example.com"
+        issue1.path = "/test"
+
+        issue2 = Issue(defect_type="fake2",
+                       severity=syntribos.MEDIUM,
+                       description="x",
+                       confidence=syntribos.LOW)
+        issue2.target = "example.com"
+        issue2.path = "/test2"
+        self.failures = [issue1, issue2]
 
     def __str__(self):
         return self.name
@@ -39,11 +53,6 @@ class TestIssueTestResult(testtools.TestCase):
         test = FakeTest("failure")
         self.issue_result.addFailure(test, ())
         self.assertEqual(self.issue_result.stats["failures"], 2)
-
-    def test_addError(self):
-        test = FakeTest("error")
-        self.issue_result.addError(test, sys.exc_info())
-        self.assertEqual(self.issue_result.stats["errors"], 1)
 
     def test_addSuccess(self):
         test = FakeTest("success")

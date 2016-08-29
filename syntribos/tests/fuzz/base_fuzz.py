@@ -213,10 +213,10 @@ class ImpactedParameter(object):
     def __init__(self, method, location, name, value):
         self.method = method
         self.location = location
-        if len(value) >= 512:
+        if len(value) >= 128:
             self.trunc_fuzz_string = "{0}...({1} chars)...{2}".format(
-                value[:256], len(value),
-                value[-256:])
+                value[:64], len(value),
+                value[-64:])
         else:
             self.trunc_fuzz_string = value
         self.fuzz_string = value
