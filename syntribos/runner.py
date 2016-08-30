@@ -109,6 +109,8 @@ class Runner(object):
     @classmethod
     def get_logger(cls, template_name):
         """Updates the logger handler for LOG."""
+        template_name = template_name.replace(os.path.sep, "::")
+        template_name = template_name.replace(".", "_")
         log_file = "{0}.log".format(template_name)
         if not cls.log_path:
             cls.get_log_dir_name()
