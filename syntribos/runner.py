@@ -233,8 +233,8 @@ class Runner(object):
                 if len(test_cases) > 0:
                     bar = cli.ProgressBar(message=result_string,
                                           max=len(test_cases))
-                    last_errors = len(result.errors)
-                    last_failures = len(result.failures)
+                    last_failures = result.stats["failures"]
+                    last_errors = result.stats["errors"]
                     for test in test_cases:
                         if test:
                             cls.run_test(test, result)
@@ -259,7 +259,7 @@ class Runner(object):
                         print ("  :  {0} Failure(s), {1} Error(s)\r".format(
                             failures, errors))
                     else:
-                        last_failures = len(result.failures)
+                        last_failures = result.stats["failures"]
                         print("  :  {} Failure(s), 0 Error(s)\r".format(
                             failures))
 
