@@ -194,11 +194,7 @@ class Runner(object):
             if len(test_cases) > 0:
                 for test in test_cases:
                     if test:
-                        test_time = cls.run_test(test, result,
-                                                 dry_run=True)
-                        test_time = "Run time: {} sec.".format(
-                            test_time)
-                        LOG.debug(test_time)
+                        cls.run_test(test, result, dry_run=True)
 
     @classmethod
     def run_all_tests(cls, list_of_tests, file_path, req_str):
@@ -241,10 +237,7 @@ class Runner(object):
                     last_failures = len(result.failures)
                     for test in test_cases:
                         if test:
-                            test_time = cls.run_test(test, result)
-                            test_time = "Run time: {} sec.".format(
-                                test_time)
-                            LOG.debug(test_time)
+                            cls.run_test(test, result)
                             bar.increment(1)
                         bar.print_bar()
                         failures = result.stats["failures"] - last_failures
@@ -271,6 +264,7 @@ class Runner(object):
                             failures))
 
             run_time = time.time() - template_start_time
+            LOG.debug("Run time: {} sec.".format(run_time))
             num_tests = result.testsRun - result.testsRunSinceLastPrint
             print("\nRan {num} test(s) in {time:.3f}s\n".format(
                   num=num_tests, time=run_time))
