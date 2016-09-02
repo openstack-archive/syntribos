@@ -26,7 +26,6 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 
-@memoize
 def authenticate_v2(
     url, username=None, password=None, tenant_name=None,
     tenant_id=None, scoped=False, serialize_format="json",
@@ -82,7 +81,6 @@ def authenticate_v2(
         return r['access']
 
 
-@memoize
 def authenticate_v2_config(user_section, scoped=False):
     """Verifies minimum requirement for v2 auth."""
     endpoint = CONF.get(user_section).endpoint or CONF.user.endpoint
@@ -116,7 +114,6 @@ def get_scoped_token_v2(user_section='user'):
     return access_data['token']['id']
 
 
-@memoize
 def authenticate_v3(
     url, username=None, password=None, user_id=None, domain_id=None,
         domain_name=None, token=None, project_name=None,
@@ -182,7 +179,6 @@ def authenticate_v3(
         return r
 
 
-@memoize
 def authenticate_v3_config(user_section, scoped=False):
     """Verifies minimum requirement for v3 auth."""
     endpoint = CONF.get(user_section).endpoint or CONF.user.endpoint
