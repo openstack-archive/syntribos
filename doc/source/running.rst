@@ -10,10 +10,10 @@ any test type.
     $ syntribos --config-file keystone.config run
 
 Fuzzy-matching test names
---------------------------
+-------------------------
 
 It is possible to limit Syntribos to run a specific test type using
-the ``-t`` flag..
+the ``-t`` flag.
 
 ::
 

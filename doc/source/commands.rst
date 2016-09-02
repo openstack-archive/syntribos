@@ -1,5 +1,5 @@
 Syntribos Commands
-===================
+==================
 
 Below are the set of commands that should be specified while
 using Syntribos.

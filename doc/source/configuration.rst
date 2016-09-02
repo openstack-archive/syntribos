@@ -38,7 +38,6 @@ section  is the one being tested by Syntribos and the endpoint URI in
 Testing Keystone API
 --------------------
 
-
 A sample config file is given in ``examples/configs/keystone.conf``.
 Copy this file to a location of your choice (default file path for
 configuration file is:  ``~/.syntribos/syntribos.conf``) and update the

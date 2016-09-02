@@ -119,7 +119,6 @@ section  is the one being tested by Syntribos and the endpoint URI in
 Testing Keystone API
 --------------------
 
-
 A sample config file is given in ``examples/configs/keystone.conf``.
 Copy this file to a location of your choice (default file path for
 configuration file is:  ``~/.syntribos/syntribos.conf``) and update the
@@ -174,7 +173,7 @@ necessary fields like user credentials, log, template directory etc.
     http_request_compression=True
 
 Syntribos Commands
-===================
+==================
 
 Below are the set of commands that should be specified while
 using Syntribos.
@@ -227,10 +226,10 @@ any test type.
     $ syntribos --config-file keystone.config run
 
 Fuzzy-matching test names
---------------------------
+-------------------------
 
 It is possible to limit Syntribos to run a specific test type using
-the ``-t`` flag..
+the ``-t`` flag.
 
 ::
 
@@ -469,3 +468,7 @@ Breaking changes, feature requests, and other non prioritized work should
 first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
+Readme.rst is auto generated from docs by running `python readme.py` in the
+`syntribos/scripts` directory. So when the README.rst needs to be updated;
+modify the corresponding rst file in `syntribos/doc/source` and auto generate
+the README.

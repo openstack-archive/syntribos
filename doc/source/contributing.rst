@@ -20,3 +20,8 @@ and not on Github. All Github issues will be closed/ignored.
 Breaking changes, feature requests, and other non prioritized work should
 first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
+
+Readme.rst is auto generated from docs by running `python readme.py` in the
+`syntribos/scripts` directory. So when the README.rst needs to be updated;
+modify the corresponding rst file in `syntribos/doc/source` and auto generate
+the README.
