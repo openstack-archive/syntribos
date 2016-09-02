@@ -446,7 +446,7 @@ This will run all the unittests and give you a result output
 containing the status and coverage details of each test.
 
 Contributing Guidelines
-========================
+=======================
 
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
