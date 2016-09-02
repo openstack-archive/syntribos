@@ -77,8 +77,7 @@ class Scope(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
     def _obj_to_dict(self):
         return self._remove_empty_values({
-            "project": self._get_sub_model(self.project),
-            "domain": self._get_sub_model(self.domain)})
+            "project": self._get_sub_model(self.project)})
 
 
 class Domain(syntribos.extensions.identity.models.base.BaseIdentityModel):
@@ -92,7 +91,7 @@ class Domain(syntribos.extensions.identity.models.base.BaseIdentityModel):
             "id": self.id_})
 
 
-class Project(Domain):
+class Project(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
     def __init__(self, name=None, id_=None, domain=None):
         super(Project, self).__init__(locals())
