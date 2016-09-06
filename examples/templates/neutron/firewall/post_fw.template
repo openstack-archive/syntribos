@@ -1,0 +1,14 @@
+POST /v2.0/fw/firewalls HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "firewall": {
+        "admin_state_up": true,
+        "firewall_policy_id": "c69933c1-b472-44f9-8226-30dc4ffd454c",
+        "description": "test",
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "router_ids": ["f21ba5e8-ddbd-43d5-b5c2-130f3cdc6477", "b98f0fb8-5533-4341-9c23-7288cbcf8f79"]
+    }
+}

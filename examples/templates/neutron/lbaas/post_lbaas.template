@@ -1,0 +1,17 @@
+POST /v2.0/lbaas/loadbalancers HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "loadbalancer": {
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "description": "simple lb",
+        "tenant_id": "83814cdb88df47989862e62454d946a2",
+        "vip_subnet_id": "013d3059-87a4-45a5-91e9-d721068ae0b2",
+        "vip_address": "10.0.0.4",
+        "admin_state_up": true,
+        "flavor": "a7ae5d5a-d855-4f9a-b187-af66b53f4d04",
+        "provider": "test"
+    }
+}
