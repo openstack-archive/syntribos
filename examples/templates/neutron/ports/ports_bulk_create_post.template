@@ -1,0 +1,23 @@
+POST /v2.0/ports HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+  "ports": [
+  {
+            "name": "sample_port_1",
+            "admin_state_up": false,
+            "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7"
+
+  },
+  {
+            "name": "sample_port_2",
+            "admin_state_up": false,
+            "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7"
+
+  }
+
+    ]
+
+}

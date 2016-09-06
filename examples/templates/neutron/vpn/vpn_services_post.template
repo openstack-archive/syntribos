@@ -1,0 +1,14 @@
+POST /v2.0/vpn/vpnservices HTTP/1.1
+Accept: application/json
+Content-type: applicaion/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "vpnservice": {
+        "subnet_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "router_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "name": "myservice",
+        "admin_state_up": true
+    }
+
+}
