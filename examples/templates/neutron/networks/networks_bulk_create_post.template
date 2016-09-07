@@ -1,0 +1,17 @@
+POST /v2.0/networks HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "networks": [
+        {
+            "name": "sample_network3",
+            "admin_state_up": true
+        },
+        {
+            "name": "sample_network4",
+            "admin_state_up": true
+        }
+    ]
+}

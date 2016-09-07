@@ -1,0 +1,19 @@
+POST /v2.0/subnetpools HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "subnetpool": {
+        "name": "my-subnet-pool",
+        "prefixes": [
+            "192.168.0.0/16",
+            "10.10.0.0/21"
+        ],
+        "default_prefixlen": 25,
+        "min_prefixlen": 24,
+        "max_prefixlen": 30,
+        "shared": "false"
+  }
+
+}

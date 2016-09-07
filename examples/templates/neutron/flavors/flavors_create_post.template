@@ -1,0 +1,15 @@
+POST /v2.0/flavors HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+  "flavor": {
+        "service_type": "LOADBALANCERV2",
+        "enabled": true,
+        "name": "dummy",
+        "description": "Dummy flavor"
+
+  }
+
+}

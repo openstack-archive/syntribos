@@ -1,0 +1,12 @@
+POST /v2.0/subnets HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "subnet": {
+        "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "ip_version": 4,
+        "cidr": "10.0.0.1"
+    }
+}

@@ -1,0 +1,22 @@
+POST /v2.0/networks HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "network": {
+        "segments": [
+            {
+                "provider:segmentation_id": "2",
+                "provider:physical_network": "8bab8453-1bc9-45af-8c70-f83aa9b50453",
+                "provider:network_type": "vlan"
+            },
+            {
+                "provider:physical_network": "8bab8453-1bc9-45af-8c70-f83aa9b50453",
+                "provider:network_type": "stt"
+            }
+        ],
+        "name": "net1",
+        "admin_state_up": true
+    }
+}
