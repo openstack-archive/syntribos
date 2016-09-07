@@ -1,0 +1,11 @@
+POST /v2.0/qos/policies HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "policy": {
+        "name": "10Mbit",
+        "description": "This policy limits the ports to 10Mbit max.",
+        "shared": false
+    }
+}

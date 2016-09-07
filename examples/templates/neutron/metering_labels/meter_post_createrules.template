@@ -1,0 +1,11 @@
+POST /v2.0/metering/metering-label-rules HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "metering_label_rule": {
+        "remote_ip_prefix": "10.0.1.0/24",
+        "direction": "ingress",
+        "metering_label_id": "e131d186-b02d-4c0b-83d5-0c0725c4f812"
+    }
+}
