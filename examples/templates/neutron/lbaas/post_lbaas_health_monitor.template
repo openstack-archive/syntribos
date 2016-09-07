@@ -1,0 +1,19 @@
+POST /v2.0/lbaas/health_monitors HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "health_monitor": {
+        "admin_state_up": true,
+        "delay": "1",
+        "expected_codes": "200,201,202",
+        "http_method": "GET",
+        "max_retries": 5,
+        "timeout": 1,
+        "type": "HTTP",
+        "url_path": "/index.html",
+        "tenant_id": "83814cdb88df47989862e62454d946a2",
+        "pool_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}

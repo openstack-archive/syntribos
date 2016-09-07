@@ -1,0 +1,23 @@
+PUT /v2.0/lbaas/listeners/{listener_id:3349cf08-a20f-42de-a605-340059523b7} HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "listener": {
+        "admin_state_up": true,
+        "connection_limit": 100,
+        "description": "listener one",
+        "loadbalancer_id": "a36c20d0-18e9-42ce-88fd-82a35977ee8c",
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "protocol": "HTTP",
+        "protocol_port": "80",
+        "default_tls_container_ref": "https://barbican.endpoint/containers/a36c20d0-18e9-42ce-88fd-82a35977ee8c",
+        "sni_container_refs": [
+            "https://barbican.endpoint/containers/b36c20d0-18e9-42ce-88fd-82a35977ee8d",
+            "https://barbican.endpoint/containers/c36c20d0-18e9-42ce-88fd-82a35977ee8e"
+        ],
+        "tenant_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "default_pool_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}

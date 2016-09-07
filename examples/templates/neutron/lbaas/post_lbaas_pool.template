@@ -1,0 +1,17 @@
+POST /v2.0/lbaas/pools HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "pool": {
+        "admin_state_up": true,
+        "description": "simple pool",
+        "lb_algorithm": "ROUND_ROBIN",
+        "name": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "protocol": "HTTP",
+        "subnet_id": "e301aed0-d9e7-498a-977c-1bbfaf14ed5d",
+        "tenant_id": "83814cdb88df47989862e62454d946a2",
+        "listener_id": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+    }
+}
