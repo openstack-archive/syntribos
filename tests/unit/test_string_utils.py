@@ -13,7 +13,9 @@
 # limitations under the License.
 import testtools
 
-from syntribos.clients.http import debug_logger
+import pprint
+
+from syntribos.utils import string_utils
 
 
 class TestDebugLogger(testtools.TestCase):
@@ -22,23 +24,24 @@ class TestDebugLogger(testtools.TestCase):
         content = {"creds": {"password": "12345"}, "sl.no": 1}
         sanitized_content = {"creds": {"password": "****"}, "sl.no": 1}
         self.assertEqual(sanitized_content,
-                         debug_logger.sanitize_secrets(content))
+                         string_utils.sanitize_secrets(content))
 
     def test_sanitize_strings(self):
         content = "password = 12344"
         sanitized_content = "password = ****"
         self.assertEqual(sanitized_content,
-                         debug_logger.sanitize_secrets(content))
+                         string_utils.sanitize_secrets(content))
 
     def test_compress(self):
         content = "Sample data for compression"
         encoded_content = "eJwLTswtyElVSEksSVRIyy9SSM7PLShKLS7OzM8DAIvJClY="
-        compressed_content = debug_logger.compress(content, threshold=10)
-        compressed_data = ("******Content compressed by Syntribos.******\n"
-                           "First fifty characters of the content:\n"
-                           "       {data}\n       "
-                           "Base64 encoded compressed content:\n"
-                           "       {compressed}\n      "
-                           "******End of compressed content.******\n").format(
-                               data=content, compressed=encoded_content)
-        self.assertEqual(compressed_content, compressed_data)
+        compressed_content = string_utils.compress(content, threshold=10)
+        compressed_data = pprint.pformat(
+            "\n***Content compressed by Syntribos.***"
+            "\nFirst fifty characters of content:\n"
+            "***{data}***"
+            "\nBase64 encoded compressed content:\n"
+            "{compressed}"
+            "\n***End of compressed content.***\n").format(
+                data=content, compressed=encoded_content)
+        self.assertEqual(compressed_data, compressed_content)
