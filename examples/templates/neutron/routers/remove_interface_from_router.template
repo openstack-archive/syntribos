@@ -1,0 +1,7 @@
+PUT /v2.0/routers/{0ffd248c55b443eaac5253b4e9cbf9b5}/remove_router_interface HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "subnet_id": "a2f1f29d-571b-4533-907f-5803ab96ead1"
+}

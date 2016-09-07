@@ -1,0 +1,10 @@
+POST /v2.0/floatingips HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
+
+{
+    "floatingip": {
+        "floating_network_id": "376da547-b977-4cfe-9cba-275c80debf57",
+        "port_id": "ce705c24-c1ef-408a-bda3-7bbd946164ab"
+    }
+}
