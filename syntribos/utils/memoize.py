@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from functools import wraps
+from hashlib import md5
+from time import time
 
 
 def memoize(func):
@@ -23,9 +25,13 @@ def memoize(func):
 
     @wraps(func)
     def decorate(*args, **kwargs):
-        if args in memoized_calls:
-            return memoized_calls[args]
-        else:
-            memoized_calls[args] = func(*args, **kwargs)
-            return memoized_calls[args]
+        ttl = time() + 1800
+        func_id = md5(str(func.__name__) + str(args) + str(kwargs)).digest()
+        if memoized_calls.get(func_id):
+            time_left = memoized_calls[func_id]["ttl"] - time()
+            if time_left > 0:
+                return memoized_calls[func_id]["ret_val"]
+        memoized_calls[func_id] = {"ret_val": func(*args, **kwargs),
+                                   "ttl": ttl}
+        return memoized_calls[func_id]["ret_val"]
     return decorate
