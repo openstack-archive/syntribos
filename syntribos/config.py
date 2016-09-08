@@ -239,7 +239,9 @@ def list_user_opts():
         cfg.StrOpt("serialize_format", default="json",
                    help="Type of request body"),
         cfg.StrOpt("deserialize_format", default="json",
-                   help="Type of response body")
+                   help="Type of response body"),
+        cfg.IntOpt("token_ttl", default=1800,
+                   help="Time to live for token in seconds")
 
     ]
 

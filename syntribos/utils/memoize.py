@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from functools import wraps
-from hashlib import md5
 from time import time
+
+from oslo_config import cfg
+
+CONF = cfg.CONF
 
 
 def memoize(func):
@@ -25,8 +28,8 @@ def memoize(func):
 
     @wraps(func)
     def decorate(*args, **kwargs):
-        ttl = time() + 1800
-        func_id = md5(str(func.__name__) + str(args) + str(kwargs)).digest()
+        ttl = time() + CONF.user.token_ttl
+        func_id = args, frozenset(kwargs.items())
         if memoized_calls.get(func_id):
             time_left = memoized_calls[func_id]["ttl"] - time()
             if time_left > 0:
