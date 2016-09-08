@@ -50,7 +50,9 @@ necessary fields like user credentials, log, template directory etc.
 
 
     [syntribos]
+    #
     # As keystone is being tested in the example, enter your
+    #
     # keystone auth endpoint url.
     endpoint=http://localhost:5000
     # Set payload and templates path
@@ -66,21 +68,32 @@ necessary fields like user credentials, log, template directory etc.
     password=<yourpassword>
     # Optional, only needed if Keystone V3 API is used
     #user_id=<youruserid>
-    # Optional, api version if required.
+    # Optional, api version if required
     #version=v2.0
-
+    # Optional, for getting scoped tokens
+    #user_id=<alt_userid>
+    # If user id is not known
+    # For V3 API
+    #domain_name=<name_of_the_domain>
+    #project_name=<name_of_the_project>
+    # For Keystone V2 API
+    #tenant_name=<name_of_the_project>
 
     #[alt_user]
     #
     # Optional, Used for cross auth tests (-t AUTH)
     #
-
-    endpoint=http://localhost:5000
+    #endpoint=http://localhost:5000
     #username=<alt_username>
     #password=<alt_password>
+    # Optional, for getting scoped tokens
     #user_id=<alt_userid>
-
-
+    # If user id is not known
+    # For V3 API
+    #domain_name=<name_of_the_domain>
+    #project_name=<name_of_the_project>
+    # For Keystone V2 API
+    #tenant_name=<name_of_the_project>
 
     [logging]
     #

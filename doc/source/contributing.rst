@@ -1,5 +1,5 @@
 Contributing Guidelines
-========================
+=======================
 
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
@@ -21,7 +21,7 @@ Breaking changes, feature requests, and other non prioritized work should
 first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
-Readme.rst is auto generated from docs by running `python readme.py` in the
-`syntribos/scripts` directory. So when the README.rst needs to be updated;
-modify the corresponding rst file in `syntribos/doc/source` and auto generate
+Readme.rst is auto generated from docs by running ``python readme.py`` in the
+``syntribos/scripts`` directory. So when the README.rst needs to be updated;
+modify the corresponding rst file in ``syntribos/doc/source`` and auto generate
 the README.
