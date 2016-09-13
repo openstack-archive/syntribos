@@ -1,0 +1,8 @@
+POST /v2/images/{image_id:3349cf08-a20f-42de-a605-340059523b71}/members HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "member": "83814cdb88df47989862e62454d946a2"
+}

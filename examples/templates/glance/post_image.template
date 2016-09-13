@@ -1,0 +1,14 @@
+POST /v2/images HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "container_format": "bare",
+    "disk_format": "raw",
+    "name": "Ubuntu",
+    "id": "3349cf08-a20f-42de-a605-340059523b71",
+    "protected": false,
+    "tags": ["testing"],
+    "visibility": "public"
+}

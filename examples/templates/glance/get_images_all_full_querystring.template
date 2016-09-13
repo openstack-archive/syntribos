@@ -1,0 +1,3 @@
+GET /v2/images?limit=9999&marker=3349cf08-a20f-42de-a605-340059523b71&name=testing&owner=testing&status=in:queued,saving,active,killed,deleted,pending_delete,deactivated&tag=testing&visibility=public&member_status=accepted&size_min=0&size_max=999999&created_at=gt:2014-04-18T21:38:54Z&updated_at=gt:2014-04-18T21:38:54Z&sort_dir=desc&sort_key=name HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
