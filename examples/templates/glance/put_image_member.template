@@ -1,4 +1,4 @@
-PUT /v2/images/{image_id:3349cf08-a20f-42de-a605-340059523b71}/members/{member_id:88b8dda6-150b-4387-ba82-a8284d6abbfb} HTTP/1.1
+PUT /v2/images/{image_id:CALL_EXTERNAL|syntribos.extensions.glance.client:get_image_id:[]|}/members/{member_id:88b8dda6-150b-4387-ba82-a8284d6abbfb} HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
