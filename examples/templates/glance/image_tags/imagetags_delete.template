@@ -1,0 +1,3 @@
+DELETE /v2/images/{image_id:40b811ca-8250-4132-8dff-6aa78dbb7f43}/tags/{tag:x} HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
