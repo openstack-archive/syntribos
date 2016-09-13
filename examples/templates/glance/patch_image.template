@@ -1,0 +1,12 @@
+PATCH /v2/images/{image_id:3349cf08-a20f-42de-a605-340059523b71} HTTP/1.1
+Accept: application/json
+Content-Type: application/openstack-images-v2.1-json-patch
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+[
+    {
+        "op": "replace",
+        "path": "/name",
+        "value": "Fedora 17"
+    }
+]

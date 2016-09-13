@@ -120,6 +120,9 @@ class RequestCreator(object):
             return ""
         try:
             data = json.loads(data)
+            # TODO(cneill): Make this less hacky
+            if isinstance(data, list):
+                data = json.dumps(data)
         except Exception:
             try:
                 data = ElementTree.fromstring(data)
