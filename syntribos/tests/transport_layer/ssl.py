@@ -11,39 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from oslo_config import cfg
-
 import syntribos
 from syntribos.checks import https_check
-from syntribos.clients.http import client
-from syntribos.clients.http import parser
 from syntribos.tests import base
 
 
-CONF = cfg.CONF
-
-
 class SSLTestCase(base.BaseTestCase):
+
     """Test if response body contains non-https links."""
 
     test_name = "SSL_ENDPOINT_BODY"
     test_type = "body"
-    client = client()
-    failures = []
-
-    @classmethod
-    def get_test_cases(cls, filename, file_content):
-
-        request_obj = parser.create_request(
-            file_content, CONF.syntribos.endpoint
-        )
-        cls.test_resp, cls.test_signals = cls.client.send_request(request_obj)
-        yield cls
 
     def test_case(self):
-        self.test_signals.register(https_check(self))
+        self.init_signals.register(https_check(self))
 
-        if "HTTP_LINKS_PRESENT" in self.test_signals:
+        if "HTTP_LINKS_PRESENT" in self.init_signals:
             self.register_issue(
                 defect_type="SSL_ERROR",
                 severity=syntribos.MEDIUM,
