@@ -10,52 +10,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from keystoneauth1 import identity
-from keystoneauth1 import session
-from neutronclient.v2_0 import client
+from neutronclient.v2_0.client import Client
 from oslo_config import cfg
 
+from syntribos.extensions.identity import client as id_client
 from syntribos.utils.memoize import memoize
 
 CONF = cfg.CONF
 
 
-def create_connection(auth_url=None,
-                      project_name=None,
-                      project_domain_name="default",
-                      user_domain_name="default",
-                      project_domain_id="default",
-                      user_domain_id="default",
-                      username=None,
-                      password=None):
-    """Method creates a neutron client and returns it."""
-
-    if auth_url.endswith("/v3/"):
-        auth_url = auth_url[:-1]
-    elif auth_url.endswith("/v3"):
-        pass
-    else:
-        auth_url = "{}/v3".format(auth_url)
-    auth = identity.Password(auth_url=auth_url,
-                             project_name=project_name,
-                             project_domain_name=project_domain_name,
-                             user_domain_name=user_domain_name,
-                             project_domain_id=project_domain_id,
-                             user_domain_id=user_domain_id,
-                             username=username,
-                             password=password)
-    return client.Client(session=session.Session(auth=auth))
-
-
-neutron_client = create_connection(
-    auth_url=CONF.user.endpoint,
-    project_name=CONF.user.project_name,
-    project_domain_id=CONF.user.domain_id,
-    user_domain_id=CONF.user.domain_id,
-    project_domain_name=CONF.user.domain_id,
-    user_domain_name=CONF.user.domain_id,
-    username=CONF.user.username,
-    password=CONF.user.password)
+def _get_client():
+    token = id_client.get_scoped_token_v3("user")
+    return Client(endpoint=CONF.syntribos.endpoint, token=token)
 
 
 def create_network(conn):
@@ -131,6 +97,7 @@ def list_router_ids(conn):
 
 @memoize
 def get_port_id():
+    neutron_client = _get_client()
     port_ids = list_port_ids(neutron_client)
     if not port_ids:
         network_id = get_network_id()
@@ -140,6 +107,7 @@ def get_port_id():
 
 @memoize
 def get_network_id():
+    neutron_client = _get_client()
     network_ids = list_network_ids(neutron_client)
     if len(network_ids) < 3:
         network_ids.append(create_network(neutron_client)["id"])
@@ -148,6 +116,7 @@ def get_network_id():
 
 @memoize
 def get_subnet_id():
+    neutron_client = _get_client()
     subnet_ids = list_subnet_ids(neutron_client)
     if not subnet_ids:
         network_id = get_network_id()
@@ -157,6 +126,7 @@ def get_subnet_id():
 
 @memoize
 def get_sg_group_id():
+    neutron_client = _get_client()
     sg_ids = list_security_group_ids(neutron_client)
     if not sg_ids:
         sg_ids.append(create_security_group(neutron_client)["id"])
@@ -165,7 +135,11 @@ def get_sg_group_id():
 
 @memoize
 def get_router_id():
+    neutron_client = _get_client()
     router_ids = list_router_ids(neutron_client)
     if not router_ids:
-        router_ids.append(create_router(neutron_client)["id"])
+        network_id = get_network_id()
+        subnet_id = get_subnet_id()
+        router_ids.append(
+            create_router(neutron_client, network_id, subnet_id)["id"])
     return router_ids[-1]
