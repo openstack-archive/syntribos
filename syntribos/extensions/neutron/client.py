@@ -125,7 +125,7 @@ def get_subnet_id():
 
 
 @memoize
-def get_sg_group_id():
+def get_sec_group_id():
     neutron_client = _get_client()
     sg_ids = list_security_group_ids(neutron_client)
     if not sg_ids:
