@@ -47,6 +47,7 @@ class ConfFixture(config_fixture.Config):
         self.conf.set_default("domain_name", "default", group="user")
         self.conf.set_default("domain_id", "5678", group="user")
         self.conf.set_default("version", "v3", group="user")
+        self.conf.set_default("token_ttl", 0, group="user")
 
     def test_config_fixture(self):
         """config values for test group."""
