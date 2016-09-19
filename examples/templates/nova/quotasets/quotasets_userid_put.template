@@ -1,0 +1,23 @@
+PUT /v2.1/os-quota-sets/{tenant_id:3aae1cc6-ceb9-44d6-a441-46fc016423a3}?user_id=x HTTP/1.1
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "quota_set": {
+        "cores": 20,
+        "force": "True",
+        "fixed_ips": -1,
+        "floating_ips": 10,
+        "injected_file_content_bytes": 10240,
+        "injected_file_path_bytes": 255,
+        "injected_files": 5,
+        "instances": 10,
+        "key_pairs": 100,
+        "metadata_items": 128,
+        "ram": 51200,
+        "security_group_rules": 20,
+        "security_groups": 45,
+        "server_groups": 10,
+        "server_group_members": 10
+    }
+}
