@@ -75,7 +75,7 @@ def server_software(test):
 def remote_os(test):
     """Returns remote OS info.
 
-    Tries to identiy which OS is running on the remote server
+    Tries to identity which OS is running on the remote server
 
     :returns: SynSignal
     """
