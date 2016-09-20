@@ -1,0 +1,12 @@
+POST /v2.1/servers/{CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|}/action HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "evacuate": {
+        "host": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+        "adminPass": "MySecretPass",
+        "onSharedStorage": "False"
+    }
+}
