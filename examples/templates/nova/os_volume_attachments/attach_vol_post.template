@@ -1,0 +1,11 @@
+POST /v2.1/servers/{CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|}/os-volume_attachments HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "volumeAttachment": {
+        "volumeId": "a26887c6-c47b-4654-abb5-dfadf7d3f803",
+        "device": "/dev/vdd"
+    }
+}

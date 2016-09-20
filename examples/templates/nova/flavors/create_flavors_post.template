@@ -1,0 +1,15 @@
+POST /v2.1/flavors HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "flavor": {
+        "name": "test_flavor",
+        "ram": 1024,
+        "vcpus": 2,
+        "disk": 10,
+        "id": "10",
+        "rxtx_factor": 2.0
+    }
+}
