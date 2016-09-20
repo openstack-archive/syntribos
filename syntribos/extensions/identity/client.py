@@ -114,6 +114,13 @@ def get_scoped_token_v2(user_section='user'):
     return access_data['token']['id']
 
 
+@memoize
+def get_tenant_id_v2(user_section='user'):
+    """Returns a tenant ID."""
+    r = authenticate_v2_config(user_section, scoped=True)
+    return r.json()["token"]["tenant"]["id"]
+
+
 def authenticate_v3(
     url, username=None, password=None, user_id=None, domain_id=None,
         domain_name=None, token=None, project_name=None,
@@ -211,3 +218,10 @@ def get_scoped_token_v3(user_section='user'):
     """Returns a scoped v3 token."""
     r = authenticate_v3_config(user_section, scoped=True)
     return r.headers["X-Subject-Token"]
+
+
+@memoize
+def get_project_id_v3(user_section='user'):
+    """Returns a project ID."""
+    r = authenticate_v3_config(user_section, scoped=True)
+    return r.json()["token"]["project"]["id"]
