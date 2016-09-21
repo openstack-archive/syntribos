@@ -1,0 +1,15 @@
+POST /v2.1/servers/{CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|}/os-interface HTTP/1.1
+Accept: application/json
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "interfaceAttachment": {
+        "fixed_ips": [
+            {
+                "ip_address": "192.168.1.3"
+            }
+        ],
+        "net_id": "3cb9bc59-5699-4588-a4b1-b87f96708bc6"
+    }
+}
