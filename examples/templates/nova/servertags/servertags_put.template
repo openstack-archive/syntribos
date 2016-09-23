@@ -1,0 +1,7 @@
+PUT /v2.1/servers/{server_id:3aae1cc6-ceb9-44d6-a441-46fc016423a3}/tags HTTP/1.1
+Content-type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "tags": ["tag1", "tag2"]
+}
