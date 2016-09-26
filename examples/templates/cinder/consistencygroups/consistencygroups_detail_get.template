@@ -1,0 +1,3 @@
+GET /v2/{tenant_id:e221d019-e614-4dd5-999e-9828edf0f7dc}/consistencygroups/detail HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|

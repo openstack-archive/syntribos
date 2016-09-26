@@ -1,0 +1,5 @@
+POST /v1/{account:default}/{container:test} HTTP/1.1
+Accept: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+X-Container-Meta-Test: Test2
+X-Container-Meta-Test2: Test3
