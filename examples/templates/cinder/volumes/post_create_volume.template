@@ -1,0 +1,27 @@
+POST /v2/{tenant_id:CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|}/volumes HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "volume": {
+           "size": 1,
+           "availability_zone": null,
+           "source_volid": null,
+           "description": null,
+           "multiattach ": false,
+           "snapshot_id": null,
+           "name": null,
+           "imageRef": null,
+           "volume_type": null,
+           "metadata": {},
+           "source_replica": null,
+           "consistencygroup_id": null
+       },
+       "OS-SCH-HNT:scheduler_hints": {
+           "same_host": [
+               "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|",
+               "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
+           ]
+       }
+}

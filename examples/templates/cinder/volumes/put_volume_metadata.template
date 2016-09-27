@@ -1,0 +1,11 @@
+PUT /v2/{tenant_id:CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|}/volumes/{volume_id:CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|}/metadata HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_scoped_token_v3:["user"]|
+
+{
+    "metadata": {
+        "name": "updated meta: sample_vol-001",
+        "description": "This is yet, another volume."
+    }
+}
