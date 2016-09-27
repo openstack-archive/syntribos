@@ -184,7 +184,7 @@ def list_cli_opts():
                              "against the target API"),
         cfg.BoolOpt("colorize", dest="colorize", short="cl", default=False,
                     help="Enable color in Syntribos terminal output"),
-        cfg.StrOpt("outfile", short="o", default=None,
+        cfg.StrOpt("outfile", short="o",
                    sample_default="out.json", help="File to print output to"),
         cfg.StrOpt("format", dest="output_format", short="f", default="json",
                    choices=["json"], ignore_case=True,
