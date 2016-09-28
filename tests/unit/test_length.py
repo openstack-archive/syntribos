@@ -37,10 +37,9 @@ class FakeTestObject(object):
 
 
 class TestLength(testtools.TestCase):
-
     @requests_mock.Mocker()
     def test_percentage_difference(self, m):
-        content = """'Traceback (most recent call last):\n',
+        content = u"""'Traceback (most recent call last):\n',
                 File "<doctest...>", line 10, in <module>\n
                 lumberjack()\n',
                 File "<doctest...>", line 4, in lumberjack\n
@@ -49,8 +48,8 @@ class TestLength(testtools.TestCase):
                 return tuple()[0]\n',
                 'IndexError: tuple index out of range\n']"""
 
-        m.register_uri("GET", "http://example.com",
-                       content=textwrap.dedent(content))
+        m.register_uri(
+            "GET", "http://example.com", text=textwrap.dedent(content))
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         self.assertIsNone(length_diff(test))

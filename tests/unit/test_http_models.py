@@ -15,6 +15,7 @@ import json
 import uuid
 import xml.etree.ElementTree as ElementTree
 
+import six
 import testtools
 
 import syntribos.clients.http.models as mod
@@ -26,7 +27,7 @@ ro = mod.RequestObject
 
 
 def get_fake_generator():
-    for i in xrange(2):
+    for i in range(2):
         yield str(i)
 
 
@@ -55,7 +56,6 @@ def post_req(path, *args, **kwargs):
 
 
 class HTTPModelsUnittest(testtools.TestCase):
-
     def test_remove_braces_named(self):
         """Tests RequestHelperMixin._remove_braces() with a named var."""
         res = rhm._remove_braces("{id:123}")
@@ -132,6 +132,8 @@ class HTTPModelsUnittest(testtools.TestCase):
         root.append(a)
         res = rhm._run_iters(root, action_field)
         res_text = ElementTree.tostring(res)
+        if not six.PY2:
+            res_text = res_text.decode("utf-8")
         self.assertEqual('<root><a attrib="val">var</a></root>', res_text)
 
     def test_run_iters_global_iterators(self):

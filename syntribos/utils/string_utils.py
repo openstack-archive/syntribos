@@ -25,8 +25,8 @@ CONF = cfg.CONF
 
 
 def is_dict(content=None):
-    return isinstance(content, CaseInsensitiveDict) or isinstance(
-        content, dict)
+    return isinstance(content, CaseInsensitiveDict) or isinstance(content,
+                                                                  dict)
 
 
 def is_string(content=None):
@@ -43,7 +43,7 @@ def sanitize_secrets(content, mask="****"):
         """
         out = deepcopy(dictionary)
 
-        for k, v in dictionary.items():
+        for k, v in list(six.iteritems(dictionary)):
             if is_dict(v):
                 out[k] = mask_dict_password(v, secret=secret)
                 continue
@@ -84,7 +84,10 @@ def compress(content, threshold=512):
     if is_string(content) and compression_enabled:
         if len(content) > threshold:
             less_data = content[:50]
-            compressed_data = base64.b64encode(zlib.compress(content))
+            compressed_data = base64.b64encode(
+                zlib.compress(bytes(content.encode("utf-8"))))
+            if not six.PY2:
+                compressed_data = compressed_data.decode("utf-8")
             return pprint.pformat(
                 "\n***Content compressed by Syntribos.***"
                 "\nFirst fifty characters of content:\n"

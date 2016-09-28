@@ -16,14 +16,13 @@ import json
 import re
 import xml.etree.ElementTree as ElementTree
 
+import six
 from six.moves import html_parser
-
 
 _iterators = {}
 
 
 class RequestHelperMixin(object):
-
     """Class that helps with fuzzing requests."""
 
     @classmethod
@@ -39,7 +38,7 @@ class RequestHelperMixin(object):
             return cls._run_iters_dict(data, action_field)
         elif isinstance(data, ElementTree.Element):
             return cls._run_iters_xml(data, action_field)
-        elif isinstance(data, basestring):
+        elif isinstance(data, six.string_types):
             data = data.replace(action_field, "")
             return cls._replace_iter(data)
         else:
@@ -48,9 +47,9 @@ class RequestHelperMixin(object):
     @classmethod
     def _run_iters_dict(cls, dic, action_field=""):
         """Run fuzz iterators for a dict type."""
-        for key, val in dic.iteritems():
+        for key, val in six.iteritems(dic):
             dic[key] = val = cls._replace_iter(val)
-            if isinstance(key, basestring):
+            if isinstance(key, six.string_types):
                 new_key = cls._replace_iter(key).replace(action_field, "")
                 if new_key != key:
                     del dic[key]
@@ -65,7 +64,7 @@ class RequestHelperMixin(object):
     def _run_iters_list(cls, val, action_field=""):
         """Run fuzz iterators for a list type."""
         for i, v in enumerate(val):
-            if isinstance(v, basestring):
+            if isinstance(v, six.string_types):
                 val[i] = v = cls._replace_iter(v).replace(action_field, "")
             elif isinstance(v, dict):
                 val[i] = cls._run_iters_dict(v, action_field)
@@ -75,7 +74,7 @@ class RequestHelperMixin(object):
     @classmethod
     def _run_iters_xml(cls, ele, action_field=""):
         """Run fuzz iterators for an XML element type."""
-        if isinstance(ele.text, basestring):
+        if isinstance(ele.text, six.string_types):
             ele.text = cls._replace_iter(ele.text).replace(action_field, "")
         cls._run_iters_dict(ele.attrib, action_field)
         for i, v in enumerate(list(ele)):
@@ -91,18 +90,18 @@ class RequestHelperMixin(object):
             str_data = ElementTree.tostring(data)
             # No way to stop tostring from HTML escaping even if we wanted
             h = html_parser.HTMLParser()
-            return h.unescape(str_data)
+            return h.unescape(str_data.decode())
         else:
             return data
 
     @staticmethod
     def _replace_iter(string):
         """Fuzz a string."""
-        if not isinstance(string, basestring):
+        if not isinstance(string, six.string_types):
             return string
-        for k, v in _iterators.items():
+        for k, v in list(six.iteritems(_iterators)):
             if k in string:
-                string = string.replace(k, v.next())
+                string = string.replace(k, six.next(v))
         return string
 
     @staticmethod
@@ -149,7 +148,6 @@ class RequestHelperMixin(object):
 
 
 class RequestObject(RequestHelperMixin):
-
     """An object that holds information about an HTTP request.
 
     :ivar str method: Request method
@@ -161,8 +159,14 @@ class RequestObject(RequestHelperMixin):
     :ivar bool sanitize: Boolean variable used to filter secrets
     """
 
-    def __init__(self, method, url, action_field=None, headers=None,
-                 params=None, data=None, sanitize=False):
+    def __init__(self,
+                 method,
+                 url,
+                 action_field=None,
+                 headers=None,
+                 params=None,
+                 data=None,
+                 sanitize=False):
         self.method = method
         self.url = url
         self.action_field = action_field

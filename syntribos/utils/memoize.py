@@ -15,6 +15,7 @@ from functools import wraps
 from time import time
 
 from oslo_config import cfg
+import six
 
 CONF = cfg.CONF
 
@@ -29,7 +30,7 @@ def memoize(func):
     @wraps(func)
     def decorate(*args, **kwargs):
         ttl = time() + CONF.user.token_ttl
-        func_id = args, frozenset(kwargs.items())
+        func_id = args, frozenset(list(six.iteritems(kwargs)))
         if memoized_calls.get(func_id):
             time_left = memoized_calls[func_id]["ttl"] - time()
             if time_left > 0:

@@ -53,7 +53,7 @@ def colorize(string, color="nocolor"):
     """Method to add ascii colors to the terminal."""
 
     color_names = ["red", "green", "yellow", "blue"]
-    colors = dict(zip(color_names, range(31, 35)))
+    colors = dict(list(zip(color_names, list(range(31, 35)))))
     colors["nocolor"] = 0  # No Color
 
     if not CONF.colorize:

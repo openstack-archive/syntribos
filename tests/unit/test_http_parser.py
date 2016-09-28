@@ -106,13 +106,13 @@ class HTTPParserUnittest(testtools.TestCase):
         string = 'GET /v1/CALL_EXTERNAL|'
         string += 'syntribos.extensions.random_data.client:get_uuid:[]|'
         parsed_string = parser.call_external_functions(string)
-        self.assertRegexpMatches(parsed_string, "GET /v1/[a-f0-9]+$")
+        self.assertRegex(parsed_string, "GET /v1/[a-f0-9]+$")
 
     def test_call_external_uuid_uuid4(self):
         """Tests calling 'uuid.uuid4()' in URL string."""
         string = 'GET /v1/CALL_EXTERNAL|uuid:uuid4:[]|'
         parsed_string = parser.call_external_functions(string)
-        self.assertRegexpMatches(parsed_string, "GET /v1/[a-f0-9\-]+$")
+        self.assertRegex(parsed_string, "GET /v1/[a-f0-9\-]+$")
 
     def test_call_external_invalid_module(self):
         """Tests calling invalid module in URL string."""
