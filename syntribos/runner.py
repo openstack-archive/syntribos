@@ -258,7 +258,7 @@ class Runner(object):
                         last_failures = result.stats["failures"]
                         last_errors = result.stats["errors"]
                         errors = cli.colorize(errors, "red")
-                        print ("  :  {0} Failure(s), {1} Error(s)\r".format(
+                        print("  :  {0} Failure(s), {1} Error(s)\r".format(
                             failures, errors))
                     else:
                         last_failures = result.stats["failures"]
