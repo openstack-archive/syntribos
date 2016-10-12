@@ -118,6 +118,8 @@ class TemplateType(ExistingPathType):
         :rtype: tuple
         :returns: (file name, file contents)
         """
+        if not string:
+            return
         super(TemplateType, self).__call__(string)
 
         if os.path.isdir(string):
@@ -131,6 +133,7 @@ syntribos_group = cfg.OptGroup(name="syntribos", title="Main syntribos Config")
 user_group = cfg.OptGroup(name="user", title="Identity Config")
 test_group = cfg.OptGroup(name="test", title="Test Config")
 logger_group = cfg.OptGroup(name="logging", title="Logger config")
+remote_group = cfg.OptGroup(name="remote", title="Remote config")
 
 
 def sub_commands(sub_parser):
@@ -149,6 +152,7 @@ def list_opts():
     results.append((user_group, list_user_opts()))
     results.append((test_group, list_test_opts()))
     results.append((logger_group, list_logger_opts()))
+    results.append((remote_group, list_remote_opts()))
     return results
 
 
@@ -167,6 +171,9 @@ def register_opts():
     # Logger options
     CONF.register_group(logger_group)
     CONF.register_opts(list_logger_opts(), group=logger_group)
+    # Remote options
+    CONF.register_group(remote_group)
+    CONF.register_opts(list_remote_opts(), group=remote_group)
 
 
 def list_cli_opts():
@@ -203,11 +210,11 @@ def list_syntribos_opts():
         cfg.StrOpt("endpoint", default="",
                    sample_default="http://localhost/app", required=True,
                    help="The target host to be tested"),
-        cfg.Opt("templates", type=TemplateType('r', 0), required=True,
+        cfg.Opt("templates", type=TemplateType('r', 0), default="",
                 sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
                      "file, to test on the target API"),
-        cfg.StrOpt("payload_dir", default="", required=True,
+        cfg.StrOpt("payloads_dir", default="",
                    sample_default="~/.syntribos/data",
                    help="The location where we can find syntribos' payloads"),
         cfg.MultiStrOpt("exclude_results",
@@ -272,4 +279,28 @@ def list_logger_opts():
         cfg.StrOpt("log_dir", default="", required=True,
                    sample_default="~/.syntribos/logs",
                    help="Where to save debug log files for a Syntribos run")
+    ]
+
+
+def list_remote_opts():
+    """Method defining remote URIs for payloads and templates."""
+    return [
+        cfg.StrOpt(
+            "cache_dir",
+            default="",
+            help="Base directory where cached files can be saved"),
+        cfg.StrOpt(
+            "payloads_uri",
+            default=("https://github.com/rahulunair/"
+                     "syntribos-payloads/"
+                     "raw/master/syntribos-payloads.tar"),
+            help="Remote URI to download payloads."),
+        cfg.StrOpt(
+            "templates_uri",
+            default=("https://github.com/rahulunair/"
+                     "syntribos-openstack-templates/"
+                     "raw/master/syntribos-openstack-templates.tar"),
+            help="Remote URI to download templates."),
+        cfg.BoolOpt("enable_cache", default=True,
+                    help="Cache remote template & payload resources locally"),
     ]

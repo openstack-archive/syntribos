@@ -20,9 +20,9 @@ import syntribos
 from syntribos.checks import length_diff as length_diff
 from syntribos.tests import base
 import syntribos.tests.fuzz.datagen
+from syntribos.utils import remotes
 
 CONF = cfg.CONF
-payload_dir = CONF.syntribos.payload_dir
 
 
 class BaseFuzzTestCase(base.BaseTestCase):
@@ -31,8 +31,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def _get_strings(cls, file_name=None):
-        path = os.path.join(payload_dir, file_name or cls.data_key)
-
+        payloads_dir = CONF.syntribos.payloads_dir
+        if not payloads_dir:
+            payloads_dir = remotes.get(CONF.remote.payloads_uri)
+        path = os.path.join(payloads_dir, file_name or cls.data_key)
         with open(path, "rb") as fp:
             return fp.read().splitlines()
 
@@ -45,8 +47,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
         """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()
         cls.test_resp, cls.test_signals = cls.client.request(
-            method=cls.request.method, url=cls.request.url,
-            headers=cls.request.headers, params=cls.request.params,
+            method=cls.request.method,
+            url=cls.request.url,
+            headers=cls.request.headers,
+            params=cls.request.params,
             data=cls.request.data)
         cls.test_req = cls.request
 
@@ -89,9 +93,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
                                "vulnerability to injection attacks"
                                ).format(CONF.test.length_diff_percent)
                 self.register_issue(
-                    defect_type="length_diff", severity=syntribos.LOW,
-                    confidence=syntribos.LOW, description=description
-                )
+                    defect_type="length_diff",
+                    severity=syntribos.LOW,
+                    confidence=syntribos.LOW,
+                    description=description)
 
     def test_case(self):
         """Performs the test
@@ -116,8 +121,9 @@ class BaseFuzzTestCase(base.BaseTestCase):
         cls.failures = []
         if hasattr(cls, 'data_key'):
             prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
-                filename=filename, test_name=cls.test_name, fuzz_file=cls.
-                data_key)
+                filename=filename,
+                test_name=cls.test_name,
+                fuzz_file=cls.data_key)
         else:
             prefix_name = "{filename}_{test_name}_".format(
                 filename=filename, test_name=cls.test_name)
@@ -125,8 +131,9 @@ class BaseFuzzTestCase(base.BaseTestCase):
         fr = syntribos.tests.fuzz.datagen.fuzz_request(
             cls.init_req, cls._get_strings(), cls.test_type, prefix_name)
         for fuzz_name, request, fuzz_string, param_path in fr:
-            yield cls.extend_class(fuzz_name, fuzz_string, param_path,
-                                   {"request": request})
+            yield cls.extend_class(fuzz_name, fuzz_string, param_path, {
+                "request": request
+            })
 
     @classmethod
     def extend_class(cls, new_name, fuzz_string, param_path, kwargs):
@@ -167,10 +174,11 @@ class BaseFuzzTestCase(base.BaseTestCase):
         :rtype: :class:`syntribos.issue.Issue`
         """
 
-        issue = syntribos.Issue(defect_type=defect_type,
-                                severity=severity,
-                                confidence=confidence,
-                                description=description)
+        issue = syntribos.Issue(
+            defect_type=defect_type,
+            severity=severity,
+            confidence=confidence,
+            description=description)
 
         # Still associating request and response objects with issue in event of
         # debug log
@@ -190,8 +198,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
             issue.content_type = None
 
         issue.impacted_parameter = ImpactedParameter(
-            method=issue.request.method, location=self.test_type,
-            name=self.param_path, value=self.fuzz_string)
+            method=issue.request.method,
+            location=self.test_type,
+            name=self.param_path,
+            value=self.fuzz_string)
 
         self.failures.append(issue)
 
@@ -199,7 +209,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
 
 class ImpactedParameter(object):
-
     """Object that encapsulates the details about what caused the defect
 
     :ivar method: The HTTP method used in the test
@@ -215,8 +224,7 @@ class ImpactedParameter(object):
         self.location = location
         if len(value) >= 128:
             self.trunc_fuzz_string = "{0}...({1} chars)...{2}".format(
-                value[:64], len(value),
-                value[-64:])
+                value[:64], len(value), value[-64:])
         else:
             self.trunc_fuzz_string = value
         self.fuzz_string = value
