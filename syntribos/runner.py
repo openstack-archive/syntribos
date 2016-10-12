@@ -45,9 +45,9 @@ class Runner(object):
         testdict = {name: clss.__doc__ for name, clss in cls.get_tests()}
         for test in sorted(testdict):
             if testdict[test] is None:
-                raise Exception(("No test description provided"
-                                 " as doc string for the test: {0}".format(
-                                     test)))
+                raise Exception(
+                    ("No test description provided"
+                     " as doc string for the test: {0}".format(test)))
             else:
                 test_description = testdict[test].split(".")[0]
             print("{test:<50}{desc}\r".format(
@@ -62,8 +62,8 @@ class Runner(object):
         :param package: a package of tests for pkgutil to load
         """
         for importer, modname, ispkg in pkgutil.walk_packages(
-            path=package.__path__,
-            prefix=package.__name__ + '.',
+                path=package.__path__,
+                prefix=package.__name__ + '.',
                 onerror=lambda x: None):
             __import__(modname, fromlist=[])
 
@@ -132,8 +132,9 @@ class Runner(object):
         global result
         try:
             syntribos.config.register_opts()
-            CONF(sys.argv[1:],
-                 default_config_files=cls.get_default_conf_files())
+            CONF(
+                sys.argv[1:],
+                default_config_files=cls.get_default_conf_files())
         except Exception as exc:
             syntribos.config.handle_config_exception(exc)
 
@@ -148,8 +149,8 @@ class Runner(object):
             cls.list_tests()
         else:
             cls.start_time = time.time()
-            list_of_tests = list(cls.get_tests(CONF.test_types,
-                                               CONF.excluded_types))
+            list_of_tests = list(
+                cls.get_tests(CONF.test_types, CONF.excluded_types))
             print("\nRunning Tests...:")
             for file_path, req_str in CONF.syntribos.templates:
                 LOG = cls.get_logger(file_path)
@@ -162,27 +163,28 @@ class Runner(object):
                 log_string = ''.join([
                     '\n{0}\nTEMPLATE FILE\n{0}\n'.format('-' * 12),
                     'file.......: {0}\n'.format(file_path),
-                    'tests......: {0}\n'.format(test_names)])
+                    'tests......: {0}\n'.format(test_names)
+                ])
                 LOG.debug(log_string)
                 print(syntribos.SEP)
                 print("Template File...: {}".format(file_path))
                 print(syntribos.SEP)
 
                 if CONF.sub_command.name == "run":
-                    cls.run_all_tests(list_of_tests, file_path, req_str)
+                    cls.run_given_tests(list_of_tests, file_path, req_str)
                 elif CONF.sub_command.name == "dry_run":
                     cls.dry_run(list_of_tests, file_path, req_str)
             result.print_result(cls.start_time)
 
     @classmethod
     def dry_run(cls, list_of_tests, file_path, req_str):
-        """Loads all the template and data files and prints out the tests
+        """Loads all the templates and prints out the tests
 
-        This method  does not run any tests, but loads all the templates
-        and payload data files and prints all the loaded tests.
+        This method  does not run any tests, but loads all the
+        templates and prints all the loaded tests.
 
         :param list list_of_tests: A list of all the tests loaded
-        :param str file_path: Path of the  payload file
+        :param str file_path: Path of the template file
         :param str req_str: Request string of each template
 
         :return: None
@@ -190,23 +192,21 @@ class Runner(object):
         for test_name, test_class in list_of_tests:
             log_string = "Dry ran  :  {name}".format(name=test_name)
             LOG.debug(log_string)
-            test_class.send_init_request(file_path, req_str)
-            test_cases = list(
-                test_class.get_test_cases(file_path, req_str))
+            test_cases = list(test_class.get_test_cases(file_path, req_str))
             if len(test_cases) > 0:
                 for test in test_cases:
                     if test:
                         cls.run_test(test, result, dry_run=True)
 
     @classmethod
-    def run_all_tests(cls, list_of_tests, file_path, req_str):
-        """Loads all the payload data and templates runs all the tests
+    def run_given_tests(cls, list_of_tests, file_path, req_str):
+        """Loads all the templates and runs all the given tests
 
-        This method call run_test method to run each of the tests one
+        This method calls run_test method to run each of the tests one
         by one.
 
-        :param list list_of_tests: A list of all the tests loaded
-        :param str file_path: Path of the  payload file
+        :param list list_of_tests: A list of all the loaded tests
+        :param str file_path: Path of the template file
         :param str req_str: Request string of each template
 
         :return: None
@@ -222,7 +222,8 @@ class Runner(object):
                 log_string = "[{test_id}]  :  {name}".format(
                     test_id=test_class.test_id, name=test_name)
                 result_string = "[{test_id}]  :  {name}".format(
-                    test_id=cli.colorize(test_class.test_id, color="green"),
+                    test_id=cli.colorize(
+                        test_class.test_id, color="green"),
                     name=test_name.replace("_", " ").capitalize())
                 if not CONF.colorize:
                     result_string = result_string.ljust(55)
@@ -233,8 +234,8 @@ class Runner(object):
                 test_cases = list(
                     test_class.get_test_cases(file_path, req_str))
                 if len(test_cases) > 0:
-                    bar = cli.ProgressBar(message=result_string,
-                                          max=len(test_cases))
+                    bar = cli.ProgressBar(
+                        message=result_string, max=len(test_cases))
                     last_failures = result.stats["failures"]
                     last_errors = result.stats["errors"]
                     for test in test_cases:
@@ -269,7 +270,7 @@ class Runner(object):
             LOG.debug("Run time: {} sec.".format(run_time))
             num_tests = result.testsRun - result.testsRunSinceLastPrint
             print("\nRan {num} test(s) in {time:.3f}s\n".format(
-                  num=num_tests, time=run_time))
+                num=num_tests, time=run_time))
             result.testsRunSinceLastPrint = result.testsRun
 
         except KeyboardInterrupt:
@@ -299,6 +300,7 @@ def entry_point():
     """Start runner. Need this so we can point to it in ``setup.cfg``."""
     Runner.run()
     return 0
+
 
 if __name__ == '__main__':
     entry_point()
