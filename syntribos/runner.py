@@ -20,6 +20,7 @@ import time
 import unittest
 
 from oslo_config import cfg
+import six
 
 import syntribos.config
 import syntribos.result
@@ -79,7 +80,7 @@ class Runner(object):
         cls.load_modules(tests)
         test_types = test_types or [""]
         excluded_types = excluded_types or [""]
-        items = sorted(syntribos.tests.base.test_table.iteritems())
+        items = sorted(six.iteritems(syntribos.tests.base.test_table))
         included = []
         # Only include tests allowed by value in -t params
         for t in test_types:

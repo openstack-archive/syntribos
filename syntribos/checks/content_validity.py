@@ -44,7 +44,7 @@ def valid_content(test):
 
     if "application/xml" in content_type or "text/html" in content_type:
         try:
-            etree.fromstring(resp.content)
+            etree.fromstring(resp.text)
         except Exception as e:
             validity = "INVALID"
             tags = ['APPLICATION_FAIL']
@@ -55,7 +55,7 @@ def valid_content(test):
 
     elif "application/json" in content_type or "text/json" in content_type:
         try:
-            json.loads(resp.content)
+            json.loads(resp.text)
         except Exception as e:
             validity = "INVALID"
             tags = ['APPLICATION_FAIL']
@@ -66,6 +66,10 @@ def valid_content(test):
 
     else:
         return None
-    return syntribos.signal.SynSignal(data=data, tags=tags, text=text,
-                                      slug=slug, strength=strength,
-                                      check_name=check_name)
+    return syntribos.signal.SynSignal(
+        data=data,
+        tags=tags,
+        text=text,
+        slug=slug,
+        strength=strength,
+        check_name=check_name)

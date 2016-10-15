@@ -36,13 +36,12 @@ class FakeTestObject(object):
 
 
 class TestString(testtools.TestCase):
-
     @requests_mock.Mocker()
     def test_has_string(self, m):
-        content = ("This is a server response, and its only job is to say:\n"
-                   "fail.")
+        text = ("This is a server response, and its only job is to say:\n"
+                "fail.")
 
-        m.register_uri("GET", "http://example.com", content=content)
+        m.register_uri("GET", "http://example.com", text=text)
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = has_string(test)

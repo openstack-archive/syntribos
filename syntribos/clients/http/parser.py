@@ -18,6 +18,7 @@ import types
 import uuid
 import xml.etree.ElementTree as ElementTree
 
+import six
 from six.moves.urllib import parse as urlparse
 
 from syntribos.clients.http.models import _iterators
@@ -141,7 +142,7 @@ class RequestCreator(object):
         :returns: the request, with EXTERNAL calls filled in with their values
                   or UUIDs
         """
-        if not isinstance(string, basestring):
+        if not isinstance(string, six.string_types):
             return string
 
         while True:

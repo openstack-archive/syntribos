@@ -35,14 +35,13 @@ class FakeTestObject(object):
 
 
 class TestSSL(testtools.TestCase):
-
     @requests_mock.Mocker()
     def test_https_check(self, m):
-        content = ("The first url is https://example.com/index.php & \n'"
-                   "the second url is http://example.com/index2.php/ ,"
-                   "thats all folks!")
+        text = ("The first url is https://example.com/index.php & \n'"
+                "the second url is http://example.com/index2.php/ ,"
+                "thats all folks!")
 
-        m.register_uri("GET", "http://example.com", content=content)
+        m.register_uri("GET", "http://example.com", text=text)
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = https_check(test)

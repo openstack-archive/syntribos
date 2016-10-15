@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import six
 import testtools
 
 from syntribos.signal import SignalHolder
@@ -83,7 +84,7 @@ class SignalHolderUnittest(testtools.TestCase):
             data={"test3": "test3"})
 
     def _assert_same_signal(self, expected, observed):
-        for key, item in expected.__dict__.iteritems():
+        for key, item in six.iteritems(expected.__dict__):
             self.assertEqual(item, observed.__dict__[key])
 
     def test_init_one_signal(self):

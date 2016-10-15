@@ -37,10 +37,9 @@ class FakeTestObject(object):
 
 
 class TestStackTrace(testtools.TestCase):
-
     @requests_mock.Mocker()
     def test_stacktrace(self, m):
-        content = """'Traceback (most recent call last):\n',
+        text = """'Traceback (most recent call last):\n',
                 File "<doctest...>", line 10, in <module>\n
                 lumberjack()\n',
                 File "<doctest...>", line 4, in lumberjack\n
@@ -49,8 +48,7 @@ class TestStackTrace(testtools.TestCase):
                 return tuple()[0]\n',
                 'IndexError: tuple index out of range\n']"""
 
-        m.register_uri("GET", "http://example.com",
-                       content=textwrap.dedent(content))
+        m.register_uri("GET", "http://example.com", text=textwrap.dedent(text))
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = stacktrace(test)

@@ -31,7 +31,7 @@ class BaseIdentityModel(object):
     def __init__(self, kwargs):
         super(BaseIdentityModel, self).__init__()
         self._log = logging.getLogger(__name__)
-        for k, v in kwargs.items():
+        for k, v in list(six.iteritems(kwargs)):
             if k != "self" and not k.startswith("_"):
                 setattr(self, k, v)
 
@@ -71,7 +71,7 @@ class BaseIdentityModel(object):
         :returns: element with namespaces trimmed
         :rtype: :class:`xml.etree.ElementTree.Element`
         """
-        for key, value in vars(cls._namespaces).items():
+        for key, value in list(six.iteritems(vars(cls._namespaces))):
             if key.startswith("__"):
                 continue
             element = cls._remove_xml_etree_namespace(element, value)

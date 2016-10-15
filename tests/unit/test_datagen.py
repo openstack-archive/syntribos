@@ -14,11 +14,11 @@
 import json
 from xml.etree import ElementTree
 
+import six
 import testtools
 
 from syntribos.clients.http.models import RequestObject
 import syntribos.tests.fuzz.datagen as fuzz_datagen
-
 
 action_field = "ACTION_FIELD:"
 test_dict = {"a": {"b": "c", "ACTION_FIELD:d": "e"}}
@@ -27,7 +27,8 @@ test_json_str = '{"a": {"b": "c", "ACTION_FIELD:d": "e"}}'
 test_params_obj = {"key": "val", "otherkey": "val2"}
 endpoint = "http://test.com"
 test_headers = {
-    "Content-Type": "application/json", "Accept": "application/json"
+    "Content-Type": "application/json",
+    "Accept": "application/json"
 }
 test_params = {"var1": "val1", "var2": "val2"}
 
@@ -60,13 +61,13 @@ def post_req(path, *args, **kwargs):
 
 
 class FuzzDatagenUnittest(testtools.TestCase):
-
     def test_fuzz_data_dict(self):
         """Test _fuzz_data with a dict."""
         strings = ["test"]
 
-        for i, d in enumerate(fuzz_datagen._fuzz_data(
-                strings, test_dict, action_field, "unittest"), 1):
+        for i, d in enumerate(
+                fuzz_datagen._fuzz_data(strings, test_dict, action_field,
+                                        "unittest"), 1):
             name, model, stri, param_path = d
             self.assertEqual("unitteststr1_model{0}".format(i), name)
             self.assertEqual("e", model.get("a").get("ACTION_FIELD:d"))
@@ -78,14 +79,24 @@ class FuzzDatagenUnittest(testtools.TestCase):
         """Test _fuzz_data with a dict containing a list."""
         strings = ["test"]
         expected = [
-            {"a": ["test", "val2", "val3"], "b": "c"},
-            {"a": ["val", "test", "val3"], "b": "c"},
-            {"a": ["val", "val2", "test"], "b": "c"},
-            {"a": ["val", "val2", "val3"], "b": "test"}
+            {
+                "a": ["test", "val2", "val3"],
+                "b": "c"
+            }, {
+                "a": ["val", "test", "val3"],
+                "b": "c"
+            }, {
+                "a": ["val", "val2", "test"],
+                "b": "c"
+            }, {
+                "a": ["val", "val2", "val3"],
+                "b": "test"
+            }
         ]
         i = 0
-        for i, result in enumerate(fuzz_datagen._fuzz_data(
-                strings, test_dict_w_list, action_field, "unittest"), 1):
+        for i, result in enumerate(
+                fuzz_datagen._fuzz_data(strings, test_dict_w_list,
+                                        action_field, "unittest"), 1):
             name, model, string, param_path = result
             self.assertIn(model, expected)
             self.assertEqual("unitteststr1_model{0}".format(i), name)
@@ -109,12 +120,16 @@ class FuzzDatagenUnittest(testtools.TestCase):
             '<a><b name="test">c</b><ACTION_FIELD:d>e</ACTION_FIELD:d></a>'
         ]
 
-        for i, d in enumerate(fuzz_datagen._fuzz_data(
-                strings, data, "ACTION_FIELD:", "unittest"), 1):
+        for i, d in enumerate(
+                fuzz_datagen._fuzz_data(strings, data, "ACTION_FIELD:",
+                                        "unittest"), 1):
             name, model, stri, param_path = d
             self.assertEqual("unitteststr1_model{0}".format(i), name)
             self.assertEqual("test", stri)
-            contents.append(ElementTree.tostring(model))
+            if six.PY2:
+                contents.append(ElementTree.tostring(model))
+            else:
+                contents.append(ElementTree.tostring(model).decode("utf-8"))
         self.assertEqual(expected_contents, contents)
 
     def test_fuzz_data_string(self):
@@ -122,8 +137,9 @@ class FuzzDatagenUnittest(testtools.TestCase):
         data = "TEST_STRING/{ST}"
         strings = ["test"]
 
-        for i, d in enumerate(fuzz_datagen._fuzz_data(
-                strings, data, action_field, "unittest"), 1):
+        for i, d in enumerate(
+                fuzz_datagen._fuzz_data(strings, data, action_field,
+                                        "unittest"), 1):
             name, model, stri, param_path = d
             self.assertEqual("unitteststr1_model{0}".format(i), name)
             self.assertEqual("TEST_STRING/test", model)
@@ -143,7 +159,8 @@ class FuzzDatagenUnittest(testtools.TestCase):
         """Test building string combinations with 1 named URL variable."""
         data = "/api/v1/{key:val}"
         results = [
-            d for d in fuzz_datagen._build_str_combinations("test", data)]
+            d for d in fuzz_datagen._build_str_combinations("test", data)
+        ]
         self.assertIn(("/api/v1/test", "key"), results)
         self.assertEqual(1, len(results))
 
@@ -155,15 +172,16 @@ class FuzzDatagenUnittest(testtools.TestCase):
             ("unitteststr1_model1", "/api/v1/test/path/{otherkey:val2}",
              "test", "key"),
             ("unitteststr1_model2", "/api/v1/{key:val}/path/test", "test",
-             "otherkey"),
-            ("unitteststr2_model1", "/api/v1/test2/path/{otherkey:val2}",
-             "test2", "key"),
-            ("unitteststr2_model2", "/api/v1/{key:val}/path/test2", "test2",
-             "otherkey")
+             "otherkey"), ("unitteststr2_model1",
+                           "/api/v1/test2/path/{otherkey:val2}", "test2",
+                           "key"), ("unitteststr2_model2",
+                                    "/api/v1/{key:val}/path/test2", "test2",
+                                    "otherkey")
         ]
         results = [
-            d for d in fuzz_datagen._fuzz_data(
-                strings, data, action_field, "unittest")
+            d
+            for d in fuzz_datagen._fuzz_data(strings, data, action_field,
+                                             "unittest")
         ]
         self.assertEqual(expected_results, results)
 
@@ -172,18 +190,17 @@ class FuzzDatagenUnittest(testtools.TestCase):
         strings = ["test", "test2"]
         data = "/api/v1/{key:val}/path/{otherkey}"
         expected_results = [
-            ("unitteststr1_model1", "/api/v1/test/path/{otherkey}",
-             "test", "key"),
-            ("unitteststr1_model2", "/api/v1/{key:val}/path/test", "test",
-             "otherkey"),
+            ("unitteststr1_model1", "/api/v1/test/path/{otherkey}", "test",
+             "key"), ("unitteststr1_model2", "/api/v1/{key:val}/path/test",
+                      "test", "otherkey"),
             ("unitteststr2_model1", "/api/v1/test2/path/{otherkey}", "test2",
-             "key"),
-            ("unitteststr2_model2", "/api/v1/{key:val}/path/test2", "test2",
-             "otherkey")
+             "key"), ("unitteststr2_model2", "/api/v1/{key:val}/path/test2",
+                      "test2", "otherkey")
         ]
         results = [
-            d for d in fuzz_datagen._fuzz_data(
-                strings, data, action_field, "unittest")
+            d
+            for d in fuzz_datagen._fuzz_data(strings, data, action_field,
+                                             "unittest")
         ]
         self.assertEqual(expected_results, results)
 
@@ -222,10 +239,19 @@ class FuzzDatagenUnittest(testtools.TestCase):
         req = get_req("/api/v1/endpoint", params=test_params_obj)
         strings = ["test", "test2"]
         expected_param_objs = [
-            {"otherkey": "test", "key": "val"},
-            {"otherkey": "val2", "key": "test"},
-            {"otherkey": "test2", "key": "val"},
-            {"otherkey": "val2", "key": "test2"}
+            {
+                "otherkey": "test",
+                "key": "val"
+            }, {
+                "otherkey": "val2",
+                "key": "test"
+            }, {
+                "otherkey": "test2",
+                "key": "val"
+            }, {
+                "otherkey": "val2",
+                "key": "test2"
+            }
         ]
         i = 0
         for i, d in enumerate(

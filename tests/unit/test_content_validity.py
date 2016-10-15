@@ -39,21 +39,20 @@ class FakeTestObject(object):
 @requests_mock.Mocker()
 class TestValidContent(testtools.TestCase):
     """Tests valid_content check for both valid and invalid json/xml."""
+
     def test_valid_json(self, m):
-        content = '{"text": "Sample json"}'
+        text = u'{"text": "Sample json"}'
         headers = {"Content-type": "application/json"}
-        m.register_uri("GET", "http://example.com",
-                       content=content, headers=headers)
+        m.register_uri("GET", "http://example.com", text=text, headers=headers)
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = valid_content(test)
         self.assertEqual("VALID_JSON", signal.slug)
 
     def test_invalid_json(self, m):
-        content = '{"text""" "Sample json"}'
+        text = u'{"text""" "Sample json"}'
         headers = {"Content-type": "application/json"}
-        m.register_uri("GET", "http://example.com",
-                       content=content, headers=headers)
+        m.register_uri("GET", "http://example.com", text=text, headers=headers)
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = valid_content(test)
@@ -61,22 +60,25 @@ class TestValidContent(testtools.TestCase):
         self.assertIn("APPLICATION_FAIL", signal.tags)
 
     def test_valid_xml(self, m):
-        content = """<note>\n
+        text = u"""<note>\n
                      <to>Tove</to>\n
                      <from>Jani</from>\n
                      <heading>Reminder</heading>\n
                      <body>Don't forget me this weekend!</body>\n
                      </note>"""
         headers = {"Content-type": "application/xml"}
-        m.register_uri("GET", "http://example.com",
-                       content=textwrap.dedent(content), headers=headers)
+        m.register_uri(
+            "GET",
+            "http://example.com",
+            text=textwrap.dedent(text),
+            headers=headers)
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = valid_content(test)
         self.assertEqual("VALID_XML", signal.slug)
 
     def test_invalid_xml(self, m):
-        content = """<xml version=='1.0' encoding==UTF-8'?>
+        text = u"""<xml version=='1.0' encoding==UTF-8'?>
                      <!DOCTYPE note SYSTEM 'Note.dtd'>
                      <note>
                      <to>Tove</to>
@@ -85,8 +87,11 @@ class TestValidContent(testtools.TestCase):
                      <body>Don't forget me this weekend!</body>
                      html>"""
         headers = {"Content-type": "application/xml"}
-        m.register_uri("GET", "http://example.com",
-                       content=textwrap.dedent(content), headers=headers)
+        m.register_uri(
+            "GET",
+            "http://example.com",
+            text=textwrap.dedent(text),
+            headers=headers)
         resp = requests.get("http://example.com")
         test = FakeTestObject(resp)
         signal = valid_content(test)

@@ -11,8 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 import re
 from xml.etree import ElementTree
+
+import six
 
 
 def fuzz_request(req, strings, fuzz_type, name_prefix):
@@ -31,8 +34,7 @@ def fuzz_request(req, strings, fuzz_type, name_prefix):
     :rtype: `tuple`
     """
     for name, data, stri, param_path in _fuzz_data(
-        strings, getattr(req, fuzz_type), req.action_field,
-            name_prefix):
+            strings, getattr(req, fuzz_type), req.action_field, name_prefix):
         request_copy = req.get_copy()
         setattr(request_copy, fuzz_type, data)
         request_copy.prepare_request()
@@ -59,13 +61,12 @@ def _fuzz_data(strings, data, skip_var, name_prefix):
             model_iter = _build_dict_combinations(stri, data, skip_var)
         elif isinstance(data, ElementTree.Element):
             model_iter = _build_xml_combinations(stri, data, skip_var)
-        elif isinstance(data, basestring):
+        elif isinstance(data, six.string_types):
             model_iter = _build_str_combinations(stri, data)
         else:
             raise TypeError("Format not recognized!")
         for model_num, (model, param_path) in enumerate(model_iter, 1):
-            name = "{0}str{1}_model{2}".format(
-                name_prefix, str_num, model_num)
+            name = "{0}str{1}_model{2}".format(name_prefix, str_num, model_num)
             yield (name, model, stri, param_path)
 
 
@@ -96,27 +97,30 @@ def _build_dict_combinations(fuzz_string, dic, skip_var):
     :param dic: A dictionary to fuzz
     :param skip_var: ACTION_FIELD UUID value to skip
     """
-    for key, val in dic.iteritems():
+    for key, val in six.iteritems(dic):
         if skip_var in key:
             continue
         elif isinstance(val, dict):
-            for ret, param_path in _build_dict_combinations(
-                    fuzz_string, val, skip_var):
-                yield (_merge_dictionaries(dic, {key: ret}),
-                       "{0}/{1}".format(key, param_path))
+            for ret, param_path in _build_dict_combinations(fuzz_string, val,
+                                                            skip_var):
+                yield (_merge_dictionaries(dic, {
+                    key: ret
+                }), "{0}/{1}".format(key, param_path))
         elif isinstance(val, list):
             for i, v in enumerate(val):
                 list_ = [_ for _ in val]
                 if isinstance(v, dict):
                     for ret, param_path in _build_dict_combinations(
                             fuzz_string, v, skip_var):
-                        list_[i] = ret.copy()
-                        yield (_merge_dictionaries(dic, {key: ret}),
-                               "{0}[{1}]/{2}".format(key, i, param_path))
+                        list_[i] = copy.copy(ret)
+                        yield (_merge_dictionaries(dic, {
+                            key: ret
+                        }), "{0}[{1}]/{2}".format(key, i, param_path))
                 else:
                     list_[i] = fuzz_string
-                    yield (_merge_dictionaries(dic, {key: list_}),
-                           "{0}[{1}]".format(key, i))
+                    yield (_merge_dictionaries(dic, {
+                        key: list_
+                    }), "{0}[{1}]".format(key, i))
         else:
             yield _merge_dictionaries(dic, {key: fuzz_string}), key
 
@@ -143,15 +147,15 @@ def _build_xml_combinations(stri, ele, skip_var):
     if skip_var not in ele.tag:
         if ele.text and skip_var not in ele.text:
             yield _update_xml_ele_text(ele, stri), ele.tag
-        for attr, param_path in _build_dict_combinations(
-                stri, ele.attrib, skip_var):
+        for attr, param_path in _build_dict_combinations(stri, ele.attrib,
+                                                         skip_var):
             yield (_update_xml_ele_attribs(ele, attr),
                    "{0}/{1}".format(ele.tag, param_path))
         for i, element in enumerate(list(ele)):
-            for ret, param_path in _build_xml_combinations(
-                    stri, element, skip_var):
+            for ret, param_path in _build_xml_combinations(stri, element,
+                                                           skip_var):
                 list_ = list(ele)
-                list_[i] = ret.copy()
+                list_[i] = copy.copy(ret)
                 yield (_update_inner_xml_ele(ele, list_),
                        "{0}/{1}".format(ele.tag, param_path))
 
@@ -165,7 +169,7 @@ def _update_xml_ele_text(ele, text):
     :returns: XML element with "text" attribute set to `text`
     :rtype: :class:`xml.ElementTree.Element`
     """
-    ret = ele.copy()
+    ret = copy.copy(ele)
     ret.text = text
     return ret
 
@@ -179,7 +183,7 @@ def _update_xml_ele_attribs(ele, attribs):
     :returns: XML element with all attributes overwritten by `attribs`
     :rtype: :class:`xml.ElementTree.Element`
     """
-    ret = ele.copy()
+    ret = copy.copy(ele)
     ret.attrib = attribs
     return ret
 
@@ -194,7 +198,7 @@ def _update_inner_xml_ele(ele, list_):
     :returns: XML element with new subelements from `list_`
     :rtype: :class:`xml.ElementTree.Element`
     """
-    ret = ele.copy()
+    ret = copy.copy(ele)
     for i, v in enumerate(list_):
         ret[i] = v
     return ret
