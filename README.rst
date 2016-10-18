@@ -236,7 +236,7 @@ any test type.
 
 ::
 
-    $ syntribos --config-file keystone.config run
+    $ syntribos --config-file keystone.conf run
 
 Fuzzy-matching test names
 -------------------------
@@ -246,7 +246,7 @@ the ``-t`` flag.
 
 ::
 
-    $ syntribos --config-file keystone.config -t SQL run
+    $ syntribos --config-file keystone.conf -t SQL run
 
 
 This will match all tests that contain ``SQL`` in their name

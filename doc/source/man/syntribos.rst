@@ -95,7 +95,7 @@ any test type.
 
 ::
 
-    $ syntribos --config-file keystone.config run
+    $ syntribos --config-file keystone.conf run
 
 SEE ALSO
 ========
