@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import datetime
 import logging
 import os
 import pkgutil
@@ -29,6 +28,7 @@ import syntribos.tests as tests
 import syntribos.tests.base
 from syntribos.utils import cleanup
 from syntribos.utils import cli as cli
+from syntribos.utils import env as ENV
 from syntribos.utils.file_utils import ContentType
 from syntribos.utils import remotes
 
@@ -104,35 +104,51 @@ class Runner(object):
         return (i for i in included)
 
     @classmethod
-    def get_default_conf_files(cls):
-        return ["~/.syntribos/syntribos.conf"]
-
-    @classmethod
-    def get_log_dir_name(cls):
-        """Returns the directory where log files would be saved."""
-        if not cls.log_path:
-            log_dir = CONF.logging.log_dir
-            time_str = datetime.datetime.now().strftime("%Y-%m-%d_%X.%f")
-            log_path = "{time}".format(time=time_str)
-            cls.log_path = os.path.join(log_dir, log_path)
-            if not os.path.isdir(cls.log_path):
-                os.makedirs(cls.log_path)
-        return cls.log_path
-
-    @classmethod
     def get_logger(cls, template_name):
         """Updates the logger handler for LOG."""
         template_name = template_name.replace(os.path.sep, "::")
         template_name = template_name.replace(".", "_")
         log_file = "{0}.log".format(template_name)
         if not cls.log_path:
-            cls.get_log_dir_name()
+            cls.log_path = ENV.get_log_dir_name()
         log_file = os.path.join(cls.log_path, log_file)
         log_handle = logging.FileHandler(log_file, 'w')
         LOG = logging.getLogger()
         LOG.handlers = [log_handle]
         LOG.setLevel(logging.DEBUG)
         return LOG
+
+    @classmethod
+    def setup_config(cls, use_file=False):
+        """Register CLI options & parse config file."""
+        try:
+            syntribos.config.register_opts()
+            if use_file:
+                CONF(
+                    sys.argv[1:],
+                    default_config_files=[ENV.get_default_conf_file()])
+            else:
+                CONF(sys.argv[1:], default_config_files=[])
+        except Exception as exc:
+            syntribos.config.handle_config_exception(exc)
+
+    @classmethod
+    def setup_runtime_env(cls):
+        """Sets up the environment for a current test run.
+
+        This includes registering / parsing config options, creating the
+        timestamped log directory and the results log file, if specified
+        """
+        # Setup logging
+        cls.log_path = ENV.get_log_dir_name()
+        if not os.path.isdir(cls.log_path):
+            os.makedirs(cls.log_path)
+
+        # Create results file if any, otherwise use sys.stdout
+        if CONF.outfile:
+            cls.output = open(CONF.outfile, "w")
+        else:
+            cls.output = sys.stdout
 
     @classmethod
     def run(cls):
@@ -143,67 +159,73 @@ class Runner(object):
         as ```list_tests``` or ```run``` the respective method is called.
         """
         global result
-        try:
-            syntribos.config.register_opts()
-            CONF(
-                sys.argv[1:],
-                default_config_files=cls.get_default_conf_files())
-        except Exception as exc:
-            syntribos.config.handle_config_exception(exc)
 
         cli.print_symbol()
-        if not CONF.outfile:
-            decorator = unittest.runner._WritelnDecorator(sys.stdout)
-        else:
-            decorator = unittest.runner._WritelnDecorator(
-                open(CONF.outfile, 'w'))
-        result = syntribos.result.IssueTestResult(decorator, True, verbosity=1)
-        if CONF.sub_command.name == "list_tests":
+        cls.setup_config()
+
+        if CONF.sub_command.name == "init":
+            ENV.initialize_syntribos_env()
+            exit(0)
+
+        elif CONF.sub_command.name == "list_tests":
             cls.list_tests()
-        else:
-            cls.start_time = time.time()
+
+        if not ENV.is_syntribos_initialized():
+            print("Syntribos was not initialized. Please run the 'init' "
+                  "command or set it up manually. See the README for more "
+                  "information about the installation process.")
+            exit(1)
+
+        cls.setup_runtime_env()
+
+        decorator = unittest.runner._WritelnDecorator(cls.output)
+        result = syntribos.result.IssueTestResult(decorator, True, verbosity=1)
+
+        cls.start_time = time.time()
+        if CONF.sub_command.name == "run":
+            list_of_tests = list(
+                cls.get_tests(CONF.test_types, CONF.excluded_types))
+        elif CONF.sub_command.name == "dry_run":
+            dry_run_output = {"failures": [], "successes": []}
+            list_of_tests = list(cls.get_tests(dry_run=True))
+
+        print("\nRunning Tests...:")
+        templates_dir = CONF.syntribos.templates
+        if templates_dir is None:
+            print("Attempting to download templates from {}".format(
+                CONF.remote.templates_uri))
+            templates_path = remotes.get(CONF.remote.templates_uri)
+            templates_dir = ContentType("r", 0)(templates_path)
+
+        for file_path, req_str in templates_dir:
+            LOG = cls.get_logger(file_path)
+            CONF.log_opt_values(LOG, logging.DEBUG)
+            if not file_path.endswith(".template"):
+                LOG.debug('file.......: {0} (SKIPPED)'.format(file_path))
+                continue
+
+            test_names = [t for (t, _) in list_of_tests]
+            log_string = ''.join([
+                '\n{0}\nTEMPLATE FILE\n{0}\n'.format('-' * 12),
+                'file.......: {0}\n'.format(file_path),
+                'tests......: {0}\n'.format(test_names)
+            ])
+            LOG.debug(log_string)
+            print(syntribos.SEP)
+            print("Template File...: {}".format(file_path))
+            print(syntribos.SEP)
+
             if CONF.sub_command.name == "run":
-                list_of_tests = list(
-                    cls.get_tests(CONF.test_types, CONF.excluded_types))
+                cls.run_given_tests(list_of_tests, file_path, req_str)
             elif CONF.sub_command.name == "dry_run":
-                dry_run_output = {"failures": [], "successes": []}
-                list_of_tests = list(cls.get_tests(dry_run=True))
-            print("\nRunning Tests...:")
-            templates_dir = CONF.syntribos.templates
-            if templates_dir is None:
-                print("Attempting to download templates from {}".format(
-                    CONF.remote.templates_uri))
-                templates_path = remotes.get(CONF.remote.templates_uri)
-                templates_dir = ContentType('r', 0)(templates_path)
-            for file_path, req_str in templates_dir:
-                LOG = cls.get_logger(file_path)
-                CONF.log_opt_values(LOG, logging.DEBUG)
-                if not file_path.endswith(".template"):
-                    LOG.debug('file.......: {0} (SKIPPED)'.format(file_path))
-                    continue
+                cls.dry_run(list_of_tests, file_path, req_str,
+                            dry_run_output)
 
-                test_names = [t for (t, _) in list_of_tests]
-                log_string = ''.join([
-                    '\n{0}\nTEMPLATE FILE\n{0}\n'.format('-' * 12),
-                    'file.......: {0}\n'.format(file_path),
-                    'tests......: {0}\n'.format(test_names)
-                ])
-                LOG.debug(log_string)
-                print(syntribos.SEP)
-                print("Template File...: {}".format(file_path))
-                print(syntribos.SEP)
-
-                if CONF.sub_command.name == "run":
-                    cls.run_given_tests(list_of_tests, file_path, req_str)
-                elif CONF.sub_command.name == "dry_run":
-                    cls.dry_run(list_of_tests, file_path, req_str,
-                                dry_run_output)
-
-            if CONF.sub_command.name == "run":
-                result.print_result(cls.start_time)
-                cleanup.delete_temps()
-            elif CONF.sub_command.name == "dry_run":
-                cls.dry_run_report(dry_run_output)
+        if CONF.sub_command.name == "run":
+            result.print_result(cls.start_time)
+            cleanup.delete_temps()
+        elif CONF.sub_command.name == "dry_run":
+            cls.dry_run_report(dry_run_output)
 
     @classmethod
     def dry_run(cls, list_of_tests, file_path, req_str, output):

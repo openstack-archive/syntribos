@@ -93,12 +93,6 @@ class RunnerUnittest(testtools.TestCase):
         loaded_tests = self.r.get_tests(["CORS_WILDCARD_HEADERS"])
         self._compare_tests(expected, loaded_tests)
 
-    def test_log_path_caching(self):
-        """Check that we get the same log file name every time."""
-        res1 = self.r.get_log_dir_name()
-        res2 = self.r.get_log_dir_name()
-        self.assertEqual(res1, res2)
-
     def test_get_sql_tests_exclude_header(self):
         """Check that we get the right SQL tests when "HEADER" is excluded."""
         expected = [

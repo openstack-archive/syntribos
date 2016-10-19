@@ -39,9 +39,33 @@ SignalHolders (:class:`syntribos.signal.SignalHolder`)
 Checks
 ~~~~~~
 
-.. autofunction:: syntribos.checks.http.check_http_fail
-
-.. autofunction:: syntribos.checks.http.check_http_status_code
+.. automodule:: syntribos.checks.content_validity
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.fingerprint
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.header
+    :members
+    :undoc-members:
+.. automodule:: syntribos.checks.http
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.length
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.ssl
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.stacktrace
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.string
+    :members:
+    :undoc-members:
+.. automodule:: syntribos.checks.time
+    :members:
+    :undoc-members:
 
 Tests
 ~~~~~
@@ -56,17 +80,6 @@ either directly, or through a subclass like
 All tests are aggregated in the `syntribos.tests.base.test_table` variable
 
 .. automodule:: syntribos.tests.base
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-..
-    .. automodule:: syntribos.tests.fuzz.base_fuzz
-        :members:
-        :undoc-members:
-        :show-inheritance:
-
-.. automodule:: syntribos.tests.fuzz.config
     :members:
     :undoc-members:
     :show-inheritance:
@@ -119,8 +132,8 @@ HTTP requests.
     :undoc-members:
     :show-inheritance:
 
-Extension
-~~~~~~~~~
+Extensions
+~~~~~~~~~~
 
 This section describes syntribos' extensions, which are called by the
 CALL_EXTERNAL field in the request template.

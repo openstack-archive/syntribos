@@ -18,6 +18,7 @@ from oslo_config import cfg
 
 import syntribos
 from syntribos.utils.file_utils import ContentType
+from syntribos.utils.file_utils import ExistingDirType
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
@@ -36,6 +37,9 @@ def handle_config_exception(exc):
         CONF.print_help()
 
     elif isinstance(exc, cfg.ConfigFilesNotFoundError):
+        if CONF._args[0] == "init":
+            return
+
         msg = ("Configuration file specified ('{config}') wasn't "
                "found or was unreadable.").format(
             config=",".join(CONF.config_file))
@@ -45,7 +49,7 @@ def handle_config_exception(exc):
         print(syntribos.SEP)
         sys.exit(0)
     else:
-        raise exc
+        LOG.exception(exc)
 
 syntribos_group = cfg.OptGroup(name="syntribos", title="Main syntribos Config")
 user_group = cfg.OptGroup(name="user", title="Identity Config")
@@ -55,11 +59,28 @@ remote_group = cfg.OptGroup(name="remote", title="Remote config")
 
 
 def sub_commands(sub_parser):
-    sub_parser.add_parser('list_tests',
+    init_parser = sub_parser.add_parser(
+        "init",
+        help="Initialize syntribos environment after "
+        "installation. Should be run before any other "
+        "commands.")
+    init_parser.add_argument(
+        "--force", dest="force", action="store_true",
+        help="Skip prompts for configurable options, force initialization "
+        "even if syntribos believes it has already been initialized. If "
+        "--custom_install_root isn't specified, we will use the default "
+        "options. WARNING: This is potentially destructive! Use with caution.")
+    init_parser.add_argument(
+        "--custom_install_root", dest="custom_install_root",
+        help="Skip prompts for configurable options, and initialize syntribos "
+             "in the specified directory. Can be combined with --force to "
+             "overwrite existing files.")
+
+    sub_parser.add_parser("list_tests",
                           help="List all available tests")
-    sub_parser.add_parser('run',
+    sub_parser.add_parser("run",
                           help="Run syntribos with given config options")
-    sub_parser.add_parser('dry_run',
+    sub_parser.add_parser("dry_run",
                           help="Dry run syntribos with given config options")
 
 
@@ -126,9 +147,9 @@ def list_cli_opts():
 def list_syntribos_opts():
     return [
         cfg.StrOpt("endpoint", default="",
-                   sample_default="http://localhost/app", required=True,
+                   sample_default="http://localhost/app",
                    help="The target host to be tested"),
-        cfg.Opt("templates", type=ContentType('r', 0), default="",
+        cfg.Opt("templates", type=ContentType("r", 0), default="",
                 sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
                      "file, to test on the target API"),
@@ -140,6 +161,11 @@ def list_syntribos_opts():
                         sample_default=["500_errors", "length_diff"],
                         help="Defect types to exclude from the "
                              "results output"),
+        cfg.Opt("custom_root", type=ExistingDirType(), short="c",
+                sample_default="/your/custom/root",
+                help="The root directory where the subfolders that make up "
+                     "syntribos' environment (logs, templates, payloads, "
+                     "configuration files, etc.)"),
     ]
 
 
@@ -172,7 +198,6 @@ def list_user_opts():
 
 
 def list_test_opts():
-    # TODO(cneill): Discover other config options from tests dynamically
     return [
         cfg.FloatOpt("length_diff_percent", default=1000.0,
                      help="Percentage difference between initial request "
@@ -194,9 +219,9 @@ def list_logger_opts():
         cfg.BoolOpt("http_request_compression", default=True,
                     help="Request content compression to compress fuzz "
                     "strings present in the http request content."),
-        cfg.StrOpt("log_dir", default="", required=True,
+        cfg.StrOpt("log_dir", default="",
                    sample_default="~/.syntribos/logs",
-                   help="Where to save debug log files for a Syntribos run")
+                   help="Where to save debug log files for a syntribos run")
     ]
 
 

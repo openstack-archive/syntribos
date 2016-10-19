@@ -205,6 +205,36 @@ with `pip <https://pypi.python.org/pypi/pip>`__.
    $ cd syntribos
    $ pip install .
 
+======================================
+Initializing the syntribos Environment
+======================================
+
+Once syntribos is installed, you must initialize the syntribos environment.
+This can be done manually, or via the ``init`` command. 
+
+::
+
+    $ syntribos init
+
+
+If you'd like to specify a custom root for syntribos to be installed in,
+specify the ``--custom_install_root`` flag after ``init``. This will skip
+syntribos' prompts for information from the terminal, which can be handy for
+Jenkins jobs and other situations where user input cannot be retrieved.
+
+If you've already run the ``init`` command but want to start over with a fresh
+environment, you can specify the ``--force`` flag to overwrite existing files.
+The ``--custom_install_root`` and ``--force`` flags can be combined to overwrite
+files in a custom install root.
+
+**Example:**
+
+::
+
+    $ syntribos init --custom_install_root /your/custom/path --force
+
+
+
 =============
 Configuration
 =============
@@ -369,6 +399,18 @@ Commands
 Below are the set of commands that can be specified while
 using syntribos.
 
+- **init**
+
+  This command sets up the syntribos environment after installation. It will
+  create the necessary folders for templates, payloads, and logs, as well as
+  an example configuration file.
+
+  ::
+
+    $ syntribos init
+
+  To learn more about ``syntribos init``, see the installation instructions
+  `here <installation.html>`_
 
 - **run**
 
@@ -379,7 +421,6 @@ using syntribos.
     $ syntribos --config-file keystone.conf -t SQL run
 
 - **dry-run**
-
 
   This command ensures that the template files given for this run parse
   successfully without errors. It then runs a debug test which sends no
@@ -392,9 +433,7 @@ using syntribos.
 
     $ syntribos --config-file keystone.conf dry_run
 
-
 - **list_tests**
-
 
   This command will list the names and description of all the tests
   that can be executed by the ``run`` command.
@@ -402,7 +441,6 @@ using syntribos.
   ::
 
     $ syntribos --config-file keystone.conf list_tests
-
 
 All these commands will only work if a configuration file
 is specified. If a configuration file is present in the default
@@ -435,6 +473,15 @@ the ``-t`` flag.
 
 This will match all tests that contain ``SQL`` in their name
 like SQL_INJECTION_HEADERS, SQL_INJECTION_BODY etc.
+
+Specifying a custom root directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you set up the syntribos environment with a custom root (i.e. with
+``syntribos init --custom_install_root``), you can point to it with the
+``--syntribos-custom_root`` configuration option. Syntribos will look for a
+``syntribos.conf`` file inside this directory, and will read further
+configuration information from there.
 
 ===================
 Logging and Results
