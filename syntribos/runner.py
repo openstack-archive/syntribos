@@ -23,6 +23,7 @@ from oslo_config import cfg
 import six
 
 import syntribos.config
+from syntribos.formatters.json_formatter import JSONFormatter
 import syntribos.result
 import syntribos.tests as tests
 import syntribos.tests.base
@@ -69,7 +70,7 @@ class Runner(object):
             __import__(modname, fromlist=[])
 
     @classmethod
-    def get_tests(cls, test_types=None, excluded_types=None):
+    def get_tests(cls, test_types=None, excluded_types=None, dry_run=False):
         """Yields relevant tests based on test type
 
         :param list test_types: Test types to be run
@@ -77,10 +78,17 @@ class Runner(object):
         :rtype: tuple
         :returns: (test type (str), ```syntribos.tests.base.TestType```)
         """
+
         cls.load_modules(tests)
         test_types = test_types or [""]
         excluded_types = excluded_types or [""]
         items = sorted(six.iteritems(syntribos.tests.base.test_table))
+        # If it's a dry run, only return the debug test
+        if dry_run:
+            return (x for x in items if "DEBUG" in x[0])
+        # Otherwise, don't run the debug test at all
+        else:
+            excluded_types.append("DEBUG")
         included = []
         # Only include tests allowed by value in -t params
         for t in test_types:
@@ -150,8 +158,12 @@ class Runner(object):
             cls.list_tests()
         else:
             cls.start_time = time.time()
-            list_of_tests = list(
-                cls.get_tests(CONF.test_types, CONF.excluded_types))
+            if CONF.sub_command.name == "run":
+                list_of_tests = list(
+                    cls.get_tests(CONF.test_types, CONF.excluded_types))
+            elif CONF.sub_command.name == "dry_run":
+                dry_run_output = {"failures": [], "successes": []}
+                list_of_tests = list(cls.get_tests(dry_run=True))
             print("\nRunning Tests...:")
             for file_path, req_str in CONF.syntribos.templates:
                 LOG = cls.get_logger(file_path)
@@ -174,30 +186,67 @@ class Runner(object):
                 if CONF.sub_command.name == "run":
                     cls.run_given_tests(list_of_tests, file_path, req_str)
                 elif CONF.sub_command.name == "dry_run":
-                    cls.dry_run(list_of_tests, file_path, req_str)
-            result.print_result(cls.start_time)
+                    cls.dry_run(list_of_tests, file_path, req_str,
+                                dry_run_output)
+
+            if CONF.sub_command.name == "run":
+                result.print_result(cls.start_time)
+            elif CONF.sub_command.name == "dry_run":
+                cls.dry_run_report(dry_run_output)
 
     @classmethod
-    def dry_run(cls, list_of_tests, file_path, req_str):
-        """Loads all the templates and prints out the tests
+    def dry_run(cls, list_of_tests, file_path, req_str, output):
+        """Runs debug test to check all steps leading up to executing a test
 
-        This method  does not run any tests, but loads all the
-        templates and prints all the loaded tests.
+        This method does not run any checks, but does parse the template files
+        and config options. It then runs a debug test which sends no requests
+        of its own.
 
-        :param list list_of_tests: A list of all the tests loaded
+        Note: if any external calls referenced inside the template file do make
+        requests, the parser will still make those requests even for a dry run
+
         :param str file_path: Path of the template file
         :param str req_str: Request string of each template
 
         :return: None
         """
         for test_name, test_class in list_of_tests:
-            log_string = "Dry ran  :  {name}".format(name=test_name)
-            LOG.debug(log_string)
+            try:
+                print("\nParsing template file...")
+                test_class.create_init_request(file_path, req_str)
+            except Exception as e:
+                print("Error in parsing template:\n \t{0}: {1}\n".format(
+                    type(e).__name__, e))
+                LOG.exception("Error in parsing template:")
+                output["failures"].append(
+                    {
+                        "file": file_path,
+                        "error": e.__str__()
+                    }
+                )
+            else:
+                print("Request sucessfully generated!\n")
+                output["successes"].append(file_path)
+
             test_cases = list(test_class.get_test_cases(file_path, req_str))
             if len(test_cases) > 0:
                 for test in test_cases:
                     if test:
-                        cls.run_test(test, result, dry_run=True)
+                        cls.run_test(test, result)
+
+    @classmethod
+    def dry_run_report(cls, output):
+        """Reports the dry run through a formatter."""
+        formatter_types = {
+            "json": JSONFormatter(result)
+        }
+        formatter = formatter_types[CONF.output_format]
+        formatter.report(output)
+
+        test_log = cls.log_path
+        print(syntribos.SEP)
+        print("LOG PATH...: {path}".format(path=test_log))
+        print(syntribos.SEP)
 
     @classmethod
     def run_given_tests(cls, list_of_tests, file_path, req_str):
@@ -280,7 +329,7 @@ class Runner(object):
             exit(0)
 
     @classmethod
-    def run_test(cls, test, result, dry_run=False):
+    def run_test(cls, test, result):
         """Create a new test suite, add a test, and run it
 
         :param test: The test to add to the suite
@@ -290,11 +339,7 @@ class Runner(object):
         """
         suite = unittest.TestSuite()
         suite.addTest(test("run_test_case"))
-        if dry_run:
-            for test in suite:
-                print(test)
-        else:
-            suite.run(result)
+        suite.run(result)
 
 
 def entry_point():

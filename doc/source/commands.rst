@@ -16,14 +16,15 @@ using Syntribos.
 - **dry_run**
 
 
-  This command prepares all the test cases that would be executed by
-  the ```run``` command based on the configuration options passed to
-  Syntribos, but simply prints their details to the screen instead
-  of actually running them.
+  This command ensures that the template files given for this run parse
+  successfully without errors. It then runs a debug test which sends no
+  requests of its own.
 
+  Note: if any external calls referenced inside the template file do make
+  requests, the parser will still make those requests even for a dry run.
   ::
 
-    $ syntribos --config-file keystone.conf -t SQL dry_run
+    $ syntribos --config-file keystone.conf dry_run
 
 
 - **list_tests**
