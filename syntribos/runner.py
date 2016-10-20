@@ -59,7 +59,6 @@ class Runner(object):
             print("{test:<50}{desc}\r".format(
                 test=test, desc=test_description))
         print("\n")
-        exit(0)
 
     @classmethod
     def load_modules(cls, package):
@@ -119,16 +118,17 @@ class Runner(object):
         return LOG
 
     @classmethod
-    def setup_config(cls, use_file=False):
+    def setup_config(cls, use_file=False, argv=None):
         """Register CLI options & parse config file."""
+        if argv is None:
+            argv = sys.argv[1:]
         try:
             syntribos.config.register_opts()
             if use_file:
-                CONF(
-                    sys.argv[1:],
-                    default_config_files=[ENV.get_default_conf_file()])
+                CONF(argv,
+                     default_config_files=[ENV.get_default_conf_file()])
             else:
-                CONF(sys.argv[1:], default_config_files=[])
+                CONF(argv, default_config_files=[])
         except Exception as exc:
             syntribos.config.handle_config_exception(exc)
 
@@ -161,14 +161,16 @@ class Runner(object):
         global result
 
         cli.print_symbol()
-        cls.setup_config()
 
         if CONF.sub_command.name == "init":
+            cls.setup_config()
             ENV.initialize_syntribos_env()
             exit(0)
 
         elif CONF.sub_command.name == "list_tests":
+            cls.setup_config()
             cls.list_tests()
+            exit(0)
 
         if not ENV.is_syntribos_initialized():
             print("Syntribos was not initialized. Please run the 'init' "
@@ -176,6 +178,7 @@ class Runner(object):
                   "information about the installation process.")
             exit(1)
 
+        cls.setup_config(use_file=True)
         cls.setup_runtime_env()
 
         decorator = unittest.runner._WritelnDecorator(cls.output)
@@ -351,10 +354,11 @@ class Runner(object):
 
             run_time = time.time() - template_start_time
             LOG.debug("Run time: {} sec.".format(run_time))
-            num_tests = result.testsRun - result.testsRunSinceLastPrint
-            print("\nRan {num} test(s) in {time:.3f}s\n".format(
-                num=num_tests, time=run_time))
-            result.testsRunSinceLastPrint = result.testsRun
+            if hasattr(result, "testsRun"):
+                num_tests = result.testsRun - result.testsRunSinceLastPrint
+                print("\nRan {num} test(s) in {time:.3f}s\n".format(
+                    num=num_tests, time=run_time))
+                result.testsRunSinceLastPrint = result.testsRun
 
         except KeyboardInterrupt:
             result.print_result(cls.start_time)

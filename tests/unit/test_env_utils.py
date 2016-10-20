@@ -13,10 +13,14 @@
 # limitations under the License.
 import os
 
+import mock
 import six
 import testtools
 
+import syntribos.config
 import syntribos.utils.env as ENV
+
+syntribos.config.register_opts()
 
 
 class EnvUtilsUnittest(testtools.TestCase):
@@ -29,3 +33,34 @@ class EnvUtilsUnittest(testtools.TestCase):
         self.assertIsNot("", home_root)
         self.assertIsNot("/", home_root)
         self.assertTrue(os.path.isdir(home_dir))
+
+    def test_get_syntribos_root(self):
+        """Check that we get something reasonable from get_syntribos_root."""
+        root = ENV.get_syntribos_root()
+        root_parent = os.path.abspath(os.path.join(root, ".."))
+        self.assertIsInstance(root, six.string_types)
+        self.assertIsNot("", root)
+        self.assertIsNot("/", root)
+        self.assertTrue(os.path.isdir(root_parent))
+
+    def test_get_syntribos_path(self):
+        """Check that we get something reasonable from get_syntribos_path."""
+        root = ENV.get_syntribos_root()
+        self.assertIsInstance(root, six.string_types)
+        root_parent = os.path.abspath(os.path.join(root, ".."))
+        path_parent = ENV.get_syntribos_path("..")
+        self.assertEqual(root_parent, path_parent)
+
+    def test_get_log_dir_name(self):
+        """Check that we get something reasonable from get_log_dir_name."""
+        log_dir = ENV.get_log_dir_name()
+        self.assertIsInstance(log_dir, six.string_types)
+        root_parent = os.path.abspath(os.path.join(log_dir, "..", ".."))
+        self.assertIsInstance(log_dir, six.string_types)
+        self.assertIsNot("", log_dir)
+        self.assertIsNot("/", log_dir)
+        self.assertTrue(os.path.isdir(root_parent))
+
+    @mock.patch("os.makedirs")
+    def test_create_env_dirs(self, makedirs):
+        ENV.create_env_dirs(ENV.get_syntribos_root())

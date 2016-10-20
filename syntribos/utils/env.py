@@ -79,7 +79,7 @@ def get_syntribos_root():
 
 
 def get_syntribos_path(*args):
-    return os.path.join(get_syntribos_root(), *args)
+    return os.path.abspath(os.path.join(get_syntribos_root(), *args))
 
 
 def get_default_conf_file():
@@ -182,8 +182,9 @@ def initialize_syntribos_env():
     root_dir = get_venv_root() if is_venv() else get_user_home_root()
 
     force = CONF.sub_command.force
-    if CONF.sub_command.custom_install_root:
-        root_dir = CONF.sub_command.custom_install_root
+    custom_root = CONF.sub_command.custom_install_root or ""
+    if custom_root:
+        root_dir = custom_root
     elif CONF.sub_command.force:
         pass
     else:

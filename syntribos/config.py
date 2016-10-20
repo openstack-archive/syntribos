@@ -22,6 +22,7 @@ from syntribos.utils.file_utils import ExistingDirType
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
+OPTS_REGISTERED = False
 
 
 def handle_config_exception(exc):
@@ -96,23 +97,26 @@ def list_opts():
 
 
 def register_opts():
-    # CLI options
-    CONF.register_cli_opts(list_cli_opts())
-    # Syntribos options
-    CONF.register_group(syntribos_group)
-    CONF.register_cli_opts(list_syntribos_opts(), group=syntribos_group)
-    # Keystone options
-    CONF.register_group(user_group)
-    CONF.register_opts(list_user_opts(), group=user_group)
-    # Test options
-    CONF.register_group(test_group)
-    CONF.register_opts(list_test_opts(), group=test_group)
-    # Logger options
-    CONF.register_group(logger_group)
-    CONF.register_opts(list_logger_opts(), group=logger_group)
-    # Remote options
-    CONF.register_group(remote_group)
-    CONF.register_opts(list_remote_opts(), group=remote_group)
+    global OPTS_REGISTERED
+    if not OPTS_REGISTERED:
+        # CLI options
+        CONF.register_cli_opts(list_cli_opts())
+        # Syntribos options
+        CONF.register_group(syntribos_group)
+        CONF.register_cli_opts(list_syntribos_opts(), group=syntribos_group)
+        # Keystone options
+        CONF.register_group(user_group)
+        CONF.register_opts(list_user_opts(), group=user_group)
+        # Test options
+        CONF.register_group(test_group)
+        CONF.register_opts(list_test_opts(), group=test_group)
+        # Logger options
+        CONF.register_group(logger_group)
+        CONF.register_opts(list_logger_opts(), group=logger_group)
+        # Remote options
+        CONF.register_group(remote_group)
+        CONF.register_opts(list_remote_opts(), group=remote_group)
+        OPTS_REGISTERED = True
 
 
 def list_cli_opts():

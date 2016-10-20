@@ -120,3 +120,15 @@ class RunnerUnittest(testtools.TestCase):
             "COMMAND_INJECTION_HEADERS", "COMMAND_INJECTION_PARAMS"]
         loaded_tests = self.r.get_tests(["SQL", "COMMAND"], ["URL", "BODY"])
         self._compare_tests(expected, loaded_tests)
+
+    def test_list_tests(self):
+        """Check that we can list tests and exit successfully."""
+        self.r.list_tests()
+
+    def test_run_empty_tests(self):
+        """Call Runner.run_given_tests with an empty list for sanity check."""
+        self.r.run_given_tests([], "", "")
+
+    def test_dry_run_empty_tests(self):
+        """Call Runner.dry_run with empty list for sanity check."""
+        self.r.dry_run([], "", "", {})
