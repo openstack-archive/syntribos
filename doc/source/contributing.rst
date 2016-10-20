@@ -1,3 +1,4 @@
+=======================
 Contributing Guidelines
 =======================
 
@@ -6,7 +7,7 @@ Contributing Guidelines
 2. All new classes/functions should have appropriate docstrings in
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
 3. All new code should have appropriate unittests (place them in the
-   ``tests/unit`` folder)
+   :file:`tests/unit` folder)
 
 Anyone wanting to contribute to OpenStack must follow
 `the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
@@ -14,14 +15,14 @@ Anyone wanting to contribute to OpenStack must follow
 All changes should be submitted through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
 
-Bugs should be filed on the `Syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
+Bugs should be filed on the `syntribos launchpad site <https://budmegs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
 Breaking changes, feature requests, and other non prioritized work should
 first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
-Readme.rst is auto generated from docs by running ``python readme.py`` in the
-``syntribos/scripts`` directory. So when the README.rst needs to be updated;
-modify the corresponding rst file in ``syntribos/doc/source`` and auto generate
+README.rst is auto generated from docs by running :command:`python readme.py` in the
+:file:`syntribos/scripts` directory. So when the README.rst needs to be updated;
+modify the corresponding rst file in :file:`syntribos/doc/source` and auto generate
 the README.

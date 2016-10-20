@@ -1,8 +1,9 @@
+============================
 Syntribos Code Documentation
 ============================
 
 Configuration
--------------
+~~~~~~~~~~~~~
 
 This section describes the configuration specified in your configuration file
 (second argument to the runner).
@@ -23,7 +24,7 @@ This section describes the configuration specified in your configuration file
         :show-inheritance:
 
 Signals
--------
+~~~~~~~
 
 This section describes Signals (:class:`syntribos.signal.SynSignal`) and
 SignalHolders (:class:`syntribos.signal.SignalHolder`)
@@ -36,19 +37,19 @@ SignalHolders (:class:`syntribos.signal.SignalHolder`)
     :special-members: __init__, __contains__
 
 Checks
-------
+~~~~~~
 
 .. autofunction:: syntribos.checks.http.check_http_fail
 
 .. autofunction:: syntribos.checks.http.check_http_status_code
 
 Tests
------
+~~~~~
 
 This section describes the components involved with writing your own tests with
-Syntribos.
+syntribos.
 
-All Syntribos tests inherit from :class:`syntribos.tests.base.BaseTestCase`,
+All syntribos tests inherit from :class:`syntribos.tests.base.BaseTestCase`,
 either directly, or through a subclass like
 :class:`syntribos.tests.fuzz.base_fuzz.BaseFuzzTestCase`.
 
@@ -76,10 +77,10 @@ All tests are aggregated in the `syntribos.tests.base.test_table` variable
     :show-inheritance:
 
 Issues
-------
+~~~~~~
 
 This section describes the representation of issues that are uncovered by
-Syntribos.
+syntribos.
 
 .. automodule:: syntribos.issue
     :members:
@@ -87,10 +88,10 @@ Syntribos.
     :show-inheritance:
 
 Results
--------
+~~~~~~~
 
 This section describes the representation of results (collections of issues)
-from a given Syntribos run.
+from a given syntribos run.
 
 .. automodule:: syntribos.result
     :members:
@@ -98,7 +99,7 @@ from a given Syntribos run.
     :show-inheritance:
 
 HTTP Requests
--------------
+~~~~~~~~~~~~~
 
 This section describes the components related to generating, fuzzing, and making
 HTTP requests.
@@ -119,9 +120,9 @@ HTTP requests.
     :show-inheritance:
 
 Extension
-----------
+~~~~~~~~~
 
-This section describes Syntribos' extensions, which are called by the
+This section describes syntribos' extensions, which are called by the
 CALL_EXTERNAL field in the request template.
 
 .. automodule:: syntribos.extensions.identity.models.base

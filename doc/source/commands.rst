@@ -1,19 +1,20 @@
+==================
 Syntribos Commands
 ==================
 
 Below are the set of commands that should be specified while
-using Syntribos.
+using syntribos.
 
 
-- **run**
+- :command:`syntribos run`
 
-  This command runs Syntribos with the given config options
+  This command runs syntribos with the given config options
 
   ::
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-- **dry_run**
+- :command:`syntribos dry-run`
 
 
   This command ensures that the template files given for this run parse
@@ -22,12 +23,13 @@ using Syntribos.
 
   Note: if any external calls referenced inside the template file do make
   requests, the parser will still make those requests even for a dry run.
+
   ::
 
     $ syntribos --config-file keystone.conf dry_run
 
 
-- **list_tests**
+- :command:`syntribos list_tests`
 
 
   This command will list the names and description of all the tests

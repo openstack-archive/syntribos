@@ -17,7 +17,7 @@ Anyone wanting to contribute to OpenStack must follow
 All changes should be submitted through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
 
-Bugs should be filed on the `Syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
+Bugs should be filed on the `syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
 Breaking changes, feature requests, and other unprioritized work should first be

@@ -127,7 +127,7 @@ class TemplateType(ExistingPathType):
             return [self._fetch_from_file(string)]
 
 
-syntribos_group = cfg.OptGroup(name="syntribos", title="Main Syntribos Config")
+syntribos_group = cfg.OptGroup(name="syntribos", title="Main syntribos Config")
 user_group = cfg.OptGroup(name="user", title="Identity Config")
 test_group = cfg.OptGroup(name="test", title="Test Config")
 logger_group = cfg.OptGroup(name="logging", title="Logger config")
@@ -137,9 +137,9 @@ def sub_commands(sub_parser):
     sub_parser.add_parser('list_tests',
                           help="List all available tests")
     sub_parser.add_parser('run',
-                          help="Run Syntribos with given config options")
+                          help="Run syntribos with given config options")
     sub_parser.add_parser('dry_run',
-                          help="Dry run Syntribos with given config options")
+                          help="Dry run syntribos with given config options")
 
 
 def list_opts():
@@ -174,7 +174,7 @@ def list_cli_opts():
         cfg.SubCommandOpt(name="sub_command",
                           handler=sub_commands,
                           help="Available commands",
-                          title="Syntribos Commands"),
+                          title="syntribos Commands"),
         cfg.MultiStrOpt("test-types", dest="test_types", short="t",
                         default=[""], sample_default=["SQL", "XSS"],
                         help="Test types to run against the target API"),
@@ -183,7 +183,7 @@ def list_cli_opts():
                         help="Test types to be excluded from current run"
                              "against the target API"),
         cfg.BoolOpt("colorize", dest="colorize", short="cl", default=False,
-                    help="Enable color in Syntribos terminal output"),
+                    help="Enable color in syntribos terminal output"),
         cfg.StrOpt("outfile", short="o",
                    sample_default="out.json", help="File to print output to"),
         cfg.StrOpt("format", dest="output_format", short="f", default="json",
@@ -209,7 +209,7 @@ def list_syntribos_opts():
                      "file, to test on the target API"),
         cfg.StrOpt("payload_dir", default="", required=True,
                    sample_default="~/.syntribos/data",
-                   help="The location where we can find Syntribos' payloads"),
+                   help="The location where we can find syntribos' payloads"),
         cfg.MultiStrOpt("exclude_results",
                         default=[""],
                         sample_default=["500_errors", "length_diff"],
@@ -221,21 +221,21 @@ def list_syntribos_opts():
 def list_user_opts():
     return [
         cfg.StrOpt("version", default="v2.0",
-                   help="Keystone version", choices=["v2.0", "v3"]),
-        cfg.StrOpt("username", default="", help="Keystone username"),
-        cfg.StrOpt("password", default="", help="Keystone user password",
+                   help="keystone version", choices=["v2.0", "v3"]),
+        cfg.StrOpt("username", default="", help="keystone username"),
+        cfg.StrOpt("password", default="", help="keystone user password",
                    secret=True),
         cfg.StrOpt("user_id", default="",
                    help="Keystone user ID", secret=True),
-        cfg.StrOpt("token", default="", help="Keystone auth token",
+        cfg.StrOpt("token", default="", help="keystone auth token",
                    secret=True),
-        cfg.StrOpt("endpoint", default="", help="Keystone endpoint URI"),
-        cfg.StrOpt("domain_name", default="", help="Keystone domain name"),
-        cfg.StrOpt("project_id", default="", help="Keystone project id"),
-        cfg.StrOpt("project_name", default="", help="Keystone project name"),
-        cfg.StrOpt("domain_id", default="", help="Keystone domain id"),
-        cfg.StrOpt("tenant_name", default="", help="Keystone tenant name"),
-        cfg.StrOpt("tenant_id", default="", help="Keystone tenant id"),
+        cfg.StrOpt("endpoint", default="", help="keystone endpoint URI"),
+        cfg.StrOpt("domain_name", default="", help="keystone domain name"),
+        cfg.StrOpt("project_id", default="", help="keystone project id"),
+        cfg.StrOpt("project_name", default="", help="keystone project name"),
+        cfg.StrOpt("domain_id", default="", help="keystone domain id"),
+        cfg.StrOpt("tenant_name", default="", help="keystone tenant name"),
+        cfg.StrOpt("tenant_id", default="", help="keystone tenant id"),
         cfg.StrOpt("serialize_format", default="json",
                    help="Type of request body"),
         cfg.StrOpt("deserialize_format", default="json",
