@@ -122,13 +122,38 @@ class BaseTestCase(unittest.TestCase):
         yield cls
 
     @classmethod
-    def send_init_request(cls, filename, file_content):
+    def create_init_request(cls, filename, file_content):
+        """Parses template and creates init request object
+
+        This method does not send the initial request, instead, it only creates
+        the object for use in the debug test
+
+        :param str filename: name of template file
+        :param str file_content: content of template file as string
+        """
         request_obj = parser.create_request(
             file_content, CONF.syntribos.endpoint)
-        prepared_copy = request_obj.get_prepared_copy()
+        cls.init_req = request_obj
+        cls.init_resp = None
+        cls.init_signals = None
+
+    @classmethod
+    def send_init_request(cls, filename, file_content):
+        """Parses template, creates init request object, and sends init request
+
+        This method sends the initial request, which is the request created
+        after parsing the template file. This request will not be modified
+        any further by the test cases themselves.
+
+        :param str filename: name of template file
+        :param str file_content: content of template file as string
+        """
+        if not cls.init_req:
+            cls.init_req = parser.create_request(
+                file_content, CONF.syntribos.endpoint)
+        prepared_copy = cls.init_req.get_prepared_copy()
         cls.init_resp, cls.init_signals = cls.client.send_request(
             prepared_copy)
-        cls.init_req = request_obj
         if cls.init_resp is not None:
             # Get the computed body and add it to our RequestObject
             # TODO(cneill): Figure out a better way to handle this discrepancy
