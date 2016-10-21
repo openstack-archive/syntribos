@@ -148,9 +148,9 @@ class BaseTestCase(unittest.TestCase):
         :param str filename: name of template file
         :param str file_content: content of template file as string
         """
-        if not cls.init_req:
-            cls.init_req = parser.create_request(
-                file_content, CONF.syntribos.endpoint)
+        cls.init_req = parser.create_request(
+            file_content, CONF.syntribos.endpoint)
+
         prepared_copy = cls.init_req.get_prepared_copy()
         cls.init_resp, cls.init_signals = cls.client.send_request(
             prepared_copy)
