@@ -61,6 +61,19 @@ def list_volume_type_ids(conn):
     return [volume.id for volume in conn.volume_types.list()]
 
 
+def create_snapshot(conn):
+    volume_id = get_volume_id()
+    snap_name = "".join(
+        random.choice(string.ascii_lowercase) for _ in range(10))
+    snapshot = conn.volume_snapshots.create(
+        volume_id, name=snap_name, description="Test snapshot")
+    return snapshot.id
+
+
+def list_snapshot_ids(conn):
+    return [snapshot.id for snapshot in conn.volume_snapshots.list()]
+
+
 @memoize
 def get_volume_id(create=False):
     cinder_client = _get_client()
@@ -77,3 +90,12 @@ def get_volume_type_id(create=False):
     if create or not vtype_ids:
         vtype_ids.append(create_volume_type(cinder_client))
     return vtype_ids[-1]
+
+
+@memoize
+def get_snapshot_id(create=False):
+    cinder_client = _get_client()
+    snapshot_ids = list_snapshot_ids(cinder_client)
+    if create or not snapshot_ids:
+        snapshot_ids.append(create_snapshot(cinder_client))
+    return snapshot_ids[-1]
