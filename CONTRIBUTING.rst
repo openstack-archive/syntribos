@@ -1,5 +1,9 @@
+=================================
 Syntribos Contributing Guidelines
 =================================
+
+Contributions to syntribos are always welcome, if you have any questions,
+we can be found in the #openstack-security channel on Freenode IRC.
 
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
@@ -7,9 +11,14 @@ Syntribos Contributing Guidelines
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
 3. All new code should have appropriate unittests (place them in the
    ``tests/unit`` folder)
-4. No new code will be accepted if it adds a new dependency on OpenCAFE, or adds
-   on top of existing CAFE functionality IF it cannot stand on its own without
-   CAFE.
+
+4. Any change you make can be tested using tox::
+
+    pip install tox
+    tox -e pep8
+    tox -e py27
+    tox -e py34
+    tox -e cover
 
 Anyone wanting to contribute to OpenStack must follow
 `the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
@@ -17,7 +26,7 @@ Anyone wanting to contribute to OpenStack must follow
 All changes should be submitted through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
 
-Bugs should be filed on the `Syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
+Bugs should be filed on the `syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
 Breaking changes, feature requests, and other unprioritized work should first be
