@@ -33,6 +33,8 @@ class ConfFixture(config_fixture.Config):
         self.conf.set_default("password", "pass", group="user")
         self.conf.set_default("serialize_format", "json", group="user")
         self.conf.set_default("deserialize_format", "json", group="user")
+        self.conf.set_default("enable_cache", True, group="remote")
+        self.conf.set_default("cache_dir", "", group="remote")
 
     def v2_identity_fixture(self):
         """config values only applicable to keystone v2."""

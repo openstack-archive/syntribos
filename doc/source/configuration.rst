@@ -2,13 +2,15 @@
 Configuration
 =============
 
-This is the basic structure of a syntribos configuration file.
 All configuration files should have at least the section
 ``[syntribos]``. Depending upon what extensions you are using
-and what you are testing, you can add other sections as well,
-for example, if you are using the built-in identity extension
+and what you are testing, you can add other sections as well.
+For example, if you are using the built-in identity extension
 you would also need the ``[user]`` section. The sections
 ``[logging]`` and ``[remote]`` are optional.
+
+Given below is the basic structure of a syntribos configuration
+file.
 
 ::
 
@@ -30,6 +32,14 @@ you would also need the ``[user]`` section. The sections
     username=<yourusername>
     password=<yourpassword>
 
+    [remote]
+    #
+    # Optional, to define remote URI and cache_dir explictly
+    #
+    templates_uri=<URI to a tar file of set of templates>
+    payloads_uri=<URI to a tar file of set of payloads>
+    cache_dir=<a local path to save the downloaded files>
+
     [logging]
     log_dir=<location_to_save_debug_logs>
 
@@ -40,6 +50,31 @@ credentials if needed. The endpoint URL in the ``[syntribos]``
 section  is the one being tested by syntribos and the endpoint URL in
 ``[user]`` section is just used to get an AUTH_TOKEN.
 
+Downloading templates and payloads remotely
+-------------------------------------------
+
+Payload and template files can be downloaded remotely in syntribos.
+In the config file under ``[syntribos]`` section, if ``templates``
+and ``payloads_dir`` options are not set then by default syntribos will
+download templates for a few OpenStack projects and all the
+latest payloads. As a user you can specify a URI to download custom
+templates and payloads from as well; this is done by using
+``[remotes]`` section in the config file. Available options under
+``[remotes]`` are ``cache_dir``, ``templates_uri``, ``payloads_uri`` and
+``enable_cache``. The ``enable_cache`` option is ``on`` by default
+and can be set to ``off`` to disable caching of remote content while
+syntribos is running. ``cache_dir`` if set to a path, syntribos will
+attempt to use that as a base directory to save downloaded template
+and payload files.
+
+The advantage of using these options are that you will be able to get
+the latest payloads from the official repository and if you are
+using syntribos to test OpenStack projects, then in most cases
+you would already have well defined templates availble to work with.
+
+This option also helps to easily manage different versions of
+templates remotely, without the need to maintain a set of
+different versions offline.
 
 Testing keystone API
 ~~~~~~~~~~~~~~~~~~~~
@@ -100,6 +135,16 @@ necessary fields like user credentials, log, template directory etc.
     #project_name=<name_of_the_project>
     # For Keystone V2 API
     #tenant_name=<name_of_the_project>
+
+    [remote]
+    #
+    # Optional, Used to specify URLs of templates and payloads
+    #
+    #cache_dir=<a local path to save the downloaded files>
+    #templates_uri=https://github.com/your_project/templates.tar
+    #payloads_uri=https://github.com/your_project/payloads.tar
+    # To disable caching of these remote contents, set the following variable to False
+    #enable_caching=True
 
     [logging]
     #

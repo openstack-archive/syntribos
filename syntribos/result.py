@@ -19,6 +19,7 @@ from oslo_config import cfg
 import syntribos
 from syntribos.formatters.json_formatter import JSONFormatter
 from syntribos.runner import Runner
+import syntribos.utils.remotes
 
 CONF = cfg.CONF
 
