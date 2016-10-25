@@ -1,3 +1,4 @@
+===================
 Executing unittests
 ===================
 
@@ -14,11 +15,12 @@ Now, run
 
     $ python -m unittest discover tests/unit -p "test_*.py"
 
-Also, if  you have configured tox you could also do
+If you have configured tox you could also do
 
 ::
 
     $ tox -e py27
+    $ tox -e py35
 
 This will run all the unittests and give you a result output
 containing the status and coverage details of each test.

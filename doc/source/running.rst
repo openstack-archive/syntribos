@@ -1,8 +1,9 @@
-Running Syntribos
+=================
+Running syntribos
 =================
 
-To run Syntribos against all the available tests, just specify the
-command ``syntribos`` with the configuration file without specifying
+To run syntribos against all the available tests, just specify the
+command :command:`syntribos run` with the configuration file without specifying
 any test type.
 
 ::
@@ -10,9 +11,9 @@ any test type.
     $ syntribos --config-file keystone.conf run
 
 Fuzzy-matching test names
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is possible to limit Syntribos to run a specific test type using
+It is possible to limit syntribos to run a specific test type using
 the ``-t`` flag.
 
 ::

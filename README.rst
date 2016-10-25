@@ -1,9 +1,10 @@
+=================================================
 Syntribos, An Automated API Security Testing Tool
 =================================================
 
 ::
 
-                      Syntribos
+                      syntribos
                        xxxxxxx
                   x xxxxxxxxxxxxx x
                x     xxxxxxxxxxx     x
@@ -34,37 +35,151 @@ Syntribos, An Automated API Security Testing Tool
 Syntribos is an automated API security testing tool that is maintained by
 members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`__.
 
-Given a simple configuration file and an example HTTP request, Syntribos
+Given a simple configuration file and an example HTTP request, syntribos
 can replace any API URL, URL parameter, HTTP header and request body
-field with a given set of strings. This is similar to Burp Proxy's
-Intruder sniper attack, but Syntribos iterates through each position
-automatically. Syntribos aims to automatically detect common security
-defects such as SQL injection, LDAP injection, buffer overflow, etc. In
-addition, Syntribos can be used to help identifying new security defects
-by fuzzing.
+field with a given set of strings. Syntribos iterates through each position
+in the request automatically. Syntribos aims to automatically detect common
+security defects such as SQL injection, LDAP injection, buffer overflow, etc. In
+addition, syntribos can be used to help identify new security defects
+by automated fuzzing.
 
 Syntribos has the capability to test any API, but is designed with
 `OpenStack <http://http://www.openstack.org/>`__ applications in mind.
 
+List of Tests
+~~~~~~~~~~~~~
+
+Syntribos is shipped with batteries included, which means, with minimal
+configuration effort you can initiate automated testing of any API of
+your choice. If testing OpenStack API is in your mind, then syntribos
+by default will help you in automatically downloading a set of templates
+of some of the bigger OpenStack projects like nova, neutron, keystone etc.
+
+A short list of tests that can be run using syntribos is given below:
+
+* Buffer Overflow
+* Command Injection
+* CORS Wildcard
+* Integer Overflow
+* LDAP Injection
+* SQL Injection
+* String Validation
+* XML External Entity
+* Cross Site Scripting ( XSS )
+
+Buffer Overflow
+---------------
+
+The idea of `buffer overflow`_ in the context of a web application is to force
+an application to handle more data than it can hold in a buffer.
+In syntribos a buffer overflow test is attempted by injecting a large
+string into the body of an HTTP request.
+
+Command Injection
+-----------------
+
+`Command injection`_ attacks are done by injecting arbitrary commands in an
+attempt to execute these commands on a remote system. In syntribos this is
+achieved by injecting a set of strings that have been proven to be successful
+in executing a command injection attacks.
+
+CORS Wildcard
+-------------
+
+`CORS wildcard`_ test is used to verify if a web server allows cross-domain
+resource sharing from any external URL ( wild carding of
+`Access-Control-Allow-Origin` header) rather than a white list of URLs.
+
+Integer Overflow
+----------------
+
+`Integer overflow`_ test in syntribos attempts to inject numeric values that
+the remote application may fail to represent within in its storage, for example
+a 32 bit integer type trying to store a 64 bit number
+
+LDAP Injection
+--------------
+
+`LDAP injection`_ is attempted in syntribos by injection of LDAP statements
+on to HTTP requests; if an application fails to properly sanitize the
+request content, it may be possible to execute arbitrary commands.
+
+SQL Injection
+-------------
+
+`SQL injection`_ attacks are one of the most common web application attacks.
+If the user input is not properly sanitized, it is fairly easy to
+execute SQL queries that may result in an attacker reading  sensitive
+information or gaining control of the SQL server. In syntribos
+an application is tested for SQL injection vulnerabilities by injecting
+SQL strings into the HTTP request.
+
+String Validation
+-----------------
+
+String validation attacks in syntribos try to exploit the fact that
+some string patterns are not sanitized effectively by the input
+validator and may cause the application to crash. Examples of characters
+that may cause string validation vulnerabilities are special unicode
+characters, emojis etc.
+
+XML External Entity
+-------------------
+
+An `XML external entity`_ attack is an attack that targets the web
+application's XML parser. If an XML parser allows processing of
+external entities referenced in an XML document then an attacker
+might be able to cause denial of service, leakage of information etc.
+Syntribos tries to inject a few malicious strings into an XML body
+while sending requests to an application in an attempt to obtain an
+appropriate response.
+
+Cross Site Scripting ( XSS )
+----------------------------
+An XSS_ attack is one where malicious JavaScript is injected into a web
+application. Syntribos tries to find potential XSS issues by injecting
+string containing "script" and other HTML tags into request fields.
+
+Other than these built-in tests, you can extend syntribos by writing
+your own custom tests. To do this, download the source code and look at
+the tests in ``syntribos/tests`` directory. The CORS test may be an easy
+one to emulate. In the same way, users can add different extensions also
+to the tests. To see how extensions can be written please see
+``syntribos/extensions`` directory.
+
+.. _buffer overflow: https://en.wikipedia.org/wiki/Buffer_overflow
+.. _Command injection: https://www.owasp.org/index.php/Command_Injection
+.. _CORS wildcard: https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)
+.. _Integer overflow: https://en.wikipedia.org/wiki/Integer_overflow
+.. _LDAP injection: https://www.owasp.org/index.php/LDAP_injection
+.. _SQL injection: https://www.owasp.org/index.php/SQL_Injection
+.. _XML external entity: https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
+.. _XSS: https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)
+
 **Details**
 
+* `Documentation`_
 * Free software: `Apache license`_
 * `Launchpad project`_
 * `Blueprints`_
 * `Bugs`_
+* `Source code`_
 
 Supported Operating Systems
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Syntribos has been developed primarily in Linux and Mac environments,
-however it supports installation and execution on Windows. But it has
-not been tested yet.
+Syntribos has been developed primarily in Linux and Mac environments and would
+work on most Unix and Linux based Operating Systems. At this point, we are not
+supporting Windows, but this may change in the future.
 
+.. _Documentation: http://docs.openstack.org/developer/syntribos/
 .. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
 .. _Launchpad project: https://launchpad.net/syntribos
 .. _Blueprints: https://blueprints.launchpad.net/syntribos
 .. _Bugs: https://bugs.launchpad.net/syntribos
+.. _Source code: https://github.com/openstack/syntribos
 
+============
 Installation
 ============
 
@@ -79,12 +194,17 @@ pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
    $ cd syntribos
    $ pip install . --upgrade
 
+=============
 Configuration
 =============
 
-This is the basic structure of a Syntribos configuration file.
-All config files should have the section ``[syntribos]`` and a
-``[user]`` section, the ``[logging]`` section is optional.
+This is the basic structure of a syntribos configuration file.
+All configuration files should have at least the section
+``[syntribos]``. Depending upon what extensions you are using
+and what you are testing, you can add other sections as well,
+for example, if you are using the built-in identity extension
+you would also need the ``[user]`` section. The sections
+``[logging]`` and ``[remote]`` are optional.
 
 ::
 
@@ -100,6 +220,7 @@ All config files should have the section ``[syntribos]`` and a
     [user]
     #
     # User credentials and endpoint URI to get an AUTH_TOKEN
+    # This section is only needed if you are using the identity extension.
     #
     endpoint=
     username=<yourusername>
@@ -112,16 +233,16 @@ All config files should have the section ``[syntribos]`` and a
 To test any project, just update the endpoint URI under
 ``[syntribos]`` to point to the API and also modify the user
 credentials if needed. The endpoint URI in the ``[syntribos]``
-section  is the one being tested by Syntribos and the endpoint URI in
+section  is the one being tested by syntribos and the endpoint URI in
 ``[user]`` section is just used to get an AUTH_TOKEN.
 
 
-Testing Keystone API
---------------------
+Testing keystone API
+~~~~~~~~~~~~~~~~~~~~
 
-A sample config file is given in ``examples/configs/keystone.conf``.
+A sample config file is given in :file:`examples/configs/keystone.conf`.
 Copy this file to a location of your choice (default file path for
-configuration file is:  ``~/.syntribos/syntribos.conf``) and update the
+configuration file is:  :file:`~/.syntribos/syntribos.conf`) and update the
 necessary fields like user credentials, log, template directory etc.
 
 ::
@@ -185,35 +306,38 @@ necessary fields like user credentials, log, template directory etc.
     # if you don't want this, set this option to False.
     http_request_compression=True
 
+==================
 Syntribos Commands
 ==================
 
 Below are the set of commands that should be specified while
-using Syntribos.
+using syntribos.
 
 
-- **run**
+- :command:`syntribos run`
 
-  This command runs Syntribos with the given config options
+  This command runs syntribos with the given config options
 
   ::
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-- **dry_run**
+- :command:`syntribos dry-run`
 
 
-  This command prepares all the test cases that would be executed by
-  the ```run``` command based on the configuration options passed to
-  Syntribos, but simply prints their details to the screen instead
-  of actually running them.
+  This command ensures that the template files given for this run parse
+  successfully without errors. It then runs a debug test which sends no
+  requests of its own.
+
+  Note: if any external calls referenced inside the template file do make
+  requests, the parser will still make those requests even for a dry run.
 
   ::
 
-    $ syntribos --config-file keystone.conf -t SQL dry_run
+    $ syntribos --config-file keystone.conf dry_run
 
 
-- **list_tests**
+- :command:`syntribos list_tests`
 
 
   This command will list the names and description of all the tests
@@ -227,11 +351,12 @@ using Syntribos.
 All these commands will only work if a configuration file
 is specified.
 
-Running Syntribos
+=================
+Running syntribos
 =================
 
-To run Syntribos against all the available tests, just specify the
-command ``syntribos`` with the configuration file without specifying
+To run syntribos against all the available tests, just specify the
+command :command:`syntribos run` with the configuration file without specifying
 any test type.
 
 ::
@@ -239,9 +364,9 @@ any test type.
     $ syntribos --config-file keystone.conf run
 
 Fuzzy-matching test names
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is possible to limit Syntribos to run a specific test type using
+It is possible to limit syntribos to run a specific test type using
 the ``-t`` flag.
 
 ::
@@ -417,93 +542,7 @@ written to the logs. The threshold to start data compression is set at 512 chara
 Compression can be turned off by setting the http_request_compression to ``False`` under logging
 section in the config file.
 
-Basic Syntribos Test Anatomy
-============================
-
-Test Types
-----------
-
-The tests included at release time include LDAP injection, SQL
-injection, integer overflow, command injection, XML external entity,
-reflected cross-site scripting, Cross Origin Resource Sharing (CORS)
-wildcard and SSL.
-
-In order to run a specific test, simply use the ``-t, --test-types``
-option and provide `syntribos` with a keyword or keywords to match from
-the test files located in ``syntribos/tests/``.
-
-For SQL injection tests, use:
-
-::
-
-    $ syntribos --config-file keystone.conf -t SQL
-
-Another example, to run SQL injection tests against the template body only, use:
-
-::
-
-    $ syntribos --config-file keystone.conf -t SQL_INJECTION_BODY
-
-For all tests against HTTP headers only, use:
-
-::
-
-    $ syntribos --config-file keystone.conf -t HEADERS
-
-
-Call External
--------------
-
-Syntribos template files can be supplemented with variable data, or data
-retrieved from external sources. This is handled using 'extensions.'
-
-Extensions are found in ``syntribos/extensions/`` .
-
-Calls to extensions are made in this form:
-
-::
-
-    CALL_EXTERNAL|{extension dot path}:{function}:{arguments}
-
-One example packaged with Syntribos enables the tester to obtain an auth
-token from keystone/identity. The code is located in
-``identity/client.py``
-
-To use this extension, you can add the following to your template file:
-
-::
-
-    X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
-
-The "user" string indicates the data from the configuration file we
-added in ``examples/configs/keystone.conf``
-
-Another example is found in ``random_data/client.py`` . This returns a
-UUID when random but unique data is needed. This can be used in place of
-usernames when fuzzing a create user call.
-
-::
-
-    "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
-
-The extension function can return one value or be used as a generator if
-you want it to change for each test.
-
-
-Action Field
-------------
-
-While Syntribos is designed to test all fields in a request, it can also
-ignore specific fields through the use of Action Fields. If you want to
-fuzz against a static object ID, use the Action Field indicator as
-follows:
-
-::
-
-    "ACTION_FIELD:id": "1a16f348-c8d5-42ec-a474-b1cdf78cf40f"
-
-The ID provided will remain static for every test.
-
+===================
 Executing unittests
 ===================
 
@@ -520,15 +559,17 @@ Now, run
 
     $ python -m unittest discover tests/unit -p "test_*.py"
 
-Also, if  you have configured tox you could also do
+If you have configured tox you could also do
 
 ::
 
     $ tox -e py27
+    $ tox -e py35
 
 This will run all the unittests and give you a result output
 containing the status and coverage details of each test.
 
+=======================
 Contributing Guidelines
 =======================
 
@@ -537,7 +578,7 @@ Contributing Guidelines
 2. All new classes/functions should have appropriate docstrings in
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
 3. All new code should have appropriate unittests (place them in the
-   ``tests/unit`` folder)
+   :file:`tests/unit` folder)
 
 Anyone wanting to contribute to OpenStack must follow
 `the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
@@ -545,15 +586,15 @@ Anyone wanting to contribute to OpenStack must follow
 All changes should be submitted through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
 
-Bugs should be filed on the `Syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
+Bugs should be filed on the `syntribos launchpad site <https://budmegs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
 Breaking changes, feature requests, and other non prioritized work should
 first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
-Readme.rst is auto generated from docs by running ``python readme.py`` in the
-``syntribos/scripts`` directory. So when the README.rst needs to be updated;
-modify the corresponding rst file in ``syntribos/doc/source`` and auto generate
+README.rst is auto generated from docs by running :command:`python readme.py` in the
+:file:`syntribos/scripts` directory. So when the README.rst needs to be updated;
+modify the corresponding rst file in :file:`syntribos/doc/source` and auto generate
 the README.
 

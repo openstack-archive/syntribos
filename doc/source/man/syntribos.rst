@@ -3,7 +3,7 @@ syntribos
 =========
 
 SYNOPSIS
-========
+~~~~~~~~
 
 syntribos [-h] [--colorize] [--config-dir DIR] [--config-file PATH]
           [--excluded-types EXCLUDED_TYPES] [--format OUTPUT_FORMAT]
@@ -17,29 +17,27 @@ syntribos [-h] [--colorize] [--config-dir DIR] [--config-file PATH]
           {list_tests,run,dry_run} ...
 
 DESCRIPTION
-===========
+~~~~~~~~~~~
 
 Syntribos is an automated API security testing tool.
 
-Given a simple configuration file and an example HTTP request, Syntribos
+Given a simple configuration file and an example HTTP request, syntribos
 can replace any API URL, URL parameter, HTTP header and request body
-field with a given set of strings. This is similar to Burp Proxy's
-Intruder sniper attack, but Syntribos iterates through each position
-automatically. Syntribos aims to automatically detect common security
-defects such as SQL injection, LDAP injection, buffer overflow, etc. In
-addition, Syntribos can be used to help identifying new security defects
-by fuzzing.
+field with a given set of strings. Syntribos aims to automatically detect
+common security defects such as SQL injection, LDAP injection, buffer
+overflow, etc. In addition, syntribos can be used to help identifying new
+security defects by fuzzing.
 
 Syntribos has the capability to test any API, but is designed with
 OpenStack applications in mind.
 
 OPTIONS
-=======
+~~~~~~~
 
   -h, --help            show this help message and exit
-  --colorize, -cl       Enable color in Syntribos terminal output
-  --config-dir DIR      Path to a config directory to pull *.conf files from.
-                        This file set is sorted, so as to provide a
+  --colorize, -cl       Enable color in syntribos terminal output
+  --config-dir DIR      Path to a config directory to pull :file:`*.conf` files
+                        from. This file set is sorted, so as to provide a
                         predictable parse order if individual options are
                         over-ridden. The set is parsed after the file(s)
                         specified via previous --config-file, arguments hence
@@ -48,7 +46,7 @@ OPTIONS
                         can be specified, with values in later files taking
                         precedence. Defaults to None.
   --excluded-types EXCLUDED_TYPES, -e EXCLUDED_TYPES
-                        Test types to be excluded from current runagainst the
+                        Test types to be excluded from current run against the
                         target API
   --format OUTPUT_FORMAT, -f OUTPUT_FORMAT
                         The format for outputting results
@@ -68,7 +66,7 @@ Main Syntribos Config:
   --syntribos-exclude_results SYNTRIBOS_EXCLUDE_RESULTS
                         Defect types to exclude from the results output
   --syntribos-payload_dir SYNTRIBOS_PAYLOAD_DIR
-                        The location where we can find Syntribos' payloads
+                        The location where we can find syntribos' payloads
   --syntribos-templates SYNTRIBOS_TEMPLATES
                         A directory of template files, or a single template
                         file, to test on the target API
@@ -77,27 +75,27 @@ Syntribos Commands:
   {list_tests,run,dry_run}
                         Available commands
     list_tests          List all available tests
-    run                 Run Syntribos with given config options
+    run                 Run syntribos with given config options
     dry_run             Dry run Syntribos with given config options
 
 FILES
-=====
+~~~~~
 
 ~/.syntribos/syntribos.conf
   syntribos configuration file
 
 EXAMPLES
-========
+~~~~~~~~
 
-To run Syntribos against all the available tests, just specify the
-command ``syntribos`` with the configuration file without specifying
-any test type.
+To run syntribos against all the available tests, just specify the
+command :command:`syntribos run` with the configuration file without
+specifying any test type.
 
 ::
 
     $ syntribos --config-file keystone.conf run
 
 SEE ALSO
-========
+~~~~~~~~
 
 bandit(1)

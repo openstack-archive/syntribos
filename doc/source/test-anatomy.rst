@@ -1,8 +1,9 @@
-Basic Syntribos Test Anatomy
+============================
+Basic syntribos Test Anatomy
 ============================
 
 Test Types
-----------
+~~~~~~~~~~
 
 The tests included at release time include LDAP injection, SQL
 injection, integer overflow, command injection, XML external entity,
@@ -33,7 +34,7 @@ For all tests against HTTP headers only, use:
 
 
 Call External
--------------
+~~~~~~~~~~~~~
 
 Syntribos template files can be supplemented with variable data, or data
 retrieved from external sources. This is handled using 'extensions.'
@@ -46,7 +47,7 @@ Calls to extensions are made in this form:
 
     CALL_EXTERNAL|{extension dot path}:{function}:{arguments}
 
-One example packaged with Syntribos enables the tester to obtain an auth
+One example packaged with syntribos enables the tester to obtain an auth
 token from keystone/identity. The code is located in
 ``identity/client.py``
 
@@ -72,9 +73,9 @@ you want it to change for each test.
 
 
 Action Field
-------------
+~~~~~~~~~~~~
 
-While Syntribos is designed to test all fields in a request, it can also
+While syntribos is designed to test all fields in a request, it can also
 ignore specific fields through the use of Action Fields. If you want to
 fuzz against a static object ID, use the Action Field indicator as
 follows:

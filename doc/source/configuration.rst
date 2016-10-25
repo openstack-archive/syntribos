@@ -1,9 +1,14 @@
+=============
 Configuration
 =============
 
-This is the basic structure of a Syntribos configuration file.
-All config files should have the section ``[syntribos]`` and a
-``[user]`` section, the ``[logging]`` section is optional.
+This is the basic structure of a syntribos configuration file.
+All configuration files should have at least the section
+``[syntribos]``. Depending upon what extensions you are using
+and what you are testing, you can add other sections as well,
+for example, if you are using the built-in identity extension
+you would also need the ``[user]`` section. The sections
+``[logging]`` and ``[remote]`` are optional.
 
 ::
 
@@ -19,6 +24,7 @@ All config files should have the section ``[syntribos]`` and a
     [user]
     #
     # User credentials and endpoint URI to get an AUTH_TOKEN
+    # This section is only needed if you are using the identity extension.
     #
     endpoint=
     username=<yourusername>
@@ -31,16 +37,16 @@ All config files should have the section ``[syntribos]`` and a
 To test any project, just update the endpoint URI under
 ``[syntribos]`` to point to the API and also modify the user
 credentials if needed. The endpoint URI in the ``[syntribos]``
-section  is the one being tested by Syntribos and the endpoint URI in
+section  is the one being tested by syntribos and the endpoint URI in
 ``[user]`` section is just used to get an AUTH_TOKEN.
 
 
-Testing Keystone API
---------------------
+Testing keystone API
+~~~~~~~~~~~~~~~~~~~~
 
-A sample config file is given in ``examples/configs/keystone.conf``.
+A sample config file is given in :file:`examples/configs/keystone.conf`.
 Copy this file to a location of your choice (default file path for
-configuration file is:  ``~/.syntribos/syntribos.conf``) and update the
+configuration file is:  :file:`~/.syntribos/syntribos.conf`) and update the
 necessary fields like user credentials, log, template directory etc.
 
 ::
