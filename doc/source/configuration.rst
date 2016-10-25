@@ -23,7 +23,7 @@ you would also need the ``[user]`` section. The sections
 
     [user]
     #
-    # User credentials and endpoint URI to get an AUTH_TOKEN
+    # User credentials and endpoint URL to get an AUTH_TOKEN
     # This section is only needed if you are using the identity extension.
     #
     endpoint=
@@ -34,10 +34,10 @@ you would also need the ``[user]`` section. The sections
     log_dir=<location_to_save_debug_logs>
 
 
-To test any project, just update the endpoint URI under
+To test any project, just update the endpoint URL under
 ``[syntribos]`` to point to the API and also modify the user
-credentials if needed. The endpoint URI in the ``[syntribos]``
-section  is the one being tested by syntribos and the endpoint URI in
+credentials if needed. The endpoint URL in the ``[syntribos]``
+section  is the one being tested by syntribos and the endpoint URL in
 ``[user]`` section is just used to get an AUTH_TOKEN.
 
 

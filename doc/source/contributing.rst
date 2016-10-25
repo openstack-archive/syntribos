@@ -15,14 +15,14 @@ Anyone wanting to contribute to OpenStack must follow
 All changes should be submitted through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
 
-Bugs should be filed on the `syntribos launchpad site <https://budmegs.launchpad.net/syntribos>`__,
+Bugs should be filed on the `syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
 Breaking changes, feature requests, and other non prioritized work should
 first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
-README.rst is auto generated from docs by running :command:`python readme.py` in the
-:file:`syntribos/scripts` directory. So when the README.rst needs to be updated;
-modify the corresponding rst file in :file:`syntribos/doc/source` and auto generate
-the README.
+Note: README.rst is auto generated from docs by running :command:`python readme.py`
+in the :file:`syntribos/scripts` directory. So when the README.rst needs to
+be updated; modify the corresponding rst file in :file:`syntribos/doc/source`
+and auto generate the README.

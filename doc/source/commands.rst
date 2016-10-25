@@ -21,7 +21,7 @@ using syntribos.
   successfully without errors. It then runs a debug test which sends no
   requests of its own.
 
-  Note: if any external calls referenced inside the template file do make
+  Note: If any external calls referenced inside the template file do make
   requests, the parser will still make those requests even for a dry run.
 
   ::
@@ -33,7 +33,7 @@ using syntribos.
 
 
   This command will list the names and description of all the tests
-  that can be executed by the ```run``` command.
+  that can be executed by the ``run`` command.
 
   ::
 
