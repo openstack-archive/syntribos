@@ -2,12 +2,24 @@
 Contributing Guidelines
 =======================
 
+Syntribos is an open source project and contributions are always
+welcome, if you have any questions, we can be found in the
+#openstack-security channel on Freenode IRC.
+
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
 2. All new classes/functions should have appropriate docstrings in
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
 3. All new code should have appropriate unittests (place them in the
-   :file:`tests/unit` folder)
+   ``tests/unit`` folder)
+
+4. Any change you make can be tested using tox:
+
+    pip install tox
+    tox -e pep8
+    tox -e py27
+    tox -e py34
+    tox -e cover
 
 Anyone wanting to contribute to OpenStack must follow
 `the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
@@ -18,11 +30,11 @@ described above. All pull requests on Github will be closed/ignored.
 Bugs should be filed on the `syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
-Breaking changes, feature requests, and other non prioritized work should
-first be submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
+Breaking changes, feature requests, and other unprioritized work should first be
+submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
-Note: README.rst is auto generated from docs by running :command:`python readme.py`
-in the :file:`syntribos/scripts` directory. So when the README.rst needs to
-be updated; modify the corresponding rst file in :file:`syntribos/doc/source`
-and auto generate the README.
+
+**Note:** README.rst is auto generated from docs by running ``python readme.py``
+from the ``syntribos/scripts`` directory. So when the README.rst needs to be updated;
+modify the corresponding rst file in syntribos/doc/source and auto generatoe the README.

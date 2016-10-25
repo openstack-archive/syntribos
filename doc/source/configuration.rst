@@ -21,7 +21,7 @@ file.
     endpoint=http://localhost:5000
     # Set payload and templates path
     templates=<location_of_templates_dir/file>
-    payload_dir=<location_of_payload_dir>
+    payloads_dir=<location_of_payloads_dir>
 
     [user]
     #
@@ -51,7 +51,7 @@ section  is the one being tested by syntribos and the endpoint URL in
 ``[user]`` section is just used to get an AUTH_TOKEN.
 
 Downloading templates and payloads remotely
--------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Payload and template files can be downloaded remotely in syntribos.
 In the config file under ``[syntribos]`` section, if ``templates``
@@ -70,18 +70,18 @@ and payload files.
 The advantage of using these options are that you will be able to get
 the latest payloads from the official repository and if you are
 using syntribos to test OpenStack projects, then in most cases
-you would already have well defined templates availble to work with.
+you would already have well defined templates available to work with.
 
 This option also helps to easily manage different versions of
 templates remotely, without the need to maintain a set of
 different versions offline.
 
-Testing keystone API
-~~~~~~~~~~~~~~~~~~~~
+Testing OpenStack keystone API
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A sample config file is given in :file:`examples/configs/keystone.conf`.
+A sample config file is given in ``examples/configs/keystone.conf``.
 Copy this file to a location of your choice (default file path for
-configuration file is:  :file:`~/.syntribos/syntribos.conf`) and update the
+configuration file is: ``~/.syntribos/syntribos.conf``) and update the
 necessary fields like user credentials, log, template directory etc.
 
 ::
@@ -98,7 +98,7 @@ necessary fields like user credentials, log, template directory etc.
     endpoint=http://localhost:5000
     # Set payload and templates path
     templates=<location_of_templates_dir/file>
-    payload_dir=<location_of_payload_dir>
+    payloads_dir=<location_of_payloads_dir>
 
     [user]
     #

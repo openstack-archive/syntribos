@@ -36,7 +36,7 @@ OPTIONS
 
   -h, --help            show this help message and exit
   --colorize, -cl       Enable color in syntribos terminal output
-  --config-dir DIR      Path to a config directory to pull :file:`*.conf` files
+  --config-dir DIR      Path to a config directory to pull ``*.conf`` files
                         from. This file set is sorted, so as to provide a
                         predictable parse order if individual options are
                         over-ridden. The set is parsed after the file(s)
@@ -73,10 +73,10 @@ Main Syntribos Config:
 
 Syntribos Commands:
   {list_tests,run,dry_run}
-                        Available commands
+            Available commands
     list_tests          List all available tests
     run                 Run syntribos with given config options
-    dry_run             Dry run Syntribos with given config options
+    dry_run             Dry run syntribos with given config options
 
 FILES
 ~~~~~
@@ -88,7 +88,7 @@ EXAMPLES
 ~~~~~~~~
 
 To run syntribos against all the available tests, just specify the
-command :command:`syntribos run` with the configuration file without
+command ``syntribos run`` with the configuration file without
 specifying any test type.
 
 ::

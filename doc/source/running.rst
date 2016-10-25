@@ -3,8 +3,8 @@ Running syntribos
 =================
 
 To run syntribos against all the available tests, just specify the
-command ``syntribos`` with the configuration file without specifying
-any test type.
+command ``syntribos`` with the configuration file without
+specifying any test type.
 
 ::
 

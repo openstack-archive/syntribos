@@ -32,8 +32,8 @@ Syntribos, An Automated API Security Testing Tool
     :target: https://pypi.python.org/pypi/syntribos/
     :alt: Downloads
 
-Syntribos is an automated API security testing tool that is maintained by
-members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`__.
+Syntribos is an open source automated API security testing tool that is
+maintained by members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`__.
 
 Given a simple configuration file and an example HTTP request, syntribos
 can replace any API URL, URL parameter, HTTP header and request body

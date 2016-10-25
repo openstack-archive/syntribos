@@ -1,12 +1,12 @@
-==================
-Syntribos Commands
-==================
+========
+Commands
+========
 
-Below are the set of commands that should be specified while
+Below are the set of commands that can  be specified while
 using syntribos.
 
 
-- :command:`syntribos run`
+- ``syntribos run``
 
   This command runs syntribos with the given config options
 
@@ -14,7 +14,7 @@ using syntribos.
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-- :command:`syntribos dry-run`
+- ``syntribos dry-run``
 
 
   This command ensures that the template files given for this run parse
@@ -29,7 +29,7 @@ using syntribos.
     $ syntribos --config-file keystone.conf dry_run
 
 
-- :command:`syntribos list_tests`
+- ``syntribos list_tests``
 
 
   This command will list the names and description of all the tests
@@ -41,4 +41,7 @@ using syntribos.
 
 
 All these commands will only work if a configuration file
-is specified.
+is specified. If a configuration file is present in the default
+path ( ``.syntribos/syntribos.conf`` ), then you
+do not need to explicitly specify a config file and
+can just run syntribos like ``syntribos run``.

@@ -1,11 +1,13 @@
-============================
-Basic syntribos Test Anatomy
-============================
+==================
+Basic Test Anatomy
+==================
+
+This section describes how to test and API using syntribos.
 
 Test Types
 ~~~~~~~~~~
 
-The tests included at release time include LDAP injection, SQL
+Some tests included with syntribos by default are LDAP injection, SQL
 injection, integer overflow, command injection, XML external entity,
 reflected cross-site scripting, Cross Origin Resource Sharing (CORS)
 wildcard and SSL.
@@ -48,8 +50,7 @@ Calls to extensions are made in this form:
     CALL_EXTERNAL|{extension dot path}:{function}:{arguments}
 
 One example packaged with syntribos enables the tester to obtain an auth
-token from keystone/identity. The code is located in
-``identity/client.py``
+token from keystone. The code is located in ``identity/client.py``
 
 To use this extension, you can add the following to your template file:
 
