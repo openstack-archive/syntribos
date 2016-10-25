@@ -12,7 +12,7 @@ syntribos [-h] [--colorize] [--config-dir DIR] [--config-file PATH]
           [--outfile OUTFILE] [--test-types TEST_TYPES]
           [--syntribos-endpoint SYNTRIBOS_ENDPOINT]
           [--syntribos-exclude_results SYNTRIBOS_EXCLUDE_RESULTS]
-          [--syntribos-payloads_dir SYNTRIBOS_PAYLOADS_DIR]
+          [--syntribos-payloads SYNTRIBOS_PAYLOADS_DIR]
           [--syntribos-templates SYNTRIBOS_TEMPLATES]
           {list_tests,run,dry_run} ...
 
@@ -65,7 +65,7 @@ Main Syntribos Config:
                         The target host to be tested
   --syntribos-exclude_results SYNTRIBOS_EXCLUDE_RESULTS
                         Defect types to exclude from the results output
-  --syntribos-payloads_dir SYNTRIBOS_PAYLOADS_DIR
+  --syntribos-payloads SYNTRIBOS_PAYLOADS_DIR
                         The location where we can find syntribos' payloads
   --syntribos-templates SYNTRIBOS_TEMPLATES
                         A directory of template files, or a single template
