@@ -17,15 +17,15 @@ import string
 
 import testtools
 
-import syntribos.config
+import syntribos.utils.file_utils as utils
 
 
 class ConfigUnittest(testtools.TestCase):
 
-    ept = syntribos.config.ExistingPathType()
-    edt = syntribos.config.ExistingDirType()
-    eft = syntribos.config.ExistingFileType()
-    tt = syntribos.config.TemplateType('r', 0)
+    ept = utils.ExistingPathType()
+    edt = utils.ExistingDirType()
+    eft = utils.ExistingFileType()
+    tt = utils.ContentType('r', 0)
 
     def test_invalid_path_raises_ioerror(self):
         """Test that a random, invalid path raises IOError for each type."""

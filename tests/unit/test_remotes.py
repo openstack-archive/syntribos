@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import tempfile
+import tarfile
 
 import testtools
 
@@ -33,8 +33,7 @@ class TestRemotes(testtools.TestCase):
         self.assertEqual(3, fake_method_taking_long_time("fake"))
 
     def test_extract_tar(self):
-        temp_fh, temp_fn = tempfile.mkstemp()
-        abs_path = os.path.abspath(temp_fn)
-        path = remotes.extract_tar(abs_path)
-        self.assertEqual(abs_path, path)
-        os.remove(path)
+        t_file = tarfile.open("temp.tar.gz", mode="w:gz")
+        t_file.close()
+        path = remotes.extract_tar(os.path.abspath("temp.tar.gz"))
+        self.assertTrue(path)

@@ -23,13 +23,13 @@ from oslo_config import cfg
 import six
 
 import syntribos.config
-from syntribos.config import TemplateType
 from syntribos.formatters.json_formatter import JSONFormatter
 import syntribos.result
 import syntribos.tests as tests
 import syntribos.tests.base
 from syntribos.utils import cleanup
 from syntribos.utils import cli as cli
+from syntribos.utils.file_utils import ContentType
 from syntribos.utils import remotes
 
 result = None
@@ -174,7 +174,7 @@ class Runner(object):
                 print("Attempting to download templates from {}".format(
                     CONF.remote.templates_uri))
                 templates_path = remotes.get(CONF.remote.templates_uri)
-                templates_dir = TemplateType('r', 0)(templates_path)
+                templates_dir = ContentType('r', 0)(templates_path)
             for file_path, req_str in templates_dir:
                 LOG = cls.get_logger(file_path)
                 CONF.log_opt_values(LOG, logging.DEBUG)
