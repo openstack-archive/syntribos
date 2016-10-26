@@ -6,7 +6,7 @@ Below are the set of commands that can be specified while
 using syntribos.
 
 
-- **``run``**
+- **run**
 
   This command runs syntribos with the given config options
 
@@ -14,7 +14,7 @@ using syntribos.
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-- **``dry-run``**
+- **dry-run**
 
 
   This command ensures that the template files given for this run parse
@@ -29,7 +29,7 @@ using syntribos.
     $ syntribos --config-file keystone.conf dry_run
 
 
-- **``list_tests``**
+- **list_tests**
 
 
   This command will list the names and description of all the tests

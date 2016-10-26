@@ -12,10 +12,9 @@ welcome, if you have any questions, we can be found in the
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
 3. All new code should have appropriate unittests (place them in the
    ``tests/unit`` folder)
-
 4. Any change you make can be tested using tox:
-
 ::
+
     pip install tox
     tox -e pep8
     tox -e py27
