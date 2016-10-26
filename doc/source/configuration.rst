@@ -21,7 +21,7 @@ file.
     endpoint=http://localhost:5000
     # Set payload and templates path
     templates=<location_of_templates_dir/file>
-    payloads_dir=<location_of_payloads_dir>
+    payloads=<location_of_payloads_dir>
 
     [user]
     #
@@ -55,7 +55,7 @@ Downloading templates and payloads remotely
 
 Payload and template files can be downloaded remotely in syntribos.
 In the config file under ``[syntribos]`` section, if ``templates``
-and ``payloads_dir`` options are not set then by default syntribos will
+and ``payloads`` options are not set then by default syntribos will
 download templates for a few OpenStack projects and all the
 latest payloads. As a user you can specify a URI to download custom
 templates and payloads from as well; this is done by using
@@ -98,7 +98,7 @@ necessary fields like user credentials, log, template directory etc.
     endpoint=http://localhost:5000
     # Set payload and templates path
     templates=<location_of_templates_dir/file>
-    payloads_dir=<location_of_payloads_dir>
+    payloads=<location_of_payloads_dir>
 
     [user]
     #

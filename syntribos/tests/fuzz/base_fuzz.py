@@ -31,10 +31,10 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
     @classmethod
     def _get_strings(cls, file_name=None):
-        payloads_dir = CONF.syntribos.payloads_dir
-        if not payloads_dir:
-            payloads_dir = remotes.get(CONF.remote.payloads_uri)
-        path = os.path.join(payloads_dir, file_name or cls.data_key)
+        payloads = CONF.syntribos.payloads
+        if not payloads:
+            payloads = remotes.get(CONF.remote.payloads_uri)
+        path = os.path.join(payloads, file_name or cls.data_key)
         with open(path, "rb") as fp:
             return fp.read().splitlines()
 

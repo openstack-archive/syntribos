@@ -214,7 +214,7 @@ def list_syntribos_opts():
                 sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
                      "file, to test on the target API"),
-        cfg.StrOpt("payloads_dir", default="",
+        cfg.StrOpt("payloads", default="",
                    sample_default="~/.syntribos/data",
                    help="The location where we can find syntribos' payloads"),
         cfg.MultiStrOpt("exclude_results",
