@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-import shutil
-
+from syntribos.utils.file_utils import delete_dir
 import syntribos.utils.remotes
 
 
@@ -25,11 +23,3 @@ def delete_temps():
     if remote_dirs - temp_dirs:
         print("All downloaded files have been saved to: {}".format(
             ",".join([ele for ele in (remote_dirs - temp_dirs)])))
-
-
-def delete_file(path):
-    os.remove(path)
-
-
-def delete_dir(dir_path):
-    return shutil.rmtree(dir_path)

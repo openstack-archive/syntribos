@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
-import os
 import sys
 
 from oslo_config import cfg
 
 import syntribos
+from syntribos.utils.file_utils import ContentType
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
@@ -46,88 +46,6 @@ def handle_config_exception(exc):
         sys.exit(0)
     else:
         raise exc
-
-
-class ExistingPathType(object):
-
-    def _raise_invalid_file(self, filename, exc=None):
-        msg = ("\nCan't open '{filename}'; not a readable file or dir."
-               "\nPlease enter a valid file or dir location.{exception}"
-               ).format(filename=filename,
-                        exception="\nEXCEPTION: {exc}\n".format(exc=exc))
-        raise IOError(msg)
-
-    def __call__(self, string):
-        if not os.path.isdir(string) and not os.path.isfile(string):
-            self._raise_invalid_file(string)
-        return string
-
-
-class ExistingDirType(ExistingPathType):
-
-    def __call__(self, string):
-        if not os.path.isdir(string):
-            self._raise_invalid_file(string)
-        return string
-
-
-class ExistingFileType(ExistingPathType):
-
-    def __call__(self, string):
-        if not os.path.isfile(string):
-            self._raise_invalid_file(string)
-        return string
-
-
-class TemplateType(ExistingPathType):
-
-    """Reads a file/directory to collect request templates."""
-
-    def __init__(self, mode, bufsize):
-        self._mode = mode
-        self._bufsize = bufsize
-        self._root = ""
-
-    def _fetch_from_dir(self, string):
-        for path, _, files in os.walk(string):
-            for file_ in files:
-                file_path = os.path.join(path, file_)
-                if path is not self._root:
-                    subdir = os.path.relpath(path, self._root)
-                    yield self._fetch_from_file(file_path, subdir)
-                else:
-                    yield self._fetch_from_file(file_path)
-
-    def _fetch_from_file(self, string, subdir=None):
-        # Get the filename here
-        relative_path = os.path.split(string)[1]
-        if subdir:
-            # Path relative to the "templates" directory specified by user
-            relative_path = os.path.join(subdir, relative_path)
-        try:
-            with open(string, self._mode, self._bufsize) as fp:
-                return relative_path, fp.read()
-        except IOError as exc:
-            self._raise_invalid_file(string, exc=exc)
-
-    def __call__(self, string):
-        """Yield the name and contents of the file(s)
-
-        :param str string: the value supplied as the argument
-
-        :rtype: tuple
-        :returns: (file name, file contents)
-        """
-        if not string:
-            return
-        super(TemplateType, self).__call__(string)
-
-        if os.path.isdir(string):
-            self._root = string
-            return self._fetch_from_dir(string)
-        elif os.path.isfile(string):
-            return [self._fetch_from_file(string)]
-
 
 syntribos_group = cfg.OptGroup(name="syntribos", title="Main syntribos Config")
 user_group = cfg.OptGroup(name="user", title="Identity Config")
@@ -210,7 +128,7 @@ def list_syntribos_opts():
         cfg.StrOpt("endpoint", default="",
                    sample_default="http://localhost/app", required=True,
                    help="The target host to be tested"),
-        cfg.Opt("templates", type=TemplateType('r', 0), default="",
+        cfg.Opt("templates", type=ContentType('r', 0), default="",
                 sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
                      "file, to test on the target API"),
@@ -291,15 +209,13 @@ def list_remote_opts():
             help="Base directory where cached files can be saved"),
         cfg.StrOpt(
             "payloads_uri",
-            default=("https://github.com/rahulunair/"
-                     "syntribos-payloads/"
-                     "raw/master/syntribos-payloads.tar"),
+            default=("https://github.com/rahulunair/syntribos-payloads/"
+                     "archive/master.tar.gz"),
             help="Remote URI to download payloads."),
         cfg.StrOpt(
             "templates_uri",
-            default=("https://github.com/rahulunair/"
-                     "syntribos-openstack-templates/"
-                     "raw/master/syntribos-openstack-templates.tar"),
+            default=("https://github.com/rahulunair/openstack-templates/"
+                     "archive/master.tar.gz"),
             help="Remote URI to download templates."),
         cfg.BoolOpt("enable_cache", default=True,
                     help="Cache remote template & payload resources locally"),

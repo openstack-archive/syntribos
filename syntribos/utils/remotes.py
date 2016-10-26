@@ -68,7 +68,7 @@ def download(uri, cache_dir=None):
     fname = uri.split("/")[-1]
     try:
         with open(fname, 'w') as fh:
-            fh.write(resp.text)
+            fh.write(resp.content)
         return os.path.abspath(fname)
     except IOError:
         LOG.error("IOError in writing the downloaded file to disk.")
@@ -76,20 +76,32 @@ def download(uri, cache_dir=None):
         os.umask(saved_umask)
 
 
+def file_type(path):
+    """Identifies what the type of file is."""
+    signature = {
+        "\x1f\x8b\x08": "gz",
+        "\x42\x5a\x68": "bz2",
+        "\x50\x4b\x03\x04": "zip"
+    }
+    with open(path) as f:
+        for sig, f_type in signature.items():
+            if f.read(4).startswith(sig):
+                return f_type
+
+
 def extract_tar(abs_path):
-    """Extract tar file from the given absolute_path
+    """Extract a gzipped tar file from the given absolute_path
 
     :param str abs_path: The absolute path to the tar file
     :returns str untar_dir: The absolute path to untarred file
     """
-    try:
-        tarfile.TarFile(abs_path)
-    except tarfile.TarError as e:
-        msg = "Not a tar file, returning abs_path, exception is: {}".format(e)
-        LOG.debug(msg)
-        return abs_path
     work_dir, tar_file = os.path.split(abs_path)
     os.chdir(work_dir)
+    try:
+        os.mkdir("remote")
+    except OSError:
+        LOG.debug("path exists already, not creating remote directory.")
+    remote_path = os.path.abspath("remote")
 
     def safe_paths(tar_meta):
         """Makes sure all tar file paths are relative to the base path
@@ -105,11 +117,10 @@ def extract_tar(abs_path):
             if os.path.realpath(each_f).startswith(work_dir):
                 yield fh
 
-    with tarfile.open(tar_file) as tarf:
-        tarf.extractall(members=safe_paths(tarf))
-    untar_dir = os.path.splitext(abs_path)[0]
+    with tarfile.open(tar_file, mode="r:gz") as tarf:
+        tarf.extractall(path=remote_path, members=safe_paths(tarf))
     os.remove(abs_path)
-    return untar_dir
+    return remote_path
 
 
 @cache
@@ -131,4 +142,8 @@ def get(uri):
         abs_path = download(uri, os.path.abspath(user_base_dir))
     else:
         abs_path = download(uri)
+    if not file_type(abs_path) == "gz":
+        msg = "Not a gz file, returning abs_path"
+        LOG.debug(msg)
+        return abs_path
     return extract_tar(abs_path)
