@@ -55,26 +55,26 @@ Downloading templates and payloads remotely
 
 Payload and template files can be downloaded remotely in syntribos.
 In the config file under ``[syntribos]`` section, if ``templates``
-and ``payloads`` options are not set then by default syntribos will
-download templates for a few OpenStack projects and all the
-latest payloads. As a user you can specify a URI to download custom
-templates and payloads from as well; this is done by using
-``[remotes]`` section in the config file. Available options under
-``[remotes]`` are ``cache_dir``, ``templates_uri``, ``payloads_uri`` and
-``enable_cache``. The ``enable_cache`` option is ``on`` by default
-and can be set to ``off`` to disable caching of remote content while
-syntribos is running. ``cache_dir`` if set to a path, syntribos will
-attempt to use that as a base directory to save downloaded template
-and payload files.
+and ``payloads`` options are not set, then, by default syntribos will
+download all the latest payloads and the templates for a few OpenStack
+projects.
+
+As a user you can specify a URI to download custom templates and payloads
+from as well; this is done by using ``[remotes]`` section in the config file.
+Available options under ``[remotes]`` are ``cache_dir``, ``templates_uri``,
+``payloads_uri`` and ``enable_cache``. The ``enable_cache`` option is
+``True`` by default and can be set to ``False`` to disable caching of remote
+content while syntribos is running. If the ``cache_dir`` set to a path,
+syntribos will attempt to use that as a base directory to save downloaded
+template and payload files.
 
 The advantage of using these options are that you will be able to get
 the latest payloads from the official repository and if you are
-using syntribos to test OpenStack projects, then in most cases
-you would already have well defined templates available to work with.
+using syntribos to test OpenStack projects, then, in most cases you
+could directly use the well defined templates available with this option.
 
-This option also helps to easily manage different versions of
-templates remotely, without the need to maintain a set of
-different versions offline.
+This option also helps to easily manage different versions of templates
+remotely, without the need to maintain a set of different versions offline.
 
 Testing OpenStack keystone API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -79,7 +79,7 @@ Command Injection
 -----------------
 
 `Command injection`_ attacks are done by injecting arbitrary commands in an
-attempt to execute these commands on a remote system. In syntribos this is
+attempt to execute these commands on a remote system. In syntribos, this is
 achieved by injecting a set of strings that have been proven to be successful
 in executing a command injection attacks.
 
@@ -94,14 +94,14 @@ Integer Overflow
 ----------------
 
 `Integer overflow`_ test in syntribos attempts to inject numeric values that
-the remote application may fail to represent within in its storage, for example
+the remote application may fail to represent within its storage, for example
 a 32 bit integer type trying to store a 64 bit number
 
 LDAP Injection
 --------------
 
-`LDAP injection`_ is attempted in syntribos by injection of LDAP statements
-on to HTTP requests; if an application fails to properly sanitize the
+Syntribos attempts `LDAP injection`_ by injecting LDAP statements
+into HTTP requests; if an application fails to properly sanitize the
 request content, it may be possible to execute arbitrary commands.
 
 SQL Injection

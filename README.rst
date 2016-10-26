@@ -79,7 +79,7 @@ Command Injection
 -----------------
 
 `Command injection`_ attacks are done by injecting arbitrary commands in an
-attempt to execute these commands on a remote system. In syntribos this is
+attempt to execute these commands on a remote system. In syntribos, this is
 achieved by injecting a set of strings that have been proven to be successful
 in executing a command injection attacks.
 
@@ -94,14 +94,14 @@ Integer Overflow
 ----------------
 
 `Integer overflow`_ test in syntribos attempts to inject numeric values that
-the remote application may fail to represent within in its storage, for example
+the remote application may fail to represent within its storage, for example
 a 32 bit integer type trying to store a 64 bit number
 
 LDAP Injection
 --------------
 
-`LDAP injection`_ is attempted in syntribos by injection of LDAP statements
-on to HTTP requests; if an application fails to properly sanitize the
+Syntribos attempts `LDAP injection`_ by injecting LDAP statements
+into HTTP requests; if an application fails to properly sanitize the
 request content, it may be possible to execute arbitrary commands.
 
 SQL Injection
@@ -183,14 +183,25 @@ supporting Windows, but this may change in the future.
 Installation
 ============
 
-Syntribos can be `installed with
-pip <https://pypi.python.org/pypi/pip>`__ from the git repository.
+Syntribos can be installed directly from `pypi with pip <https://pypi.python.org/pypi/pip>`__
 
--  Clone the repository and install it using pip
+::
+
+   pip install syntribos
+
+If you want the latest changes, you could install syntribos from `source <https://www.github.com/openstack/syntribos.git>`__
+with `pip <https://pypi.python.org/pypi/pip>`__.
+
+-  Clone the repository
 
 ::
 
    $ git clone https://github.com/openstack/syntribos.git
+
+- cd to the directory and install with pip
+
+::
+
    $ cd syntribos
    $ pip install .
 
@@ -251,26 +262,26 @@ Downloading templates and payloads remotely
 
 Payload and template files can be downloaded remotely in syntribos.
 In the config file under ``[syntribos]`` section, if ``templates``
-and ``payloads`` options are not set then by default syntribos will
-download templates for a few OpenStack projects and all the
-latest payloads. As a user you can specify a URI to download custom
-templates and payloads from as well; this is done by using
-``[remotes]`` section in the config file. Available options under
-``[remotes]`` are ``cache_dir``, ``templates_uri``, ``payloads_uri`` and
-``enable_cache``. The ``enable_cache`` option is ``on`` by default
-and can be set to ``off`` to disable caching of remote content while
-syntribos is running. ``cache_dir`` if set to a path, syntribos will
-attempt to use that as a base directory to save downloaded template
-and payload files.
+and ``payloads`` options are not set, then, by default syntribos will
+download all the latest payloads and the templates for a few OpenStack
+projects.
+
+As a user you can specify a URI to download custom templates and payloads
+from as well; this is done by using ``[remotes]`` section in the config file.
+Available options under ``[remotes]`` are ``cache_dir``, ``templates_uri``,
+``payloads_uri`` and ``enable_cache``. The ``enable_cache`` option is
+``True`` by default and can be set to ``False`` to disable caching of remote
+content while syntribos is running. If the ``cache_dir`` set to a path,
+syntribos will attempt to use that as a base directory to save downloaded
+template and payload files.
 
 The advantage of using these options are that you will be able to get
 the latest payloads from the official repository and if you are
-using syntribos to test OpenStack projects, then in most cases
-you would already have well defined templates available to work with.
+using syntribos to test OpenStack projects, then, in most cases you
+could directly use the well defined templates available with this option.
 
-This option also helps to easily manage different versions of
-templates remotely, without the need to maintain a set of
-different versions offline.
+This option also helps to easily manage different versions of templates
+remotely, without the need to maintain a set of different versions offline.
 
 Testing OpenStack keystone API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -355,11 +366,11 @@ necessary fields like user credentials, log, template directory etc.
 Commands
 ========
 
-Below are the set of commands that can  be specified while
+Below are the set of commands that can be specified while
 using syntribos.
 
 
-- ``syntribos run``
+- **``run``**
 
   This command runs syntribos with the given config options
 
@@ -367,7 +378,7 @@ using syntribos.
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-- ``syntribos dry-run``
+- **``dry-run``**
 
 
   This command ensures that the template files given for this run parse
@@ -382,7 +393,7 @@ using syntribos.
     $ syntribos --config-file keystone.conf dry_run
 
 
-- ``syntribos list_tests``
+- **``list_tests``**
 
 
   This command will list the names and description of all the tests
@@ -395,9 +406,9 @@ using syntribos.
 
 All these commands will only work if a configuration file
 is specified. If a configuration file is present in the default
-path ( ``.syntribos/syntribos.conf`` ), then you
+path ( ``~/.syntribos/syntribos.conf`` ), then you
 do not need to explicitly specify a config file and
-can just run syntribos like ``syntribos run``.
+can run syntribos using the command ``syntribos run``.
 
 =================
 Running syntribos
@@ -430,7 +441,7 @@ Logging and Results
 ===================
 
 Two types of logs are generated by syntribos, results and debug logs. While
-results log is the representation of results(collection of issues) from a
+results log is the representation of results ( collection of issues ) from a
 given syntribos run, debug logs contain debugging information captured during
 a particular run. Debug logs may include exception messages, warnings, raw
 but sanitized request/response data and a few more details as well.
@@ -644,6 +655,7 @@ welcome, if you have any questions, we can be found in the
 
 4. Any change you make can be tested using tox:
 
+::
     pip install tox
     tox -e pep8
     tox -e py27
@@ -664,7 +676,9 @@ submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
 for review.
 
 
-**Note:** README.rst is auto generated from docs by running ``python readme.py``
-from the ``syntribos/scripts`` directory. So when the README.rst needs to be updated;
-modify the corresponding rst file in syntribos/doc/source and auto generatoe the README.
+**Note:** README.rst is an auto generated file, from the rst files in the
+docs directory. The file can be generated by running ``python readme.py``
+from the ``syntribos/scripts`` directory. When the README needs to be
+updated; modify the corresponding rst file in ``syntribos/doc/source``
+and generate it by running the script.
 
