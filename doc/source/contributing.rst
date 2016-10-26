@@ -18,7 +18,7 @@ welcome, if you have any questions, we can be found in the
     pip install tox
     tox -e pep8
     tox -e py27
-    tox -e py34
+    tox -e py35
     tox -e cover
 
 Anyone wanting to contribute to OpenStack must follow
