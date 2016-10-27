@@ -13,7 +13,7 @@ addition, syntribos can be used to help identify new security defects
 by automated fuzzing.
 
 Syntribos has the capability to test any API, but is designed with
-`OpenStack <http://http://www.openstack.org/>`__ applications in mind.
+`OpenStack <https://www.openstack.org/>`__ applications in mind.
 
 Index
 ~~~~~
