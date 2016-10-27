@@ -162,13 +162,17 @@ class Runner(object):
 
         cli.print_symbol()
 
-        if CONF.sub_command.name == "init":
+        # If we are initializing, don't look for a default config file
+        if "init" in sys.argv:
             cls.setup_config()
+        else:
+            cls.setup_config(use_file=True)
+
+        if CONF.sub_command.name == "init":
             ENV.initialize_syntribos_env()
             exit(0)
 
         elif CONF.sub_command.name == "list_tests":
-            cls.setup_config()
             cls.list_tests()
             exit(0)
 
@@ -178,7 +182,6 @@ class Runner(object):
                   "information about the installation process.")
             exit(1)
 
-        cls.setup_config(use_file=True)
         cls.setup_runtime_env()
 
         decorator = unittest.runner._WritelnDecorator(cls.output)
