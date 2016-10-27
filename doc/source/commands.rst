@@ -48,7 +48,19 @@ using syntribos.
 
     $ syntribos --config-file keystone.conf list_tests
 
-All these commands will only work if a configuration file
+- **download**
+
+  This command will download templates and payload files. By default, it will
+  download a default set of OpenStack template files (with the --templates
+  flag) or our default set of payloads (with the --payloads flag) to your
+  syntribos root directory. However, the behavior of this command can be
+  configured in the [remote] section of your config file.
+
+  ::
+
+    $ syntribos download --templates
+
+All these commands except init will only work if a configuration file
 is specified. If a configuration file is present in the default
 path ( ``~/.syntribos/syntribos.conf`` ), then you
 do not need to explicitly specify a config file and

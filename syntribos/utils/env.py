@@ -18,9 +18,11 @@ import shutil
 import sys
 
 from oslo_config import cfg
+import requests
 from six.moves import input
 
 import syntribos
+from syntribos.utils import remotes
 
 FOLDER = ".syntribos"
 FILE = "syntribos.conf"
@@ -87,9 +89,9 @@ def get_default_conf_file():
     return get_syntribos_path(FILE)
 
 
-def get_log_dir_name():
+def get_log_dir_name(log_path=""):
     """Returns the directory where log files would be saved."""
-    log_dir = CONF.logging.log_dir
+    log_dir = CONF.logging.log_dir or log_path
     time_str = datetime.datetime.now().strftime("%Y-%m-%d_%X.%f")
     log_path = "{time}".format(time=time_str.split(".")[0])
     log_path = os.path.join(log_dir, log_path)
@@ -131,7 +133,7 @@ def create_env_dirs(root_dir, force=False):
     return (root_dir, payloads, templates, log_dir)
 
 
-def create_conf_file(created_folders=None):
+def create_conf_file(created_folders=None, remote_path=None):
     global FILE
     root, payloads, templates, logs = created_folders
     conf_file = os.path.join(root, FILE)
@@ -151,8 +153,8 @@ def create_conf_file(created_folders=None):
             "[logging]\n"
             "log_dir={logs}\n"
         ).format(
-            payloads=payloads, templates=templates, custom_root=custom_root,
-            logs=logs)
+            payloads=remote_path if remote_path else payloads,
+            templates=templates, custom_root=custom_root, logs=logs)
         f.write(template)
     return conf_file
 
@@ -194,11 +196,22 @@ def initialize_syntribos_env():
             prompt_yes_or_quit(prompt)
 
         else:
-            prompt = ("Syntribos has not been initialized. By default, this "
-                      "process will create a '.syntribos' folder with a "
-                      "barebones configuration file, and sub-folders for "
-                      "templates, debug logs, and payloads.").format(
-                          get_syntribos_root())
+            if not CONF.sub_command.no_downloads:
+                prompt = ("Syntribos has not been initialized. By default, "
+                          "this process will create a '.syntribos' folder\n "
+                          "with a barebones configuration file, and "
+                          "sub-folders for templates, debug logs, and\n "
+                          "payloads. Syntribos will also attempt to download "
+                          "payload files, which are necessary for fuzz\n "
+                          "tests to run. To avoid this behavior, run this "
+                          "command again with the --no_downloads flag")
+            else:
+                prompt = ("Syntribos has not been initialized. By default, "
+                          "this process will create a '.syntribos' folder\n "
+                          "with a barebones configuration file, and "
+                          "sub-folders for templates, debug logs, and\n "
+                          "payloads. Syntribos will not attempt to download "
+                          "any files during the initialization process.")
             prompt_yes_or_quit(prompt)
 
         if is_venv():
@@ -213,16 +226,38 @@ def initialize_syntribos_env():
                     root_dir = get_user_home_root()
 
     folders_created = create_env_dirs(root_dir, force=force)
-    conf_file = create_conf_file(folders_created)
 
     # Grab payloads
-    # Grab templates
+    logging.disable(logging.ERROR)  # Don't want to log to console here...
 
-    print("Syntribos has been initialized!")
+    payloads_dir = folders_created[1]
+    if not CONF.sub_command.no_downloads:
+        print("\nDownloading payload files to {0}...".format(payloads_dir))
+        try:
+            remote_path = remotes.get(CONF.remote.payloads_uri, payloads_dir)
+            conf_file = create_conf_file(folders_created, remote_path)
+            print("Download successful!")
+        except (requests.ConnectionError, IOError):
+            print("Download failed. If you would still like to download "
+                  "payload files, please consult our documentation about the"
+                  "'syntribos download' command or do so manually.")
+            conf_file = create_conf_file(folders_created)
+    else:
+        conf_file = create_conf_file(folders_created)
+
+    logging.disable(logging.NOTSET)
+
+    print("\nSyntribos has been initialized!")
     print("Folders created:\n\t{0}".format("\n\t".join(folders_created)))
     print("Configuration file:\n\t{0}".format(conf_file))
     print("\nYou'll need to edit your configuration file to specify the "
           "endpoint to test and any other configuration options you want.")
+    print("\nBy default, syntribos does not ship with any template files, "
+          "which are required for syntribos to run. However, we provide a\n "
+          "'syntribos download' command to fetch template files remotely. "
+          "Please see our documentation for this subcommand, or run\n "
+          "'syntribos download --templates' to download our default set of "
+          "OpenStack templates.")
     print(syntribos.SEP)
 
 
@@ -239,3 +274,42 @@ def is_syntribos_initialized():
         return True
 
     return False
+
+
+def download_wrapper():
+    """Provides wrapper method to use in 'syntribos download' subcommand."""
+    templates_uri = CONF.remote.templates_uri
+    payloads_uri = CONF.remote.payloads_uri
+
+    templates_dir = (CONF.remote.cache_dir or
+                     os.path.join(get_syntribos_root(), "templates"))
+    payloads_dir = (CONF.remote.cache_dir or
+                    os.path.join(get_syntribos_root(), "payloads"))
+
+    if not CONF.sub_command.templates and not CONF.sub_command.payloads:
+        print("Please specify the --templates flag and/or the --payloads flag "
+              "to this command.\nNo files have been downloaded.\n")
+
+    if CONF.sub_command.templates:
+        print("Downloading template files from {0} to {1}...".format(
+            templates_uri, templates_dir))
+        try:
+            remotes.get(templates_uri, templates_dir)
+            print("Download successful! To use these templates, edit your "
+                  "config file to update the location of templates.")
+        except Exception:
+            print("Template download failed. Our documentation contains "
+                  "instructions to provide templates manually.")
+            exit(1)
+
+    if CONF.sub_command.payloads:
+        print("Downloading payload files from {0} to {1}...\n".format(
+            payloads_uri, payloads_dir))
+        try:
+            remotes.get(payloads_uri, payloads_dir)
+            print("Download successful! To use these payloads, edit your "
+                  "config file to update the location of payloads.")
+        except Exception:
+            print("Payload download failed. Our documentation contains "
+                  "instructions to provide payloads manually.")
+            exit(1)

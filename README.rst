@@ -210,12 +210,18 @@ Initializing the syntribos Environment
 ======================================
 
 Once syntribos is installed, you must initialize the syntribos environment.
-This can be done manually, or via the ``init`` command. 
+This can be done manually, or via the ``init`` command.
 
 ::
 
     $ syntribos init
 
+By default, ``syntribos init`` fetches a set of default payload files from a
+`remote repository maintained by our development team
+<https://github.com/rahulunair/syntribos-payloads>`_. These payload files are
+necessary for our fuzz tests to run, but if you would like to disable this
+behavior, run syntribos with the ``--no_downloads`` flag. Payload files can
+also be fetched by running ``syntribos download --payloads`` at any time.
 
 If you'd like to specify a custom root for syntribos to be installed in,
 specify the ``--custom_install_root`` flag after ``init``. This will skip
@@ -441,6 +447,18 @@ using syntribos.
   ::
 
     $ syntribos --config-file keystone.conf list_tests
+
+- **download**
+
+  This command will download templates and payload files. By default, it will
+  download a default set of OpenStack template files (with the --templates
+  flag) or our default set of payloads (with the --payloads flag) to your
+  syntribos root directory. However, the behavior of this command can be
+  configured in the [remote] section of your config file.
+
+  ::
+
+    $ syntribos download --templates
 
 All these commands will only work if a configuration file
 is specified. If a configuration file is present in the default

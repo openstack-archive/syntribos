@@ -52,6 +52,7 @@ def handle_config_exception(exc):
     else:
         LOG.exception(exc)
 
+
 syntribos_group = cfg.OptGroup(name="syntribos", title="Main syntribos Config")
 user_group = cfg.OptGroup(name="user", title="Identity Config")
 test_group = cfg.OptGroup(name="test", title="Test Config")
@@ -76,6 +77,21 @@ def sub_commands(sub_parser):
         help="Skip prompts for configurable options, and initialize syntribos "
              "in the specified directory. Can be combined with --force to "
              "overwrite existing files.")
+    init_parser.add_argument(
+        "--no_downloads", dest="no_downloads", action="store_true",
+        help="Disable the downloading of payload files as part of the "
+             "initialization process")
+
+    download_parser = sub_parser.add_parser(
+        "download",
+        help="Download payload and template files. This command is "
+        "configurable according to the remote section of your config file")
+    download_parser.add_argument(
+        "--templates", dest="templates", action="store_true",
+        help="Download templates")
+    download_parser.add_argument(
+        "--payloads", dest="payloads", action="store_true",
+        help="Download payloads")
 
     sub_parser.add_parser("list_tests",
                           help="List all available tests")
