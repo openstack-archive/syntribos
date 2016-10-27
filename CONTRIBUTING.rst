@@ -13,6 +13,7 @@ welcome, if you have any questions, we can be found in the
 3. All new code should have appropriate unittests (place them in the
    ``tests/unit`` folder)
 4. Any change you make can be tested using tox:
+
 ::
 
     pip install tox

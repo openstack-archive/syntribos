@@ -70,15 +70,15 @@ A short list of tests that can be run using syntribos is given below:
 Buffer Overflow
 ---------------
 
-The idea of `buffer overflow`_ in the context of a web application is to force
-an application to handle more data than it can hold in a buffer.
+The idea of `buffer overflow attacks`_ in the context of a web application
+is to force an application to handle more data than it can hold in a buffer.
 In syntribos a buffer overflow test is attempted by injecting a large
 string into the body of an HTTP request.
 
 Command Injection
 -----------------
 
-`Command injection`_ attacks are done by injecting arbitrary commands in an
+`Command injection attacks`_ are done by injecting arbitrary commands in an
 attempt to execute these commands on a remote system. In syntribos, this is
 achieved by injecting a set of strings that have been proven to be successful
 in executing a command injection attacks.
@@ -86,28 +86,28 @@ in executing a command injection attacks.
 CORS Wildcard
 -------------
 
-`CORS wildcard`_ test is used to verify if a web server allows cross-domain
+`CORS wildcard test`_ is used to verify if a web server allows cross-domain
 resource sharing from any external URL ( wild carding of
 `Access-Control-Allow-Origin` header) rather than a white list of URLs.
 
 Integer Overflow
 ----------------
 
-`Integer overflow`_ test in syntribos attempts to inject numeric values that
+`Integer overflow test`_ in syntribos attempts to inject numeric values that
 the remote application may fail to represent within its storage, for example
 a 32 bit integer type trying to store a 64 bit number
 
 LDAP Injection
 --------------
 
-Syntribos attempts `LDAP injection`_ by injecting LDAP statements
+Syntribos attempts `LDAP injection attacks`_ by injecting LDAP statements
 into HTTP requests; if an application fails to properly sanitize the
 request content, it may be possible to execute arbitrary commands.
 
 SQL Injection
 -------------
 
-`SQL injection`_ attacks are one of the most common web application attacks.
+`SQL injection attacks`_ are one of the most common web application attacks.
 If the user input is not properly sanitized, it is fairly easy to
 execute SQL queries that may result in an attacker reading  sensitive
 information or gaining control of the SQL server. In syntribos
@@ -126,7 +126,7 @@ characters, emojis etc.
 XML External Entity
 -------------------
 
-An `XML external entity`_ attack is an attack that targets the web
+`XML external entity attacks`_ are attacks that targets the web
 application's XML parser. If an XML parser allows processing of
 external entities referenced in an XML document then an attacker
 might be able to cause denial of service, leakage of information etc.
@@ -147,13 +147,13 @@ one to emulate. In the same way, users can add different extensions also
 to the tests. To see how extensions can be written please see
 ``syntribos/extensions`` directory.
 
-.. _buffer overflow: https://en.wikipedia.org/wiki/Buffer_overflow
-.. _Command injection: https://www.owasp.org/index.php/Command_Injection
-.. _CORS wildcard: https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)
-.. _Integer overflow: https://en.wikipedia.org/wiki/Integer_overflow
-.. _LDAP injection: https://www.owasp.org/index.php/LDAP_injection
-.. _SQL injection: https://www.owasp.org/index.php/SQL_Injection
-.. _XML external entity: https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
+.. _buffer overflow attacks: https://en.wikipedia.org/wiki/Buffer_overflow
+.. _Command injection attacks: https://www.owasp.org/index.php/Command_Injection
+.. _CORS wildcard test: https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)
+.. _Integer overflow test: https://en.wikipedia.org/wiki/Integer_overflow
+.. _LDAP injection attacks: https://www.owasp.org/index.php/LDAP_injection
+.. _SQL injection attacks: https://www.owasp.org/index.php/SQL_Injection
+.. _XML external entity attacks: https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
 .. _XSS: https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)
 
 **Details**
