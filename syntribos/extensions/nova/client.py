@@ -10,13 +10,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import urlparse
-
 from glanceclient.v2.client import Client as GC
 from keystoneauth1.identity import v3
 from keystoneauth1 import session
 from novaclient.client import Client
 from oslo_config import cfg
+import six.moves.urllib.parse as urlparse
 
 from syntribos.extensions.identity import client as id_client
 from syntribos.utils.memoize import memoize
@@ -78,7 +77,7 @@ def list_server_ids(conn):
 
 def create_server(conn):
     token = id_client.get_scoped_token_v3("user")
-    _url = urlparse.urlparse(CONF.syntribos.endpoint)
+    _url = urlparse.urlunparse(CONF.syntribos.endpoint)
     endpoint = urlparse.urlunparse(
         (_url.scheme,
          _url.hostname + ":9292",
