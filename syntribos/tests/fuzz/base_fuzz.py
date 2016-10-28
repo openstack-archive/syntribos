@@ -35,12 +35,12 @@ class BaseFuzzTestCase(base.BaseTestCase):
         payloads = CONF.syntribos.payloads
         if not payloads:
             payloads = remotes.get(CONF.remote.payloads_uri)
-            content = ContentType('r', 0)(payloads)
-            for file_path, _ in content:
-                if file_path.endswith(".txt"):
-                    file_dir = os.path.split(file_path)[0]
-                    payloads = os.path.join(payloads, file_dir)
-                    break
+        content = ContentType('r', 0)(payloads)
+        for file_path, _ in content:
+            if file_path.endswith(".txt"):
+                file_dir = os.path.split(file_path)[0]
+                payloads = os.path.join(payloads, file_dir)
+                break
         path = os.path.join(payloads, file_name or cls.data_key)
         with open(path, "rb") as fp:
             return fp.read().splitlines()

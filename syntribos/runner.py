@@ -176,6 +176,10 @@ class Runner(object):
             cls.list_tests()
             exit(0)
 
+        elif CONF.sub_command.name == "download":
+            ENV.download_wrapper()
+            exit(0)
+
         if not ENV.is_syntribos_initialized():
             print("Syntribos was not initialized. Please run the 'init' "
                   "command or set it up manually. See the README for more "

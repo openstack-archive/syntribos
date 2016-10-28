@@ -124,13 +124,14 @@ def extract_tar(abs_path):
 
 
 @cache
-def get(uri):
+def get(uri, cache_dir=None):
     """Entry method for download method
 
     :param str uri: A formatted remote URL of a file
     :param str: Absolute path to the downloaded content
+    :param str cache_dir: path to save downloaded files
     """
-    user_base_dir = CONF.remote.cache_dir
+    user_base_dir = cache_dir or CONF.remote.cache_dir
     if user_base_dir:
         try:
             temp = tempfile.TemporaryFile(dir=os.path.abspath(user_base_dir))
