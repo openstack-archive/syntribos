@@ -23,14 +23,24 @@ Syntribos, An Automated API Security Testing Tool
                           x
              === Automated API Scanning  ===
 
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: http://docs.openstack.org/developer/syntribos/
 
 .. image:: https://img.shields.io/pypi/v/syntribos.svg
     :target: https://pypi.python.org/pypi/syntribos/
-    :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/dm/syntribos.svg
     :target: https://pypi.python.org/pypi/syntribos/
-    :alt: Downloads
+
+.. image:: https://img.shields.io/pypi/pyversions/syntribos.svg
+        :target: https://pypi.python.org/pypi/syntribos/
+
+.. image:: https://img.shields.io/pypi/wheel/syntribos.svg
+        :target: https://pypi.python.org/pypi/syntribos/
+
+.. image:: https://img.shields.io/irc/%23openstack-security.png
+        :target: http://webchat.freenode.net/?channels=openstack-security
+
 
 Syntribos is an open source automated API security testing tool that is
 maintained by members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`__.

@@ -23,14 +23,24 @@ Syntribos, An Automated API Security Testing Tool
                           x
              === Automated API Scanning  ===
 
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: http://docs.openstack.org/developer/syntribos/
 
 .. image:: https://img.shields.io/pypi/v/syntribos.svg
     :target: https://pypi.python.org/pypi/syntribos/
-    :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/dm/syntribos.svg
     :target: https://pypi.python.org/pypi/syntribos/
-    :alt: Downloads
+
+.. image:: https://img.shields.io/pypi/pyversions/syntribos.svg
+        :target: https://pypi.python.org/pypi/syntribos/
+
+.. image:: https://img.shields.io/pypi/wheel/syntribos.svg
+        :target: https://pypi.python.org/pypi/syntribos/
+
+.. image:: https://img.shields.io/irc/%23openstack-security.png
+        :target: http://webchat.freenode.net/?channels=openstack-security
+
 
 Syntribos is an open source automated API security testing tool that is
 maintained by members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`__.
@@ -217,11 +227,11 @@ This can be done manually, or via the ``init`` command.
     $ syntribos init
 
 By default, ``syntribos init`` fetches a set of default payload files from a
-`remote repository maintained by our development team
-<https://github.com/rahulunair/syntribos-payloads>`_. These payload files are
-necessary for our fuzz tests to run, but if you would like to disable this
-behavior, run syntribos with the ``--no_downloads`` flag. Payload files can
-also be fetched by running ``syntribos download --payloads`` at any time.
+`remote repository maintained by our development team <https://github.com/rahulunair/syntribos-payloads>`_.
+These payload files are necessary for our fuzz tests to run, but if you would
+like to disable this behavior, run syntribos with the ``--no_downloads`` flag.
+Payload files can also be fetched by running ``syntribos download --payloads``
+at any time.
 
 If you'd like to specify a custom root for syntribos to be installed in,
 specify the ``--custom_install_root`` flag after ``init``. This will skip
@@ -460,7 +470,7 @@ using syntribos.
 
     $ syntribos download --templates
 
-All these commands will only work if a configuration file
+All these commands except init will only work if a configuration file
 is specified. If a configuration file is present in the default
 path ( ``~/.syntribos/syntribos.conf`` ), then you
 do not need to explicitly specify a config file and
