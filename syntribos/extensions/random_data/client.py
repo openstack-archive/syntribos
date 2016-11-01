@@ -11,8 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import datetime
 import random
+import string
+import time
 import uuid
+
+import six
 
 
 def get_uuid():
@@ -59,3 +64,32 @@ def random_ip():
 def random_mac():
     while True:
         yield fake_mac()
+
+
+def random_string(n=10, string_type="lower"):
+    if string_type == "lower":
+        string_type = string.ascii_lowercase
+    elif string_type == "upper":
+        string_type = string.ascii_uppercase
+    else:
+        string_type = string.ascii_letters
+    while True:
+        r = "".join(random.choice(string_type) for _ in range(n))
+        yield r
+
+
+def random_integer(beg=0, end=1478029570):
+    # The default value of end is a valid epoch time, this is done so that
+    # random intger can then be used to generate random epoch as well.
+    while True:
+        yield random.randint(beg, end)
+
+
+def random_utc_datetime():
+    """Returns random utc date time."""
+    while True:
+        offset = six.next(random_integer())
+        epoch = time.time() - offset
+        ts = datetime.datetime.fromtimestamp(epoch).strftime(
+            "%Y-%m-%d %H:%M:%S")
+        yield ts
