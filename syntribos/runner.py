@@ -20,6 +20,7 @@ import unittest
 
 from oslo_config import cfg
 import six
+from six.moves import input
 
 import syntribos.config
 from syntribos.formatters.json_formatter import JSONFormatter
@@ -207,6 +208,7 @@ class Runner(object):
             templates_path = remotes.get(CONF.remote.templates_uri)
             templates_dir = ContentType("r", 0)(templates_path)
 
+        print("\nPress Ctrl-C to pause or exit...\n")
         for file_path, req_str in templates_dir:
             LOG = cls.get_logger(file_path)
             CONF.log_opt_values(LOG, logging.DEBUG)
@@ -368,10 +370,20 @@ class Runner(object):
                 result.testsRunSinceLastPrint = result.testsRun
 
         except KeyboardInterrupt:
-            result.print_result(cls.start_time)
-            cleanup.delete_temps()
-            print("Keyboard interrupt, exiting...")
-            exit(0)
+            print('\n\nPausing...  Hit ENTER to continue, type quit to exit.')
+            try:
+                response = input()
+                if response.lower() == "quit":
+                    result.print_result(cls.start_time)
+                    cleanup.delete_temps()
+                    print("Exiting...")
+                    exit(0)
+                print('Resuming...')
+            except KeyboardInterrupt:
+                result.print_result(cls.start_time)
+                cleanup.delete_temps()
+                print("Exiting...")
+                exit(0)
 
     @classmethod
     def run_test(cls, test, result):
