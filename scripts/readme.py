@@ -22,7 +22,7 @@ def find_docs():
         "about", "installation",
         "configuration", "commands",
         "running", "logging",
-        "test.anatomy", "unittests",
+        "test-anatomy", "unittests",
         "contributing"]
 
     for fname in whitelist:
