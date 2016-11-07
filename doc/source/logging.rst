@@ -87,7 +87,7 @@ Debug logs include details about HTTP requests and responses, and other debuggin
 information like errors and warnings across the project. The default path where
 debug logs are saved is ``.syntribos/logs/``. Debug logs are arranged in
 directories based on the timestamp and in these directories, in files named
-accordring to the templates.
+according to the templates.
 
 For example:
 

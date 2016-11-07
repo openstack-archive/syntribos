@@ -34,7 +34,7 @@ file.
 
     [remote]
     #
-    # Optional, to define remote URI and cache_dir explictly
+    # Optional, to define remote URI and cache_dir explicitly
     #
     templates_uri=<URI to a tar file of set of templates>
     payloads_uri=<URI to a tar file of set of payloads>
