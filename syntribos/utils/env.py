@@ -14,6 +14,7 @@
 import datetime
 import logging
 import os
+import pwd
 import shutil
 import sys
 
@@ -42,7 +43,13 @@ def get_user_home_root():
     global FOLDER
     user = os.environ.get("SUDO_USER")
     if not user:
-        user = os.getlogin() or os.environ.get("USER")
+        try:
+            user = os.environ.get("USER") or os.getlogin()
+        except OSError as e:
+            # Refer https://mail.python.org/pipermail/python-bugs-list/
+            # 2002-July/012691.html
+            LOG.error("Exception thrown in : {}".format(e))
+            user = pwd.getpwuid(os.getuid())[0]
     home_path = "~{0}/{1}".format(user, FOLDER)
     return expand_path(home_path)
 
@@ -62,6 +69,7 @@ def get_venv_root():
 
 def get_syntribos_root():
     """This determines the proper path to use as syntribos' root directory."""
+    path = ""
     custom_root = CONF.syntribos.custom_root
 
     if custom_root:
