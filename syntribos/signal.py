@@ -65,6 +65,9 @@ class SignalHolder(object):
         s2_has_s1 = all([sig in other.signals for sig in self.signals])
         return s1_has_s2 and s2_has_s1
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __contains__(self, item):
         """This is used to search for signals in the 'if __ in __' pattern."""
         if not isinstance(item, SynSignal) and type(item) is not str:
