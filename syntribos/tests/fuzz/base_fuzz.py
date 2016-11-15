@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import logging
 import os
 
 from oslo_config import cfg
@@ -23,6 +24,7 @@ import syntribos.tests.fuzz.datagen
 from syntribos.utils.file_utils import ContentType
 from syntribos.utils import remotes
 
+LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 
@@ -41,9 +43,15 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 file_dir = os.path.split(file_path)[0]
                 payloads = os.path.join(payloads, file_dir)
                 break
-        path = os.path.join(payloads, file_name or cls.data_key)
-        with open(path, "rb") as fp:
-            return fp.read().splitlines()
+        try:
+            path = os.path.join(payloads, file_name or cls.data_key)
+            with open(path, "rb") as fp:
+                return fp.read().splitlines()
+        except IOError as e:
+            LOG.error("Exception raised: {}".format(e))
+            print("\nNo file named {} found in the payloads dir, "
+                  "exiting..".format(file_name or cls.data_key))
+            exit(1)
 
     @classmethod
     def send_init_request(cls, filename, file_content):
