@@ -165,26 +165,40 @@ def list_cli_opts():
 
 
 def list_syntribos_opts():
+    def wrap_try_except(func):
+        def wrap(*args):
+            try:
+                func(*args)
+            except IOError:
+                print("\nCan't open a file or directory specified in the "
+                      "config file under the section `[syntribos]`; verify "
+                      "if the path exists.\nFor more information please refer "
+                      "the debug logs.")
+                exit(1)
+        return wrap
     return [
         cfg.StrOpt("endpoint", default="",
                    sample_default="http://localhost/app",
                    help="The target host to be tested"),
-        cfg.Opt("templates", type=ContentType("r", 0), default="",
+        cfg.Opt("templates", type=wrap_try_except(ContentType("r", 0)),
+                default="",
                 sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
                      "file, to test on the target API"),
         cfg.StrOpt("payloads", default="",
                    sample_default="~/.syntribos/data",
-                   help="The location where we can find syntribos' payloads"),
+                   help="The location where we can find syntribos'"
+                   "payloads"),
         cfg.MultiStrOpt("exclude_results",
                         default=[""],
                         sample_default=["500_errors", "length_diff"],
                         help="Defect types to exclude from the "
                              "results output"),
-        cfg.Opt("custom_root", type=ExistingDirType(), short="c",
+        cfg.Opt("custom_root", type=wrap_try_except(ExistingDirType()),
+                short="c",
                 sample_default="/your/custom/root",
-                help="The root directory where the subfolders that make up "
-                     "syntribos' environment (logs, templates, payloads, "
+                help="The root directory where the subfolders that make up"
+                     " syntribos' environment (logs, templates, payloads, "
                      "configuration files, etc.)"),
     ]
 

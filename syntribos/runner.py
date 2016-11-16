@@ -168,18 +168,22 @@ class Runner(object):
             cls.setup_config()
         else:
             cls.setup_config(use_file=True)
+        try:
+            if CONF.sub_command.name == "init":
+                ENV.initialize_syntribos_env()
+                exit(0)
 
-        if CONF.sub_command.name == "init":
-            ENV.initialize_syntribos_env()
-            exit(0)
+            elif CONF.sub_command.name == "list_tests":
+                cls.list_tests()
+                exit(0)
 
-        elif CONF.sub_command.name == "list_tests":
-            cls.list_tests()
-            exit(0)
-
-        elif CONF.sub_command.name == "download":
-            ENV.download_wrapper()
-            exit(0)
+            elif CONF.sub_command.name == "download":
+                ENV.download_wrapper()
+                exit(0)
+        except AttributeError:
+            print("Not able to run the requested sub command, please check "
+                  "the debug logs for more information, exiting...")
+            exit(1)
 
         if not ENV.is_syntribos_initialized():
             print("Syntribos was not initialized. Please run the 'init' "
@@ -206,7 +210,12 @@ class Runner(object):
             print("Attempting to download templates from {}".format(
                 CONF.remote.templates_uri))
             templates_path = remotes.get(CONF.remote.templates_uri)
-            templates_dir = ContentType("r", 0)(templates_path)
+            try:
+                templates_dir = ContentType("r", 0)(templates_path)
+            except IOError:
+                print("Not able to open `{}`; "
+                      "please verify path, exiting...".format(templates_path))
+                exit(1)
 
         print("\nPress Ctrl-C to pause or exit...\n")
         for file_path, req_str in templates_dir:
