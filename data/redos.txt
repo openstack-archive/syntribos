@@ -1,0 +1,6 @@
+(a+)+
+^(([a-z])+.)+[A-Z]([a-z])+$
+aaaaaaaaaaaaaaaaaaaaaaaaaab
+(([\-.]|[_]+)?([a-zA-Z0-9]+))*
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!
+1111111111111111111111111111111112
