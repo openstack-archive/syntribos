@@ -21,7 +21,7 @@ class ExistingPathType(object):
         msg = ("\nCan't open '{filename}'; not a readable file or dir."
                "\nPlease enter a valid file or dir location.{exception}"
                ).format(filename=filename,
-                        exception="\nEXCEPTION: {exc}\n".format(exc=exc))
+                        exception="\nException: {exc}\n".format(exc=exc))
         raise IOError(msg)
 
     def __call__(self, string):
