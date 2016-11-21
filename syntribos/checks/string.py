@@ -34,7 +34,7 @@ def has_string(test):
                                   if key in test.test_resp.text]
 
     if len(data["failed_strings"]) > 0:
-        keys = "\n".join(map(str, data["failed_strings"]))
+        keys = "\n".join([str(s) for s in data["failed_strings"]])
         text = "Failed strings present " + keys
         return syntribos.signal.SynSignal(
             check_name="has_string",

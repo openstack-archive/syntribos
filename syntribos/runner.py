@@ -40,6 +40,12 @@ LOG = logging.getLogger(__name__)
 
 
 class Runner(object):
+    """The core engine of syntribos.
+
+    This class is composed of a set of static methods that forms the core of
+    syntribos. These include methods to list tests, run, to load test modules,
+    to dry run etc.
+    """
 
     log_path = ""
     current_test_id = 1000
@@ -67,7 +73,7 @@ class Runner(object):
 
         :param package: a package of tests for pkgutil to load
         """
-        for importer, modname, ispkg in pkgutil.walk_packages(
+        for _, modname, _ in pkgutil.walk_packages(
                 path=package.__path__,
                 prefix=package.__name__ + '.',
                 onerror=lambda x: None):
@@ -126,8 +132,7 @@ class Runner(object):
         try:
             syntribos.config.register_opts()
             if use_file:
-                CONF(argv,
-                     default_config_files=[ENV.get_default_conf_file()])
+                CONF(argv, default_config_files=[ENV.get_default_conf_file()])
             else:
                 CONF(argv, default_config_files=[])
         except Exception as exc:
@@ -230,8 +235,7 @@ class Runner(object):
             if CONF.sub_command.name == "run":
                 cls.run_given_tests(list_of_tests, file_path, req_str)
             elif CONF.sub_command.name == "dry_run":
-                cls.dry_run(list_of_tests, file_path, req_str,
-                            dry_run_output)
+                cls.dry_run(list_of_tests, file_path, req_str, dry_run_output)
 
         if CONF.sub_command.name == "run":
             result.print_result(cls.start_time)
@@ -255,7 +259,7 @@ class Runner(object):
 
         :return: None
         """
-        for test_name, test_class in list_of_tests:
+        for _, test_class in list_of_tests:
             try:
                 print("\nParsing template file...")
                 test_class.create_init_request(file_path, req_str)
@@ -263,12 +267,10 @@ class Runner(object):
                 print("Error in parsing template:\n \t{0}: {1}\n".format(
                     type(e).__name__, e))
                 LOG.exception("Error in parsing template:")
-                output["failures"].append(
-                    {
-                        "file": file_path,
-                        "error": e.__str__()
-                    }
-                )
+                output["failures"].append({
+                    "file": file_path,
+                    "error": e.__str__()
+                })
             else:
                 print("Request sucessfully generated!\n")
                 output["successes"].append(file_path)
@@ -282,9 +284,7 @@ class Runner(object):
     @classmethod
     def dry_run_report(cls, output):
         """Reports the dry run through a formatter."""
-        formatter_types = {
-            "json": JSONFormatter(result)
-        }
+        formatter_types = {"json": JSONFormatter(result)}
         formatter = formatter_types[CONF.output_format]
         formatter.report(output)
 
@@ -362,7 +362,7 @@ class Runner(object):
                             failures))
 
             run_time = time.time() - template_start_time
-            LOG.debug("Run time: {} sec.".format(run_time))
+            LOG.debug("Run time: %s sec.", run_time)
             if hasattr(result, "testsRun"):
                 num_tests = result.testsRun - result.testsRunSinceLastPrint
                 print("\nRan {num} test(s) in {time:.3f}s\n".format(
