@@ -26,7 +26,7 @@ using syntribos.
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-- **dry-run**
+- **dry_run**
 
   This command ensures that the template files given for this run parse
   successfully without errors. It then runs a debug test which sends no
