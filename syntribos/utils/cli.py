@@ -67,17 +67,17 @@ class ProgressBar(object):
     """A simple progressBar.
 
     A simple generic progress bar like many others.
-    :param int max: max value, when progress is 100 %
+    :param int total_len: total_len value, when progress is 100 %
     :param int width: width of the progress bar
     :param str fill_char: character to show progress
     :param str empty_char: character to show empty part
     :param str message: string to be part of the progress bar
     """
 
-    def __init__(self, max=30, width=23, fill_char="#", empty_char="-",
+    def __init__(self, total_len=30, width=23, fill_char="#", empty_char="-",
                  message=""):
         self.width = width
-        self.max = max
+        self.total_len = total_len
         self.fill_char = fill_char
         self.empty_char = empty_char
         self.message = message
@@ -89,10 +89,10 @@ class ProgressBar(object):
         :param int inc_level: level of increment
         :returns: None
         """
-        if self.max > self.present_level + inc_level:
+        if self.total_len > self.present_level + inc_level:
             self.present_level += inc_level
         else:
-            self.present_level = self.max
+            self.present_level = self.total_len
 
     def format_bar(self):
         """Method to format the progress bar.
@@ -103,10 +103,10 @@ class ProgressBar(object):
 
         :returns: formatted progress bar string
         """
-        bar_width = int(ceil(self.present_level / self.max * self.width))
+        bar_width = int(ceil(self.present_level / self.total_len * self.width))
         empty_char = self.empty_char * (self.width - bar_width)
         fill_char = self.fill_char * bar_width
-        percentage = int(self.present_level / self.max * 100)
+        percentage = int(self.present_level / self.total_len * 100)
         return "{message}\t\t|{fill_char}{empty_char}|  {percentage} %".format(
             message=self.message, fill_char=fill_char,
             empty_char=empty_char, percentage=percentage)

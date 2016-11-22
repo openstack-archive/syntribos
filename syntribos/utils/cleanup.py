@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: skip-file
 from syntribos.utils.file_utils import delete_dir
 import syntribos.utils.remotes
 

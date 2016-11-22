@@ -24,23 +24,12 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
     test_type = "data"
     data_key = "sql-injection.txt"
     failure_keys = [
-        "SQL syntax",
-        "mysql",
-        "MySqlException (0x",
-        "valid MySQL result",
+        "SQL syntax", "mysql", "MySqlException (0x", "valid MySQL result",
         "check the manual that corresponds to your MySQL server version",
-        "MySqlClient.",
-        "com.mysql.jdbc.exceptions",
-        "SQLite/JDBCDriver",
-        "SQLite.Exception",
-        "System.Data.SQLite.SQLiteException",
-        "sqlite_.",
-        "SQLite3::",
-        "[SQLITE_ERROR]",
-        "Unknown column",
-        "where clause",
-        "SqlServer",
-        "syntax error"
+        "MySqlClient.", "com.mysql.jdbc.exceptions", "SQLite/JDBCDriver",
+        "SQLite.Exception", "System.Data.SQLite.SQLiteException", "sqlite_.",
+        "SQLite3::", "[SQLITE_ERROR]", "Unknown column", "where clause",
+        "SqlServer", "syntax error"
     ]
 
     def test_case(self):
@@ -57,8 +46,7 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
                              "returned after a successful SQL injection attack"
                              ", have been found in the response. This could "
                              "indicate a vulnerability to SQL injection "
-                             "attacks."
-                             ).format(failed_strings))
+                             "attacks.").format(failed_strings))
 
         self.diff_signals.register(time_diff(self))
         if "TIME_DIFF_OVER" in self.diff_signals:

@@ -26,10 +26,14 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 
-def authenticate_v2(
-    url, username=None, password=None, tenant_name=None,
-    tenant_id=None, scoped=False, serialize_format="json",
-        deserialize_format="json"):
+def authenticate_v2(url,
+                    username=None,
+                    password=None,
+                    tenant_name=None,
+                    tenant_id=None,
+                    scoped=False,
+                    serialize_format="json",
+                    deserialize_format="json"):
     """Creates auth request body and sends it to the given v2 endpoint.
 
     :param str username: OpenStack username
@@ -57,18 +61,15 @@ def authenticate_v2(
         username=username, password=password)
     if scoped:
         request_entity = v2.Auth(
-            tenant_name=tenant_name, tenant_id=tenant_id,
-            password_creds=password_creds
-        )
+            tenant_name=tenant_name,
+            tenant_id=tenant_id,
+            password_creds=password_creds)
     else:
-        request_entity = v2.Auth(
-            password_creds=password_creds
-        )
+        request_entity = v2.Auth(password_creds=password_creds)
     data = request_entity.serialize(serialize_format)
     try:
-        resp, signals = SynHTTPClient().request(
-            "POST", url, headers=headers,
-            data=data, sanitize=True)
+        resp, _ = SynHTTPClient().request(
+            "POST", url, headers=headers, data=data, sanitize=True)
         r = resp.json()
     except RequestException as e:
         LOG.debug(e)
@@ -121,11 +122,18 @@ def get_tenant_id_v2(user_section='user'):
     return r.json()["token"]["tenant"]["id"]
 
 
-def authenticate_v3(
-    url, username=None, password=None, user_id=None, domain_id=None,
-        domain_name=None, token=None, project_name=None,
-        project_id=None, scoped=False,
-        serialize_format="json", deserialize_format="json"):
+def authenticate_v3(url,
+                    username=None,
+                    password=None,
+                    user_id=None,
+                    domain_id=None,
+                    domain_name=None,
+                    token=None,
+                    project_name=None,
+                    project_id=None,
+                    scoped=False,
+                    serialize_format="json",
+                    deserialize_format="json"):
     """Creates auth request body and sends it to the given v3 endpoint.
 
     :param str username: OpenStack username
@@ -156,8 +164,7 @@ def authenticate_v3(
     else:
         domain = v3.Domain(name=domain_name, id_=domain_id)
     password = v3.Password(user=v3.User(
-        name=username, password=password, id_=user_id, domain=domain
-    ))
+        name=username, password=password, id_=user_id, domain=domain))
     if token:
         kwargs = {"token": v3.Token(id_=token), "methods": ["token"]}
     else:
@@ -175,9 +182,8 @@ def authenticate_v3(
     request_entity = v3.Auth(identity=v3.Identity(**kwargs), scope=scope)
     data = request_entity.serialize(serialize_format)
     try:
-        r, signals = SynHTTPClient().request(
-            "POST", url, headers=headers,
-            data=data, sanitize=True)
+        r, _ = SynHTTPClient().request(
+            "POST", url, headers=headers, data=data, sanitize=True)
     except RequestException as e:
         LOG.critical(e)
     else:
@@ -200,8 +206,8 @@ def authenticate_v3_config(user_section, scoped=False):
         domain_name=CONF.get(user_section).domain_name or
         CONF.user.domain_name,
         token=CONF.get(user_section).token or CONF.user.token,
-        project_name=CONF.get(
-            user_section).project_name or CONF.user.project_name,
+        project_name=CONF.get(user_section).project_name or
+        CONF.user.project_name,
         project_id=CONF.get(user_section).project_id or CONF.user.project_id,
         scoped=scoped)
 

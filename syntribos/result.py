@@ -25,7 +25,6 @@ CONF = cfg.CONF
 
 
 class IssueTestResult(unittest.TextTestResult):
-
     """Custom unnittest results holder class
 
     This class aggregates :class:`syntribos.issue.Issue` objects from all the
@@ -33,7 +32,10 @@ class IssueTestResult(unittest.TextTestResult):
     """
     output = {"failures": {}, "errors": [], "stats": {}}
     output["stats"]["severity"] = {
-        "UNDEFINED": 0, "LOW": 0, "MEDIUM": 0, "HIGH": 0
+        "UNDEFINED": 0,
+        "LOW": 0,
+        "MEDIUM": 0,
+        "HIGH": 0
     }
     stats = {"errors": 0, "failures": 0, "successes": 0}
     severity_counter_dict = {}
@@ -83,8 +85,10 @@ class IssueTestResult(unittest.TextTestResult):
         """
         for issue in test.failures:
             defect_type = issue.defect_type
-            if any([True for x in CONF.syntribos.exclude_results
-                    if x and x in defect_type]):
+            if any([
+                    True for x in CONF.syntribos.exclude_results
+                    if x and x in defect_type
+            ]):
                 continue
 
             min_sev = syntribos.RANKING_VALUES[CONF.min_severity]
@@ -143,7 +147,7 @@ class IssueTestResult(unittest.TextTestResult):
 
                 instance_obj = None
                 for i in failure_obj["instances"]:
-                    if(i["confidence"] == conf_rating and
+                    if (i["confidence"] == conf_rating and
                             i["severity"] == sev_rating and
                             i["param"]["method"] == method and
                             i["param"]["location"] == loc):
@@ -151,8 +155,8 @@ class IssueTestResult(unittest.TextTestResult):
                         i["param"]["variables"].add(name)
                         for sig_type in signals:
                             if sig_type in i["signals"]:
-                                i["signals"][sig_type].update(
-                                    signals[sig_type])
+                                i["signals"][sig_type].update(signals[
+                                    sig_type])
                             else:
                                 i["signals"][sig_type] = signals[sig_type]
                         i["strings"].add(payload_string)
@@ -174,12 +178,12 @@ class IssueTestResult(unittest.TextTestResult):
             else:
                 instance_obj = None
                 for i in failure_obj["instances"]:
-                    if(i["confidence"] == conf_rating and
+                    if (i["confidence"] == conf_rating and
                             i["severity"] == sev_rating):
                         for sig_type in signals:
                             if sig_type in i["signals"]:
-                                i["signals"][sig_type].update(
-                                    signals[sig_type])
+                                i["signals"][sig_type].update(signals[
+                                    sig_type])
                             else:
                                 i["signals"][sig_type] = signals[sig_type]
                         instance_obj = i
@@ -202,11 +206,10 @@ class IssueTestResult(unittest.TextTestResult):
         :param err:
         :type tuple: Tuple of format ``(type, value, traceback)``
         """
-        self.errors.append(
-            {
-                "test": self.getDescription(test),
-                "error": self._exc_info_to_string(err, test)
-            })
+        self.errors.append({
+            "test": self.getDescription(test),
+            "error": self._exc_info_to_string(err, test)
+        })
         self.stats["errors"] += 1
 
     def addSuccess(self, test):
@@ -224,9 +227,7 @@ class IssueTestResult(unittest.TextTestResult):
         """
         self.output["errors"] = self.errors
         self.output["failures"] = self.failures
-        formatter_types = {
-            "json": JSONFormatter(self)
-        }
+        formatter_types = {"json": JSONFormatter(self)}
         formatter = formatter_types[output_format]
         formatter.report(self.output)
 
@@ -242,10 +243,13 @@ class IssueTestResult(unittest.TextTestResult):
         num_fail = self.stats["failures"]
         num_err = self.stats["errors"]
         print("\n{sep}\nTotal: Ran {num} test{suff} in {time:.3f}s".format(
-            sep=syntribos.SEP, num=self.testsRun,
-            suff="s" * bool(self.testsRun - 1), time=run_time))
+            sep=syntribos.SEP,
+            num=self.testsRun,
+            suff="s" * bool(self.testsRun - 1),
+            time=run_time))
         print("Total: {f} failure{fsuff} and {e} error{esuff}".format(
-            f=num_fail, e=num_err,
+            f=num_fail,
+            e=num_err,
             fsuff="s" * bool(num_fail - 1),
             esuff="s" * bool(num_err - 1)))
         if test_log:

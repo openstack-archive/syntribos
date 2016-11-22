@@ -44,11 +44,11 @@ class JSONDepthOverflowBody(base_fuzz.BaseFuzzTestCase):
                 defect_type="json_depth_limit_strings",
                 severity=syntribos.MEDIUM,
                 confidence=syntribos.HIGH,
-                description=("The string(s): '{0}', is known to be commonly "
-                             "returned after a successful overflow of the json"
-                             " parsers depth limit. This could possibly "
-                             "result in a dos vulnerability."
-                             ).format(failed_strings))
+                description=(
+                    "The string(s): '{0}', is known to be commonly "
+                    "returned after a successful overflow of the json"
+                    " parsers depth limit. This could possibly "
+                    "result in a dos vulnerability.").format(failed_strings))
 
         self.diff_signals.register(time_diff(self))
         if "TIME_DIFF_OVER" in self.diff_signals:

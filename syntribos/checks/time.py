@@ -48,16 +48,15 @@ def percentage_difference(test):
         # Difference not larger than configured percentage
         return None
 
-    text = (
-        "Validate Time Differential:\n"
-        "\tResponse 1 elapsed time: {0}\n"
-        "\tResponse 2 elapsed time: {1}\n"
-        "\tResponse difference: {2}\n"
-        "\tPercent difference: {3}%\n"
-        "\tDifference direction: {4}"
-        "\tConfig percent: {5}\n").format(
-        data["resp1_time"], data["resp2_time"], data["time_diff"],
-        data["percent_diff"], data["dir"], CONF.test.time_diff_percent)
+    text = ("Validate Time Differential:\n"
+            "\tResponse 1 elapsed time: {0}\n"
+            "\tResponse 2 elapsed time: {1}\n"
+            "\tResponse difference: {2}\n"
+            "\tPercent difference: {3}%\n"
+            "\tDifference direction: {4}"
+            "\tConfig percent: {5}\n").format(
+                data["resp1_time"], data["resp2_time"], data["time_diff"],
+                data["percent_diff"], data["dir"], CONF.test.time_diff_percent)
 
     slug = "TIME_DIFF_{dir}".format(dir=data["dir"])
 
@@ -77,23 +76,27 @@ def absolute_time(test):
     else:
         resp = test.test_resp
 
-    data = {"request": resp.request,
-            "response": resp,
-            "elapsed": resp.elapsed.total_seconds(),
-            "max_time": CONF.test.max_time
-            }
+    data = {
+        "request": resp.request,
+        "response": resp,
+        "elapsed": resp.elapsed.total_seconds(),
+        "max_time": CONF.test.max_time
+    }
 
     if data["elapsed"] < data["max_time"]:
         return None
 
-    text = (
-        "Check that response time doesn't exceed test.max_time:\n"
-        "\tMax time: {0}\n"
-        "\tElapsed time: {1}\n").format(data["elapsed"], data["max_time"])
+    text = ("Check that response time doesn't exceed test.max_time:\n"
+            "\tMax time: {0}\n"
+            "\tElapsed time: {1}\n").format(data["elapsed"], data["max_time"])
 
     slug = "TIME_OVER_MAX"
     tags = ["CONNECTION_TIMEOUT"]
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1.0,
-        tags=tags, data=data, check_name=check_name)
+        text=text,
+        slug=slug,
+        strength=1.0,
+        tags=tags,
+        data=data,
+        check_name=check_name)

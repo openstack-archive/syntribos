@@ -42,8 +42,7 @@ class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
                 description=("The string(s): '{0}', is in the list of "
                              "possible vulnerable keys. This may "
                              "indicate a vulnerability to this form of "
-                             "user defined attack."
-                             ).format(failed_strings))
+                             "user defined attack.").format(failed_strings))
 
         self.diff_signals.register(time_diff(self))
         if "TIME_DIFF_OVER" in self.diff_signals:

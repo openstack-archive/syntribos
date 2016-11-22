@@ -339,7 +339,7 @@ class Runner(object):
                     test_class.get_test_cases(file_path, req_str))
                 if len(test_cases) > 0:
                     bar = cli.ProgressBar(
-                        message=result_string, max=len(test_cases))
+                        message=result_string, total_len=len(test_cases))
                     last_failures = result.stats["failures"]
                     last_errors = result.stats["errors"]
                     for test in test_cases:

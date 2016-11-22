@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# pylint: skip-file
 import logging
 import os
 
@@ -96,7 +97,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 confidence=syntribos.HIGH,
                 description=("This request returns an error with status code "
                              "{0}, which might indicate some server-side "
-                             "fault that could lead to further vulnerabilities"
+                             "fault that may lead to further vulnerabilities"
                              ).format(self.test_resp.status_code))
         self.diff_signals.register(length_diff(self))
         if "LENGTH_DIFF_OVER" in self.diff_signals:
@@ -146,9 +147,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
         fr = syntribos.tests.fuzz.datagen.fuzz_request(
             cls.init_req, cls._get_strings(), cls.test_type, prefix_name)
         for fuzz_name, request, fuzz_string, param_path in fr:
-            yield cls.extend_class(fuzz_name, fuzz_string, param_path, {
-                "request": request
-            })
+            yield cls.extend_class(fuzz_name, fuzz_string, param_path,
+                                   {"request": request})
 
     @classmethod
     def extend_class(cls, new_name, fuzz_string, param_path, kwargs):

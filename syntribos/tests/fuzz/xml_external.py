@@ -57,7 +57,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         prepared_copy_xml.headers['content-type'] = "application/xml"
 
         init_response, init_signals = cls.client.send_request(prepared_copy)
-        init_response_xml, xml_signals = cls.client.send_request(
+        _, xml_signals = cls.client.send_request(
             prepared_copy_xml)
 
         cls.init_resp = init_response

@@ -65,9 +65,9 @@ def percentage_difference(test):
         "\tPercent difference: {6}%\n"
         "\tDifference direction: {7}"
         "\tConfig percent: {8}\n").format(
-        data["req1_len"], data["resp1_len"], data["req2_len"],
-        data["resp2_len"], data["req_diff"], data["resp_diff"],
-        data["percent_diff"], data["dir"], CONF.test.length_diff_percent)
+            data["req1_len"], data["resp1_len"], data["req2_len"],
+            data["resp2_len"], data["req_diff"], data["resp_diff"],
+            data["percent_diff"], data["dir"], CONF.test.length_diff_percent)
 
     slug = "LENGTH_DIFF_{dir}".format(dir=data["dir"])
 
@@ -94,16 +94,16 @@ def max_body_length(test):
         "req_len": len(resp.request.body or ""),
         "resp_len": len(resp.content or ""),
     }
-    text = (
-        "Length:\n"
-        "\tRequest length: {0}\n"
-        "\tResponse length: {1}\n".format(
-            data["req_len"], data["resp_len"]
-        )
-    )
+    text = ("Length:\n"
+            "\tRequest length: {0}\n"
+            "\tResponse length: {1}\n".format(data["req_len"],
+                                              data["resp_len"]))
     slug = "OVER_MAX_LENGTH"
 
     if data["resp_len"] > CONF.test.max_length:
         return syntribos.signal.SynSignal(
-            text=text, slug=slug, strength=1.0, data=data,
+            text=text,
+            slug=slug,
+            strength=1.0,
+            data=data,
             check_name=check_name)
