@@ -18,21 +18,21 @@ import syntribos.extensions.identity.models.base
 
 
 class AuthResponse(
-    syntribos.extensions.identity.models.base.BaseIdentityModel
-):
-
-    def __init__(
-            self, token=None, service_catalog=None, user=None, metadata=None):
-            super(AuthResponse, self).__init__(locals())
+        syntribos.extensions.identity.models.base.BaseIdentityModel):
+    def __init__(self,
+                 token=None,
+                 service_catalog=None,
+                 user=None,
+                 metadata=None):
+        super(AuthResponse, self).__init__(locals())
 
     @classmethod
     def _dict_to_obj(cls, data):
-        return cls(
-            token=Token._dict_to_obj(data.get('token')),
-            metadata=Metadata._dict_to_obj(data.get('metadata')),
-            user=User._dict_to_obj(data.get('user')),
-            service_catalog=cls._build_list_model(
-                data, "serviceCatalog", Service))
+        return cls(token=Token._dict_to_obj(data.get('token')),
+                   metadata=Metadata._dict_to_obj(data.get('metadata')),
+                   user=User._dict_to_obj(data.get('user')),
+                   service_catalog=cls._build_list_model(
+                       data, "serviceCatalog", Service))
 
     @classmethod
     def _json_to_obj(cls, serialized_str):
@@ -55,7 +55,6 @@ class AuthResponse(
 
 
 class Metadata(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
     @classmethod
     def _dict_to_obj(cls, data):
         return data
@@ -66,18 +65,17 @@ class Metadata(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Tenant(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
     def __init__(self, enabled=None, description=None, name=None, id_=None):
         super(Tenant, self).__init__(locals())
 
     @classmethod
     def _xml_ele_to_obj(cls, data):
         description = data.findtext('description')
-        return cls(
-            name=data.attrib.get("name"),
-            id_=data.attrib.get("id"),
-            enabled=True if data.attrib.get('enabled') == "true" else False,
-            description=description)
+        return cls(name=data.attrib.get("name"),
+                   id_=data.attrib.get("id"),
+                   enabled=True
+                   if data.attrib.get('enabled') == "true" else False,
+                   description=description)
 
     @classmethod
     def _dict_to_obj(cls, data_dict):
@@ -88,7 +86,6 @@ class Tenant(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Token(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
     def __init__(self, id_=None, issued_at=None, expires=None, tenant=None):
         super(Token, self).__init__(locals())
 
@@ -110,54 +107,54 @@ class Token(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class User(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
-    def __init__(
-            self, id_=None, name=None, username=None, roles=None):
+    def __init__(self, id_=None, name=None, username=None, roles=None):
         super(User, self).__init__(locals())
 
     @classmethod
     def _dict_to_obj(cls, data):
-        return cls(
-            id_=data.get('id'),
-            name=data.get('name'),
-            username=data.get('username'),
-            roles=cls._build_list_model(data, "roles", Role))
+        return cls(id_=data.get('id'),
+                   name=data.get('name'),
+                   username=data.get('username'),
+                   roles=cls._build_list_model(data, "roles", Role))
 
     @classmethod
     def _xml_ele_to_obj(cls, data):
-        return cls(
-            id_=data.attrib.get('id'),
-            name=data.attrib.get('name'),
-            username=data.attrib.get('username'),
-            roles=cls._build_list_model(
-                cls._find(data, "roles"), "role", Role))
+        return cls(id_=data.attrib.get('id'),
+                   name=data.attrib.get('name'),
+                   username=data.attrib.get('username'),
+                   roles=cls._build_list_model(
+                       cls._find(data, "roles"), "role", Role))
 
 
 class Service(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
-    def __init__(
-            self, endpoints=None, name=None, type_=None):
+    def __init__(self, endpoints=None, name=None, type_=None):
         super(Service, self).__init__(locals())
 
     @classmethod
     def _dict_to_obj(cls, data):
         return cls(
             endpoints=cls._build_list_model(data, "endpoints", Endpoint),
-            name=data.get("name"), type_=data.get("type"))
+            name=data.get("name"),
+            type_=data.get("type"))
 
     @classmethod
     def _xml_ele_to_obj(cls, data):
-        return cls(
-            endpoints=cls._build_list_model(data, "endpoint", Endpoint),
-            name=data.attrib.get("name"), type_=data.attrib.get("type"))
+        return cls(endpoints=cls._build_list_model(data, "endpoint", Endpoint),
+                   name=data.attrib.get("name"),
+                   type_=data.attrib.get("type"))
 
 
 class Endpoint(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
-    def __init__(
-            self, region=None, id_=None, public_url=None, admin_url=None,
-            internal_url=None, private_url=None, version_id=None,
-            version_info=None, version_list=None):
+    def __init__(self,
+                 region=None,
+                 id_=None,
+                 public_url=None,
+                 admin_url=None,
+                 internal_url=None,
+                 private_url=None,
+                 version_id=None,
+                 version_info=None,
+                 version_list=None):
         super(Endpoint, self).__init__(locals())
 
     @classmethod
@@ -186,41 +183,38 @@ class Endpoint(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class Role(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
-    def __init__(
-        self, id_=None, name=None, description=None,
-            tenant_id=None, service_id=None):
+    def __init__(self,
+                 id_=None,
+                 name=None,
+                 description=None,
+                 tenant_id=None,
+                 service_id=None):
         super(Role, self).__init__(locals())
 
     @classmethod
     def _xml_ele_to_obj(cls, element):
         if element is None:
             return None
-        return cls(
-            id_=element.attrib.get("id"),
-            name=element.attrib.get("name"),
-            description=element.attrib.get("description"))
+        return cls(id_=element.attrib.get("id"),
+                   name=element.attrib.get("name"),
+                   description=element.attrib.get("description"))
 
     @classmethod
     def _dict_to_obj(cls, data):
         if data is None:
             return None
-        return cls(
-            id_=data.get("id"),
-            name=data.get("name"),
-            description=data.get("description"))
+        return cls(id_=data.get("id"),
+                   name=data.get("name"),
+                   description=data.get("description"))
 
 
 class Auth(syntribos.extensions.identity.models.base.BaseIdentityModel):
-
-    def __init__(
-            self, password_creds=None, tenant_id=None, tenant_name=None):
+    def __init__(self, password_creds=None, tenant_id=None, tenant_name=None):
         super(Auth, self).__init__(locals())
 
     def _obj_to_dict(self):
         dic = {}
-        dic["passwordCredentials"] = self._get_sub_model(
-            self.password_creds)
+        dic["passwordCredentials"] = self._get_sub_model(self.password_creds)
         dic["tenantId"] = self.tenant_id
         dic["tenantName"] = self.tenant_name
         return {"auth": self._remove_empty_values(dic)}
@@ -233,9 +227,7 @@ class Auth(syntribos.extensions.identity.models.base.BaseIdentityModel):
 
 
 class PasswordCredentials(
-    syntribos.extensions.identity.models.base.BaseIdentityModel
-):
-
+        syntribos.extensions.identity.models.base.BaseIdentityModel):
     def __init__(self, username=None, password=None):
         super(PasswordCredentials, self).__init__(locals())
 

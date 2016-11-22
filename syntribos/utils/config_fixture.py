@@ -77,7 +77,7 @@ class ConfFixture(config_fixture.Config):
         super(ConfFixture, self).setUp()
         self.common_config_fixture()
         self.v2_identity_fixture()
-        self.v3_identity_fixture
+        self.v3_identity_fixture()
         self.test_config_fixture()
         self.logger_config_fixture()
         self.cli_config_fixture()
