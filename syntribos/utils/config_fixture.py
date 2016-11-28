@@ -13,10 +13,6 @@
 # limitations under the License.
 from oslo_config import fixture as config_fixture
 
-import syntribos.config as cfg
-
-CONF = cfg.CONF
-
 
 class ConfFixture(config_fixture.Config):
     """Fixture to fake config values."""
