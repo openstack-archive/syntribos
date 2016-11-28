@@ -50,7 +50,7 @@ class RequestCreator(object):
                 break
         if lines[index] != "":
             index = index + 1
-        method, url, params, version = cls._parse_url_line(lines[0], endpoint)
+        method, url, params, _ = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
         data = cls._parse_data(lines[index + 1:])
         return cls.request_model_type(
@@ -115,7 +115,7 @@ class RequestCreator(object):
 
         :returns: object representation of body data (JSON or XML)
         """
-        postdat_regex = "([\w%]+=[\w%]+&?)+"
+        postdat_regex = r"([\w%]+=[\w%]+&?)+"
         data = "\n".join(lines).strip()
         if not data:
             return ""

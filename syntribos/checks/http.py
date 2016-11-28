@@ -49,9 +49,8 @@ def check_fail(exception):
     slug = "HTTP_FAIL_{exc}".format(exc=data["exception_name"])
     tags = set(["EXCEPTION_RAISED"])
 
-    invalid_request_exceptions = (
-        rex.URLRequired, rex.MissingSchema, rex.InvalidSchema, rex.InvalidURL
-    )
+    invalid_request_exceptions = (rex.URLRequired, rex.MissingSchema,
+                                  rex.InvalidSchema, rex.InvalidURL)
 
     if exception.__doc__:
         text = text.format(desc=exception.__doc__)
@@ -70,7 +69,11 @@ def check_fail(exception):
         tags.update(["INVALID_REQUEST", "CLIENT_FAIL"])
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1.0, tags=list(tags), data=data,
+        text=text,
+        slug=slug,
+        strength=1.0,
+        tags=list(tags),
+        data=data,
         check_name=check_name)
 
 
@@ -95,11 +98,11 @@ def check_status_code(response):
     else:
         data["details"] = "Unknown"
 
-    text = (
-        "A {code} HTTP status code was returned by the server, with reason"
-        " '{reason}'. This status code usually means '{details}'.").format(
-        code=data["status_code"], reason=data["reason"],
-        details=data["details"])
+    text = ("A {code} HTTP status code was returned by the server, with reason"
+            " '{reason}'. This status code usually means '{details}'.").format(
+                code=data["status_code"],
+                reason=data["reason"],
+                details=data["details"])
 
     slug = "HTTP_STATUS_CODE_{range}"
     tags = []
@@ -125,7 +128,11 @@ def check_status_code(response):
     slug = (slug + "_{code}").format(code=data["status_code"])
 
     return syntribos.signal.SynSignal(
-        text=text, slug=slug, strength=1, tags=tags, data=data,
+        text=text,
+        slug=slug,
+        strength=1,
+        tags=tags,
+        data=data,
         check_name=check_name)
 
 
@@ -149,7 +156,6 @@ def check_content_type(response):
     # valid headers should be in form type/subtype
     if "/" not in raw_type:
         raise Exception("Not a valid content type. What happened?")
-        return None
 
     # chop off encodings, etc (ex: application/json[; charset=utf-8])
     if ";" in raw_type:
@@ -174,10 +180,9 @@ def check_content_type(response):
                 fuzzy_type = s.upper()
                 break
 
-    text = (
-        "The content type returned by the server was {raw}. We determined"
-        " this is of the general type {fuzzy_type}.").format(
-            raw=raw_type, fuzzy_type=fuzzy_type)
+    text = ("The content type returned by the server was {raw}. We determined"
+            " this is of the general type {fuzzy_type}.").format(
+                raw=raw_type, fuzzy_type=fuzzy_type)
 
     slug = "HTTP_CONTENT_TYPE_{fuzzy_type}".format(fuzzy_type=fuzzy_type)
 

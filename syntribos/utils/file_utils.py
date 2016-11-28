@@ -16,12 +16,12 @@ import shutil
 
 
 class ExistingPathType(object):
-
     def _raise_invalid_file(self, filename, exc=None):
-        msg = ("\nCan't open '{filename}'; not a readable file or dir."
-               "\nPlease enter a valid file or dir location.{exception}"
-               ).format(filename=filename,
-                        exception="\nException: {exc}\n".format(exc=exc))
+        msg = (
+            "\nCan't open '{filename}'; not a readable file or dir."
+            "\nPlease enter a valid file or dir location.{exception}").format(
+                filename=filename,
+                exception="\nException: {exc}\n".format(exc=exc))
         raise IOError(msg)
 
     def __call__(self, string):
@@ -31,7 +31,6 @@ class ExistingPathType(object):
 
 
 class ExistingDirType(ExistingPathType):
-
     def __call__(self, string):
         if not os.path.isdir(string):
             self._raise_invalid_file(string)
@@ -39,7 +38,6 @@ class ExistingDirType(ExistingPathType):
 
 
 class ExistingFileType(ExistingPathType):
-
     def __call__(self, string):
         if not os.path.isfile(string):
             self._raise_invalid_file(string)
@@ -47,7 +45,6 @@ class ExistingFileType(ExistingPathType):
 
 
 class ContentType(ExistingPathType):
-
     """Reads a file/directory to collect the contents."""
 
     def __init__(self, mode, bufsize):

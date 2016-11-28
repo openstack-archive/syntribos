@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import six
 
 
 class SignalHolder(object):
-
     """SignalHolder represents a 'set' of SynSignals.
 
     :ivar list signals: Collection of :class:`SynSignal`
@@ -70,10 +70,11 @@ class SignalHolder(object):
 
     def __contains__(self, item):
         """This is used to search for signals in the 'if __ in __' pattern."""
-        if not isinstance(item, SynSignal) and type(item) is not str:
+        if not isinstance(item, SynSignal) and not isinstance(
+                item, six.string_types):
             raise TypeError()
 
-        if type(item) is str:
+        if isinstance(item, six.string_types):
             # We are searching for either a tag or a slug
             for signal in self.signals:
                 if signal.matches_slug(item):
@@ -104,7 +105,7 @@ class SignalHolder(object):
             self.signals.append(signals)
             self.all_slugs.append(signals.slug)
 
-        elif type(signals) is list or isinstance(signals, SignalHolder):
+        elif isinstance(signals, list) or isinstance(signals, SignalHolder):
             for signal in signals:
                 self.register(signal)
 
@@ -123,14 +124,13 @@ class SignalHolder(object):
 
         if slugs:
             for bad_slug in slugs:
-                bad_signals.register(
-                    [sig for sig in self.signals if sig.matches_slug(bad_slug)]
-                )
+                bad_signals.register([
+                    sig for sig in self.signals if sig.matches_slug(bad_slug)
+                ])
         if tags:
             for bad_tag in tags:
                 bad_signals.register(
-                    [sig for sig in self.signals if sig.matches_tag(bad_tag)]
-                )
+                    [sig for sig in self.signals if sig.matches_tag(bad_tag)])
 
         return bad_signals
 
@@ -160,7 +160,8 @@ class SignalHolder(object):
             "sh1_len": len(self),
             "sh2_len": len(other),
             "sh1_not_in_sh2": SignalHolder(),
-            "sh2_not_in_sh1": SignalHolder()}
+            "sh2_not_in_sh1": SignalHolder()
+        }
         if self == other:
             return data
         for signal in self.signals:
@@ -175,7 +176,6 @@ class SignalHolder(object):
 
 
 class SynSignal(object):
-
     """SynSignal represents a piece of information raised by a 'check'
 
     :ivar str text: A message describing the signal
@@ -185,9 +185,13 @@ class SynSignal(object):
     :ivar dict data: Information about the results of the check
     """
 
-    def __init__(self, text="", slug="",
-                 strength=0.0, tags=None,
-                 data=None, check_name=None):
+    def __init__(self,
+                 text="",
+                 slug="",
+                 strength=0.0,
+                 tags=None,
+                 data=None,
+                 check_name=None):
         self.text = text if text else ""
         self.slug = slug if slug else ""
         self.check_name = check_name if check_name else ""

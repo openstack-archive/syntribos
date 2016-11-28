@@ -77,8 +77,7 @@ def base64_encode(data):
         data = base64.b64encode(data.encode())
     except TypeError as e:
         LOG.error("Couldn't encode data to base64, {}".format(e))
-    finally:
-        return data
+    return data
 
 
 def url_encode(url):

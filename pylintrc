@@ -12,9 +12,11 @@ extension-pkg-whitelist=
 
 [MESSAGES CONTROL]
 
-disable=missing-docstring,invalid-name,bad-continuation,too-many-locals,too-many-branches,no-self-use,unidiomatic-typecheck,too-many-nested-blocks,too-many-arguments,superfluous-parens,redefined-variable-type,blacklisted-name,bad-mcs-classmethod-argument,no-member, unused-argument,abstract-method,protected-access,broad-except,logging-format-interpolation,global-variable-not-assigned,unused-variable,fixme,redefined-outer-name,dangerous-default-value,unused-import,unexpected-keyword-arg,undefined-loop-variable,too-many-format-args,global-statement,arguments-differ,anomalous-backslash-in-string,wildcard-import,unreachable,redefined-builtin,pointless-statement,method-hidden,lost-exception,expression-not-assigned,import-error,cyclic-import,attribute-defined-outside-init,unpacking-non-sequence,too-many-instance-attributes
+#disable=missing-docstring,invalid-name,too-many-locals,too-many-branches,no-self-use,too-many-nested-blocks,too-many-arguments,superfluous-parens,redefined-variable-type,blacklisted-name,bad-mcs-classmethod-argument,abstract-method,protected-access,broad-except,logging-format-interpolation,global-variable-not-assigned,unused-variable,fixme,redefined-outer-name,too-many-format-args,global-statement,arguments-differ,import-error,cyclic-import,attribute-defined-outside-init,unpacking-non-sequence,too-many-instance-attributes,no-member,unused-argument,unexpected-keyword-arg,undefined-loop-variable,unused-import,dangerous-default-value,undefined-loop-variable,fixme
 
-enable=bad-indentation,bad-builtin,pointless-statement
+disable=all
+
+enable=bad-indentation,bad-builtin,pointless-statement,bad-continuation, unidiomatic-typecheck,method-hidden,lost-exception,attribute-defined-outside-init,expression-not-assigned,anomalous-backslash-in-string,wildcard-import,unreachable,unused-variable
 
 [REPORTS]
 output-format=text
