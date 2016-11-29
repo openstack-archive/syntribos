@@ -39,6 +39,9 @@ SignalHolders (:class:`syntribos.signal.SignalHolder`)
 Checks
 ~~~~~~
 
+This section describes the checks, which analyze the HTTP response and returns a signal if it
+detects something that it knows about. It's intended to make it easier to inspect HTTP responses.
+
 .. automodule:: syntribos.checks.content_validity
     :members:
     :undoc-members:
