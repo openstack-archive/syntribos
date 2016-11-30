@@ -181,7 +181,7 @@ def list_syntribos_opts():
         cfg.StrOpt("endpoint", default="",
                    sample_default="http://localhost/app",
                    help="The target host to be tested"),
-        cfg.Opt("templates", type=wrap_try_except(ContentType("r", 0)),
+        cfg.Opt("templates", type=ContentType("r", 0),
                 default="",
                 sample_default="~/.syntribos/templates",
                 help="A directory of template files, or a single template "
