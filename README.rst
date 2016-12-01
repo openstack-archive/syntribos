@@ -23,6 +23,14 @@ Syntribos, An Automated API Security Testing Tool
                           x
              === Automated API Scanning  ===
 
+
+Team and repository tags
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: http://governance.openstack.org/badges/syntribos.svg
+    :target: http://governance.openstack.org/reference/tags/index.html
+
+
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
     :target: http://docs.openstack.org/developer/syntribos/
 
