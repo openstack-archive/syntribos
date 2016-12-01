@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+
 from oslo_config import cfg
 
 import syntribos
@@ -21,13 +23,27 @@ from syntribos.tests.fuzz import base_fuzz
 CONF = cfg.CONF
 
 
+def user_defined_config():
+    """Create config options for user defined test."""
+    user_defined_group = cfg.OptGroup(
+        name="user_defined", title="Data for user defined test")
+    CONF.register_group(user_defined_group)
+    options = [
+        cfg.StrOpt(
+            "payload", help="Path to a payload data file."), cfg.StrOpt(
+                "failure_keys", help="Possible failure keys")
+    ]
+    CONF.register_opts(options, group=user_defined_group)
+
+
 class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
     """Test for user defined vulnerabilities in HTTP body."""
 
     test_name = "USER_DEFINED_VULN_BODY"
     test_type = "data"
-    data_key = CONF.test.data_file
-    failure_keys = CONF.test.failure_keys
+    user_defined_config()
+    data_key = CONF.user_defined.payload
+    failure_keys = CONF.user_defined.failure_keys
 
     def test_case(self):
         self.run_default_checks()
@@ -55,6 +71,23 @@ class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
                              "request. This could indicate a vulnerability "
                              "to time-based injection attacks using the user "
                              "provided strings."))
+
+    @classmethod
+    def get_test_cases(cls, filename, file_content):
+        """Generates test cases if a payload file is provided."""
+        conf_var = CONF.user_defined.payload
+        if conf_var is None or not os.path.isfile(conf_var):
+            return
+        cls.failures = []
+        prefix_name = "{filename}_{test_name}_{fuzz_file}_".format(
+            filename=filename,
+            test_name=cls.test_name,
+            fuzz_file=cls.data_key)
+        fr = syntribos.tests.fuzz.datagen.fuzz_request(
+            cls.init_req, cls._get_strings(), cls.test_type, prefix_name)
+        for fuzz_name, request, fuzz_string, param_path in fr:
+            yield cls.extend_class(fuzz_name, fuzz_string, param_path,
+                                   {"request": request})
 
 
 class UserDefinedVulnParams(UserDefinedVulnBody):

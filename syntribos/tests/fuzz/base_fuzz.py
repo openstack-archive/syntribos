@@ -45,13 +45,16 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 payloads = os.path.join(payloads, file_dir)
                 break
         try:
-            path = os.path.join(payloads, file_name or cls.data_key)
+            if os.path.isfile(cls.data_key):
+                path = cls.data_key
+            else:
+                path = os.path.join(payloads, file_name or cls.data_key)
             with open(path, "rb") as fp:
                 return fp.read().splitlines()
-        except IOError as e:
+        except (IOError, AttributeError, TypeError) as e:
             LOG.error("Exception raised: {}".format(e))
-            print("\nNo file named {} found in the payloads dir, "
-                  "exiting..".format(file_name or cls.data_key))
+            print("\nPayload file for test '{}' not readable, "
+                  "exiting...".format(cls.test_name))
             exit(1)
 
     @classmethod
