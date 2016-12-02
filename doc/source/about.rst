@@ -31,22 +31,19 @@ Team and repository tags
     :target: http://governance.openstack.org/reference/tags/index.html
 
 
-.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
     :target: http://docs.openstack.org/developer/syntribos/
 
-.. image:: https://img.shields.io/pypi/v/syntribos.svg
+.. image:: http://img.shields.io/pypi/v/syntribos.svg
     :target: https://pypi.python.org/pypi/syntribos/
 
-.. image:: https://img.shields.io/pypi/dm/syntribos.svg
-    :target: https://pypi.python.org/pypi/syntribos/
-
-.. image:: https://img.shields.io/pypi/pyversions/syntribos.svg
+.. image:: http://img.shields.io/pypi/pyversions/syntribos.svg
         :target: https://pypi.python.org/pypi/syntribos/
 
-.. image:: https://img.shields.io/pypi/wheel/syntribos.svg
+.. image:: http://img.shields.io/pypi/wheel/syntribos.svg
         :target: https://pypi.python.org/pypi/syntribos/
 
-.. image:: https://img.shields.io/irc/%23openstack-security.png
+.. image:: http://img.shields.io/irc/%23openstack-security.png
         :target: http://webchat.freenode.net/?channels=openstack-security
 
 
