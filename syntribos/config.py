@@ -274,7 +274,7 @@ def list_remote_opts():
             help="Base directory where cached files can be saved"),
         cfg.StrOpt(
             "payloads_uri",
-            default=("https://github.com/rahulunair/syntribos-payloads/"
+            default=("https://github.com/openstack/syntribos-payloads/"
                      "archive/master.tar.gz"),
             help="Remote URI to download payloads."),
         cfg.StrOpt(
