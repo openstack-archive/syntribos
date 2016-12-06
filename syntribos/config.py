@@ -245,8 +245,6 @@ def list_test_opts():
                         "response before triggering a timeout signal"),
         cfg.IntOpt("max_length", default=500,
                    help="Maximum length (in characters) of the response text"),
-        cfg.StrOpt("data_file", default="fuzz_data.txt",
-                   help="File containing user-defined fuzz strings."),
         cfg.ListOpt("failure_keys", default="[`syntax error`]",
                     help="Comma seperated list of keys for which the test "
                     "would fail.")
