@@ -59,6 +59,8 @@ A short list of tests that can be run using syntribos is given below:
 * String Validation
 * XML External Entity
 * Cross Site Scripting ( XSS )
+* Regex Denial of Service (ReDoS)
+* JSON Parser Depth Limit
 
 Buffer Overflow
 ---------------
@@ -127,9 +129,10 @@ Syntribos tries to inject a few malicious strings into an XML body
 while sending requests to an application in an attempt to obtain an
 appropriate response.
 
-Cross Site Scripting ( XSS )
+Cross Site Scripting (XSS)
 ----------------------------
-An XSS_ attack is one where malicious JavaScript is injected into a web
+
+An `XSS`_ attack is one where malicious JavaScript is injected into a web
 application. Syntribos tries to find potential XSS issues by injecting
 string containing "script" and other HTML tags into request fields.
 
@@ -140,6 +143,24 @@ one to emulate. In the same way, users can add different extensions also
 to the tests. To see how extensions can be written please see
 ``syntribos/extensions`` directory.
 
+Regex Denial of Service (ReDoS)
+-------------------------------
+
+A `ReDoS`_ attack is one that attempts to produce a denial of service by
+providing a regular expression that takes a very long time to evaluate.
+This can cause the regex engine to backtrack indefinitely, which can
+slow down some parsers or even cause a processing halt. The attack
+exploits the fact that most regular expression implementations have
+an exponential time worst case complexity.
+
+JSON Parser Depth Limit
+-----------------------
+
+There is a possibility that the JSON parser will reach depth limit and crash,
+resulting in a successful overflow of the JSON parsers depth limit, leading
+to a DoS vulnerability. Syntribos tries to check for this, and raises an issue
+if the parser crashes.
+
 .. _buffer overflow attacks: https://en.wikipedia.org/wiki/Buffer_overflow
 .. _Command injection attacks: https://www.owasp.org/index.php/Command_Injection
 .. _CORS wildcard test: https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)
@@ -148,9 +169,9 @@ to the tests. To see how extensions can be written please see
 .. _SQL injection attacks: https://www.owasp.org/index.php/SQL_Injection
 .. _XML external entity attacks: https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
 .. _XSS: https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)
+.. _ReDoS: https://en.wikipedia.org/wiki/ReDoS
 
 **Details**
-
 * `Documentation`_
 * Free software: `Apache license`_
 * `Launchpad project`_
