@@ -278,7 +278,8 @@ def is_syntribos_initialized():
     if not os.path.exists(get_syntribos_root()):
         return False
 
-    if os.path.exists(get_default_conf_file()):
+    if any([os.path.exists(conf_file) for conf_file in
+            [get_default_conf_file(), CONF.config_file, CONF.config_dir]]):
         return True
 
     return False
