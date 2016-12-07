@@ -855,20 +855,20 @@ For SQL injection tests, use:
 
 ::
 
-    $ syntribos --config-file keystone.conf -t SQL
+    $ syntribos --config-file keystone.conf -t SQL run
 
 Another example, to run SQL injection tests against the template body only,
 use:
 
 ::
 
-    $ syntribos --config-file keystone.conf -t SQL_INJECTION_BODY
+    $ syntribos --config-file keystone.conf -t SQL_INJECTION_BODY run
 
 For all tests against HTTP headers only, use:
 
 ::
 
-    $ syntribos --config-file keystone.conf -t HEADERS
+    $ syntribos --config-file keystone.conf -t HEADERS run
 
 
 
