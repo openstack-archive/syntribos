@@ -36,7 +36,7 @@ This can be done manually, or via the ``init`` command.
     $ syntribos init
 
 By default, ``syntribos init`` fetches a set of default payload files from a
-`remote repository maintained by our development team <https://github.com/rahulunair/syntribos-payloads>`_.
+`remote repository maintained by our development team <https://github.com/openstack/syntribos-payloads>`_.
 These payload files are necessary for our fuzz tests to run, but if you would
 like to disable this behavior, run syntribos with the ``--no_downloads`` flag.
 Payload files can also be fetched by running ``syntribos download --payloads``

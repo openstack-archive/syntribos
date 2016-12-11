@@ -49,7 +49,7 @@ detects something that it knows about. It's intended to make it easier to inspec
     :members:
     :undoc-members:
 .. automodule:: syntribos.checks.header
-    :members
+    :members:
     :undoc-members:
 .. automodule:: syntribos.checks.http
     :members:
