@@ -15,8 +15,9 @@
 import os
 
 repository_tags = """
+========================
 Team and repository tags
-~~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 .. image:: http://governance.openstack.org/badges/syntribos.svg
     :target: http://governance.openstack.org/reference/tags/index.html
