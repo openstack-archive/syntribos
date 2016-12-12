@@ -86,6 +86,7 @@ A short list of tests that can be run using syntribos is given below:
 * Cross Site Scripting ( XSS )
 * Regex Denial of Service (ReDoS)
 * JSON Parser Depth Limit
+* User Defined
 
 Buffer Overflow
 ---------------
@@ -186,6 +187,19 @@ resulting in a successful overflow of the JSON parsers depth limit, leading
 to a DoS vulnerability. Syntribos tries to check for this, and raises an issue
 if the parser crashes.
 
+User defined Test
+-----------------
+
+This test gives users the ability to fuzz using user defined fuzz data and
+provides an option to look for failure strings provided by the user. The fuzz
+data needs to be provided using the config option :option:`[user_defined]`.
+
+Example::
+
+  [user_defined]
+  payload=<payload_file>
+  failure_strings=<[list_of_failure_strings] # optional
+
 .. _buffer overflow attacks: https://en.wikipedia.org/wiki/Buffer_overflow
 .. _Command injection attacks: https://www.owasp.org/index.php/Command_Injection
 .. _CORS wildcard test: https://www.owasp.org/index.php/Test_Cross_Origin_Resource_Sharing_(OTG-CLIENT-007)
@@ -197,12 +211,14 @@ if the parser crashes.
 .. _ReDoS: https://en.wikipedia.org/wiki/ReDoS
 
 **Details**
+
 * `Documentation`_
 * Free software: `Apache license`_
 * `Launchpad project`_
 * `Blueprints`_
 * `Bugs`_
 * `Source code`_
+
 
 Supported Operating Systems
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
