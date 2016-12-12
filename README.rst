@@ -1,3 +1,27 @@
+
+Team and repository tags
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: http://governance.openstack.org/badges/syntribos.svg
+    :target: http://governance.openstack.org/reference/tags/index.html
+
+
+.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: http://docs.openstack.org/developer/syntribos/
+
+.. image:: http://img.shields.io/pypi/v/syntribos.svg
+    :target: http://pypi.python.org/pypi/syntribos/
+
+.. image:: http://img.shields.io/pypi/pyversions/syntribos.svg
+        :target: http://pypi.python.org/pypi/syntribos/
+
+.. image:: http://img.shields.io/pypi/wheel/syntribos.svg
+        :target: http://pypi.python.org/pypi/syntribos/
+
+.. image:: http://img.shields.io/irc/%23openstack-security.png
+        :target: http://webchat.freenode.net/?channels=openstack-security
+
+
 =================================================
 Syntribos, An Automated API Security Testing Tool
 =================================================
@@ -23,28 +47,6 @@ Syntribos, An Automated API Security Testing Tool
                           x
              === Automated API Scanning  ===
 
-
-Team and repository tags
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. image:: http://governance.openstack.org/badges/syntribos.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
-
-
-.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
-    :target: http://docs.openstack.org/developer/syntribos/
-
-.. image:: http://img.shields.io/pypi/v/syntribos.svg
-    :target: https://pypi.python.org/pypi/syntribos/
-
-.. image:: http://img.shields.io/pypi/pyversions/syntribos.svg
-        :target: https://pypi.python.org/pypi/syntribos/
-
-.. image:: http://img.shields.io/pypi/wheel/syntribos.svg
-        :target: https://pypi.python.org/pypi/syntribos/
-
-.. image:: http://img.shields.io/irc/%23openstack-security.png
-        :target: http://webchat.freenode.net/?channels=openstack-security
 
 
 Syntribos is an open source automated API security testing tool that is

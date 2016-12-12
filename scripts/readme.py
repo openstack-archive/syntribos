@@ -14,6 +14,31 @@
 # limitations under the License.
 import os
 
+repository_tags = """
+Team and repository tags
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: http://governance.openstack.org/badges/syntribos.svg
+    :target: http://governance.openstack.org/reference/tags/index.html
+
+
+.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: http://docs.openstack.org/developer/syntribos/
+
+.. image:: http://img.shields.io/pypi/v/syntribos.svg
+    :target: http://pypi.python.org/pypi/syntribos/
+
+.. image:: http://img.shields.io/pypi/pyversions/syntribos.svg
+        :target: http://pypi.python.org/pypi/syntribos/
+
+.. image:: http://img.shields.io/pypi/wheel/syntribos.svg
+        :target: http://pypi.python.org/pypi/syntribos/
+
+.. image:: http://img.shields.io/irc/%23openstack-security.png
+        :target: http://webchat.freenode.net/?channels=openstack-security
+
+
+"""
 
 def find_docs():
     """Yields files as per the whitelist."""
@@ -38,6 +63,7 @@ def concat_docs():
         print("../README.rst not found, exiting!")
         exit(1)
     with open(outfile, 'w') as readme_handle:
+        readme_handle.write(repository_tags)
         for doc in find_docs():
             with open(doc, 'r') as doc_handle:
                 for line in doc_handle:
