@@ -2,24 +2,20 @@
 Installation
 ============
 
-Syntribos can be installed directly from `pypi with pip <https://pypi.python.org/pypi/pip>`__
+Syntribos can be installed directly from `pypi with pip <https://pypi.python.org/pypi/pip>`__.
 
 ::
 
    pip install syntribos
 
-If you want the latest changes, you could install syntribos from `source <https://www.github.com/openstack/syntribos.git>`__
+For the latest changes, install syntribos from `source <https://www.github.com/openstack/syntribos.git>`__
 with `pip <https://pypi.python.org/pypi/pip>`__.
 
--  Clone the repository
-
-::
+Clone the repository::
 
    $ git clone https://github.com/openstack/syntribos.git
 
-- cd to the directory and install with pip
-
-::
+Change directory into the repository clone and install with pip::
 
    $ cd syntribos
    $ pip install .
@@ -29,28 +25,29 @@ Initializing the syntribos Environment
 ======================================
 
 Once syntribos is installed, you must initialize the syntribos environment.
-This can be done manually, or via the ``init`` command.
+This can be done manually, or with the ``init`` command.
 
 ::
 
     $ syntribos init
 
-By default, ``syntribos init`` fetches a set of default payload files from a
-`remote repository maintained by our development team <https://github.com/openstack/syntribos-payloads>`_.
-These payload files are necessary for our fuzz tests to run, but if you would
-like to disable this behavior, run syntribos with the ``--no_downloads`` flag.
-Payload files can also be fetched by running ``syntribos download --payloads``
-at any time.
+.. Note::
+    By default, ``syntribos init`` fetches a set of default payload files
+    from a `remote repository <https://github.com/openstack/syntribos-payloads>`_
+    maintained by our development team. These payload files are necessary for
+    our fuzz tests to run. To disable this behavior, run syntribos with the
+    ``--no_downloads`` flag. Payload files can also be fetched by running
+    ``syntribos download --payloads`` at any time.
 
-If you'd like to specify a custom root for syntribos to be installed in,
+To specify a custom root for syntribos to be installed in,
 specify the ``--custom_install_root`` flag after ``init``. This will skip
-syntribos' prompts for information from the terminal, which can be handy for
+prompts for information from the terminal, which can be handy for
 Jenkins jobs and other situations where user input cannot be retrieved.
 
 If you've already run the ``init`` command but want to start over with a fresh
 environment, you can specify the ``--force`` flag to overwrite existing files.
-The ``--custom_install_root`` and ``--force`` flags can be combined to overwrite
-files in a custom install root.
+The ``--custom_install_root`` and ``--force`` flags can be combined to
+overwrite files in a custom install root.
 
 **Example:**
 

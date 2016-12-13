@@ -234,24 +234,20 @@ supporting Windows, but this may change in the future.
 Installation
 ============
 
-Syntribos can be installed directly from `pypi with pip <https://pypi.python.org/pypi/pip>`__
+Syntribos can be installed directly from `pypi with pip <https://pypi.python.org/pypi/pip>`__.
 
 ::
 
    pip install syntribos
 
-If you want the latest changes, you could install syntribos from `source <https://www.github.com/openstack/syntribos.git>`__
+For the latest changes, install syntribos from `source <https://www.github.com/openstack/syntribos.git>`__
 with `pip <https://pypi.python.org/pypi/pip>`__.
 
--  Clone the repository
-
-::
+Clone the repository::
 
    $ git clone https://github.com/openstack/syntribos.git
 
-- cd to the directory and install with pip
-
-::
+Change directory into the repository clone and install with pip::
 
    $ cd syntribos
    $ pip install .
@@ -261,28 +257,29 @@ Initializing the syntribos Environment
 ======================================
 
 Once syntribos is installed, you must initialize the syntribos environment.
-This can be done manually, or via the ``init`` command.
+This can be done manually, or with the ``init`` command.
 
 ::
 
     $ syntribos init
 
-By default, ``syntribos init`` fetches a set of default payload files from a
-`remote repository maintained by our development team <https://github.com/rahulunair/syntribos-payloads>`_.
-These payload files are necessary for our fuzz tests to run, but if you would
-like to disable this behavior, run syntribos with the ``--no_downloads`` flag.
-Payload files can also be fetched by running ``syntribos download --payloads``
-at any time.
+.. Note::
+    By default, ``syntribos init`` fetches a set of default payload files
+    from a `remote repository <https://github.com/openstack/syntribos-payloads>`_
+    maintained by our development team. These payload files are necessary for
+    our fuzz tests to run. To disable this behavior, run syntribos with the
+    ``--no_downloads`` flag. Payload files can also be fetched by running
+    ``syntribos download --payloads`` at any time.
 
-If you'd like to specify a custom root for syntribos to be installed in,
+To specify a custom root for syntribos to be installed in,
 specify the ``--custom_install_root`` flag after ``init``. This will skip
-syntribos' prompts for information from the terminal, which can be handy for
+prompts for information from the terminal, which can be handy for
 Jenkins jobs and other situations where user input cannot be retrieved.
 
 If you've already run the ``init`` command but want to start over with a fresh
 environment, you can specify the ``--force`` flag to overwrite existing files.
-The ``--custom_install_root`` and ``--force`` flags can be combined to overwrite
-files in a custom install root.
+The ``--custom_install_root`` and ``--force`` flags can be combined to
+overwrite files in a custom install root.
 
 **Example:**
 
@@ -296,17 +293,14 @@ files in a custom install root.
 Configuration
 =============
 
-All configuration files should have at least the section
-``[syntribos]``. Depending upon what extensions you are using
-and what you are testing, you can add other sections as well.
-For example, if you are using the built-in identity extension
-you would also need the ``[user]`` section. The sections
-``[logging]`` and ``[remote]`` are optional.
+All configuration files should have a ``[syntribos]`` section.
+Add other sections depending on what extensions you are using
+and what you are testing. For example, if you are using the
+built-in identity extension, you would need the ``[user]``
+section. The sections ``[logging]`` and ``[remote]`` are optional.
 
-Given below is the basic structure of a syntribos configuration
-file.
-
-::
+The basic structure of a syntribos configuration
+file is given below::
 
     [syntribos]
     #
@@ -337,27 +331,26 @@ file.
     [logging]
     log_dir=<location_to_save_debug_logs>
 
-
-To test any project, just update the endpoint URL under
+The endpoint URL specified in the ``[syntribos]`` section is the endpoint URL
+tested by syntribos. The endpoint URL in the ``[user]`` section is used to
+get an AUTH_TOKEN. To test any project, update the endpoint URL under
 ``[syntribos]`` to point to the API and also modify the user
-credentials if needed. The endpoint URL in the ``[syntribos]``
-section  is the one being tested by syntribos and the endpoint URL in
-``[user]`` section is just used to get an AUTH_TOKEN.
+credentials if needed.
 
 Downloading templates and payloads remotely
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Payload and template files can be downloaded remotely in syntribos.
-In the config file under ``[syntribos]`` section, if ``templates``
-and ``payloads`` options are not set, then, by default syntribos will
+In the config file under the ``[syntribos]`` section, if the ``templates``
+and ``payloads`` options are not set, by default syntribos will
 download all the latest payloads and the templates for a few OpenStack
 projects.
 
-As a user you can specify a URI to download custom templates and payloads
-from as well; this is done by using ``[remotes]`` section in the config file.
+To specify a URI to download custom templates and payloads
+from, use the ``[remotes]`` section in the config file.
 Available options under ``[remotes]`` are ``cache_dir``, ``templates_uri``,
-``payloads_uri`` and ``enable_cache``. The ``enable_cache`` option is
-``True`` by default and can be set to ``False`` to disable caching of remote
+``payloads_uri``, and ``enable_cache``. The ``enable_cache`` option is
+``True`` by default; set to ``False`` to disable caching of remote
 content while syntribos is running. If the ``cache_dir`` set to a path,
 syntribos will attempt to use that as a base directory to save downloaded
 template and payload files.
@@ -374,9 +367,9 @@ Testing OpenStack keystone API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A sample config file is given in ``examples/configs/keystone.conf``.
-Copy this file to a location of your choice (default file path for
+Copy this file to a location of your choice (the default file path for the
 configuration file is: ``~/.syntribos/syntribos.conf``) and update the
-necessary fields like user credentials, log, template directory etc.
+necessary fields, such as user credentials, log, template directory, etc.
 
 ::
 
@@ -454,24 +447,24 @@ Commands
 ========
 
 Below are the set of commands that can be specified while
-using syntribos.
+using syntribos:
 
 - **init**
 
-  This command sets up the syntribos environment after installation. It will
-  create the necessary folders for templates, payloads, and logs, as well as
-  an example configuration file.
+  This command sets up the syntribos environment after installation. Running
+  this command creates the necessary folders for templates, payloads,
+  and logs; as well a sample configuration file.
 
   ::
 
     $ syntribos init
 
   To learn more about ``syntribos init``, see the installation instructions
-  `here <installation.html>`_
+  `here <installation.html>`_.
 
 - **run**
 
-  This command runs syntribos with the given config options
+  This command runs syntribos with the given config options.
 
   ::
 
@@ -480,20 +473,21 @@ using syntribos.
 - **dry_run**
 
   This command ensures that the template files given for this run parse
-  successfully without errors. It then runs a debug test which sends no
+  successfully and without errors. It then runs a debug test which sends no
   requests of its own.
-
-  Note: If any external calls referenced inside the template file do make
-  requests, the parser will still make those requests even for a dry run.
 
   ::
 
     $ syntribos --config-file keystone.conf dry_run
 
+.. Note::
+    If any external calls referenced inside the template file do make
+    requests, the parser will still make those requests even for a dry run.
+
 - **list_tests**
 
-  This command will list the names and description of all the tests
-  that can be executed by the ``run`` command.
+  This command will list the names of all the tests
+  that can be executed by the ``run`` command with their description.
 
   ::
 
@@ -502,26 +496,27 @@ using syntribos.
 - **download**
 
   This command will download templates and payload files. By default, it will
-  download a default set of OpenStack template files (with the --templates
-  flag) or our default set of payloads (with the --payloads flag) to your
+  download a set of OpenStack template files (with the ``--templates``
+  flag), or a set of payloads (with the ``--payloads`` flag) to your
   syntribos root directory. However, the behavior of this command can be
-  configured in the [remote] section of your config file.
+  configured in the ``[remote]`` section of your config file.
 
   ::
 
     $ syntribos download --templates
 
-All these commands except init will only work if a configuration file
-is specified. If a configuration file is present in the default
-path ( ``~/.syntribos/syntribos.conf`` ), then you
-do not need to explicitly specify a config file and
-can run syntribos using the command ``syntribos run``.
+.. Important::
+    All these commands, except ``init``, will only work if a configuration file
+    is specified. If a configuration file is present in the default
+    path ( ``~/.syntribos/syntribos.conf`` ), then you
+    do not need to explicitly specify a config file and
+    can run syntribos using the command ``syntribos run``.
 
 =================
 Running syntribos
 =================
 
-To run syntribos against all the available tests, just specify the
+To run syntribos against all the available tests, specify the
 command ``syntribos`` with the configuration file without
 specifying any test type.
 
@@ -540,8 +535,8 @@ the ``-t`` flag.
     $ syntribos --config-file keystone.conf -t SQL run
 
 
-This will match all tests that contain ``SQL`` in their name
-like SQL_INJECTION_HEADERS, SQL_INJECTION_BODY etc.
+This will match all tests that contain ``SQL`` in their name. For example:
+``SQL_INJECTION_HEADERS``, ``SQL_INJECTION_BODY``, etc.
 
 Specifying a custom root directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -556,24 +551,24 @@ configuration information from there.
 Logging and Results
 ===================
 
-Two types of logs are generated by syntribos, results and debug logs. While
-results log is the representation of results ( collection of issues ) from a
-given syntribos run, debug logs contain debugging information captured during
-a particular run. Debug logs may include exception messages, warnings, raw
-but sanitized request/response data and a few more details as well.
-A modified version of Python logger is used for collecting debug logs in
-syntribos.
+There are two types of logs generated by syntribos:
+
+#. The results log is a collection of issues generated at the end of a
+   syntribos run to represent results.
+#. The debug log contains debugging information captured during a particular
+   run. Debug logs may include exception messages, warnings, raw
+   but sanitized request/response data, and a few more details. A modified
+   version of Python logger is used for collecting debug logs in syntribos.
 
 Results Log
 ~~~~~~~~~~~
 
-The results log as described above is a collection of issues (failures and
-errors) generated at the end of a syntribos run. The "failures" key represents
-tests that have failed, indicating a possible security vulnerability and the
-"errors" key gives us information on any unhandled exceptions such as connection
-errors encountered on that run.
+The results log includes failures and errors. The ``"failures"`` key represents
+tests that have failed, indicating a possible security vulnerability. The
+``"errors"`` key gives us information on any unhandled exceptions, such as
+connection errors, encountered on that run.
 
-An example failure object is seen below:
+Example failure object:
 
 ::
 
@@ -619,7 +614,7 @@ An example failure object is seen below:
     }
 
 
-Errors take the form:
+Error form:
 
 ::
 
@@ -637,11 +632,11 @@ Errors take the form:
 Debug Logs
 ~~~~~~~~~~
 
-Debug logs include details about HTTP requests and responses, and other debugging
-information like errors and warnings across the project. The default path where
-debug logs are saved is ``.syntribos/logs/``. Debug logs are arranged in
-directories based on the timestamp and in these directories, in files named
-according to the templates.
+Debug logs include details about HTTP requests, HTTP responses, and other
+debugging information such as errors and warnings across the project. The
+path where debug logs are saved by default is ``.syntribos/logs/``.
+Debug logs are arranged in directories based on the timestamp in these
+directories and files are named according to the templates.
 
 For example:
 
@@ -663,12 +658,10 @@ For example:
     cells::get_os_cells_capacities_template.log
     cells::get_os_cells_data_template.log
 
-Each log file includes some essential debugging information like the string representation
-of the request object, signals and checks used for tests etc.
+Each log file includes some essential debugging information such as the string
+representation of the request object, signals, and checks used for tests, etc.
 
-The request:
-
-::
+Example request::
 
     ------------
     REQUEST SENT
@@ -684,9 +677,7 @@ The request:
     request body size....: 0
     request body.........: None
 
-The response:
-
-::
+Example response::
 
     -----------------
     RESPONSE RECEIVED
@@ -710,22 +701,22 @@ The response:
     Starting new HTTP connection (1): 127.0.0.1
     "PUT http://127.0.0.1/api HTTP/1.1" 501 93
 
-And the signals captured:
-
-::
+Example signals captured::
 
     Signals: ['HTTP_STATUS_CODE_4XX_400', 'HTTP_CONTENT_TYPE_JSON']
     Checks used: ['HTTP_STATUS_CODE', 'HTTP_CONTENT_TYPE']
 
 Debug logs are sanitized to prevent storing secrets to log files.
-Passwords and other sensitive information are masked with astericks using a
-slightly modified version of `oslo_utils.strutils.mask_password <http://docs.openstack.org/developer/oslo.utils/api/strutils.html#oslo_utils.strutils.mask_password>`__
+Passwords and other sensitive information are marked with asterisks using a
+slightly modified version of `oslo_utils.strutils.mask_password <http://docs.openstack.org/developer/oslo.utils/api/strutils.html#oslo_utils.strutils.mask_password>`__.
 
-Debug logs also includes body compression, wherein long fuzz strings are
+Debug logs also include string compression, wherein long fuzz strings are
 compressed before being written to the logs. The threshold to start data
-compression is set to 512 characters. While compression can be turned off
-by setting the variable "http_request_compression" under logging section
-in the config file to ``False``, it is not recommended.
+compression is set to 512 characters. Although it is not recommended to turn
+off compression, it is possible by setting the variable
+``"http_request_compression"``, under the logging section in the config file,
+to ``False``.
+
 
 =============================
 Anatomy of a request template

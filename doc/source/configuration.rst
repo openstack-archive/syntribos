@@ -2,17 +2,14 @@
 Configuration
 =============
 
-All configuration files should have at least the section
-``[syntribos]``. Depending upon what extensions you are using
-and what you are testing, you can add other sections as well.
-For example, if you are using the built-in identity extension
-you would also need the ``[user]`` section. The sections
-``[logging]`` and ``[remote]`` are optional.
+All configuration files should have a ``[syntribos]`` section.
+Add other sections depending on what extensions you are using
+and what you are testing. For example, if you are using the
+built-in identity extension, you would need the ``[user]``
+section. The sections ``[logging]`` and ``[remote]`` are optional.
 
-Given below is the basic structure of a syntribos configuration
-file.
-
-::
+The basic structure of a syntribos configuration
+file is given below::
 
     [syntribos]
     #
@@ -43,27 +40,26 @@ file.
     [logging]
     log_dir=<location_to_save_debug_logs>
 
-
-To test any project, just update the endpoint URL under
+The endpoint URL specified in the ``[syntribos]`` section is the endpoint URL
+tested by syntribos. The endpoint URL in the ``[user]`` section is used to
+get an AUTH_TOKEN. To test any project, update the endpoint URL under
 ``[syntribos]`` to point to the API and also modify the user
-credentials if needed. The endpoint URL in the ``[syntribos]``
-section  is the one being tested by syntribos and the endpoint URL in
-``[user]`` section is just used to get an AUTH_TOKEN.
+credentials if needed.
 
 Downloading templates and payloads remotely
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Payload and template files can be downloaded remotely in syntribos.
-In the config file under ``[syntribos]`` section, if ``templates``
-and ``payloads`` options are not set, then, by default syntribos will
+In the config file under the ``[syntribos]`` section, if the ``templates``
+and ``payloads`` options are not set, by default syntribos will
 download all the latest payloads and the templates for a few OpenStack
 projects.
 
-As a user you can specify a URI to download custom templates and payloads
-from as well; this is done by using ``[remotes]`` section in the config file.
+To specify a URI to download custom templates and payloads
+from, use the ``[remotes]`` section in the config file.
 Available options under ``[remotes]`` are ``cache_dir``, ``templates_uri``,
-``payloads_uri`` and ``enable_cache``. The ``enable_cache`` option is
-``True`` by default and can be set to ``False`` to disable caching of remote
+``payloads_uri``, and ``enable_cache``. The ``enable_cache`` option is
+``True`` by default; set to ``False`` to disable caching of remote
 content while syntribos is running. If the ``cache_dir`` set to a path,
 syntribos will attempt to use that as a base directory to save downloaded
 template and payload files.
@@ -80,9 +76,9 @@ Testing OpenStack keystone API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A sample config file is given in ``examples/configs/keystone.conf``.
-Copy this file to a location of your choice (default file path for
+Copy this file to a location of your choice (the default file path for the
 configuration file is: ``~/.syntribos/syntribos.conf``) and update the
-necessary fields like user credentials, log, template directory etc.
+necessary fields, such as user credentials, log, template directory, etc.
 
 ::
 
