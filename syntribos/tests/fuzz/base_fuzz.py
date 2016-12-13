@@ -58,10 +58,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
             exit(1)
 
     @classmethod
-    def send_init_request(cls, filename, file_content):
-        super(BaseFuzzTestCase, cls).send_init_request(filename, file_content)
-
-    @classmethod
     def setUpClass(cls):
         """being used as a setup test not."""
         super(BaseFuzzTestCase, cls).setUpClass()

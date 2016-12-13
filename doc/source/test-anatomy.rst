@@ -145,6 +145,50 @@ follows:
 
 The ID provided will remain static for every test.
 
+Meta Variable File
+~~~~~~~~~~~~~~~~~~
+
+Syntribos allows for templates to read in variables from a user-specified
+meta variable file. These files contain JSON objects that define variables
+to be used in one or more request templates.
+
+The file must be named `meta.json` and must be placed in the same
+directory as the template files that reference it. Meta variable files take
+the form:
+::
+
+    {
+        "user_password": {
+            "val": 1234
+        },
+        "user_name": {
+            "type": config,
+            "val": "user.username"
+        },
+        "user_token": {
+            "type": "function",
+            "val": "syntribos.extensions.identity:get_scoped_token_v3",
+            "args": ["user"]
+        }
+    }
+
+To reference a meta variable from a request template, reference the variable
+name surrounded by `|` (pipe). An example request template with meta
+variables is as follows:
+::
+
+    POST /user HTTP/1.1
+    X-Auth-Token: |user_token|
+    Accept: */*
+    Content-type: application/json
+
+    {
+        "user": {
+            "username": "|user_name|",
+            "password": "|user_password|"
+        }
+    }
+
 Running a specific test
 ~~~~~~~~~~~~~~~~~~~~~~~
 

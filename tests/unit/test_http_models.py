@@ -18,12 +18,12 @@ import xml.etree.ElementTree as ElementTree
 import six
 import testtools
 
-import syntribos.clients.http.models as mod
+from syntribos.clients.http.parser import _iterators
+from syntribos.clients.http.parser import RequestHelperMixin as rhm
+from syntribos.clients.http.parser import RequestObject as ro
 
 endpoint = "http://test.com"
 action_field = "ACTION_FIELD:"
-rhm = mod.RequestHelperMixin
-ro = mod.RequestObject
 
 
 def get_fake_generator():
@@ -139,7 +139,7 @@ class HTTPModelsUnittest(testtools.TestCase):
     def test_run_iters_global_iterators(self):
         """Tests _replace_iter by modifying _iterators global object."""
         u = str(uuid.uuid4()).replace("-", "")
-        mod._iterators[u] = get_fake_generator()
+        _iterators[u] = get_fake_generator()
         _str = "/v1/{0}/test".format(u)
         res = rhm._run_iters(_str, action_field)
         self.assertEqual("/v1/{0}/test".format(0), res)

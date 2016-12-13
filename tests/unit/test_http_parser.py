@@ -38,11 +38,6 @@ class HTTPParserUnittest(testtools.TestCase):
         self.assertEqual({"var": "val", "var2": "val2"}, params)
         self.assertEqual("HTTP/1.1", version)
 
-    def test_url_line_parser_invalid_version(self):
-        """Tests parsing an invalid HTTP version."""
-        line = "GET /path?var=val&var2=val2 HTTP"
-        self.assertRaises(ValueError, parser._parse_url_line, line, endpoint)
-
     def test_url_line_parser_invalid_method(self):
         """Tests parsing an invalid HTTP method."""
         line = "DERP /path?var=val&var2=val2 HTTP/1.1"

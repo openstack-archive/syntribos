@@ -17,7 +17,7 @@ from xml.etree import ElementTree
 import six
 import testtools
 
-from syntribos.clients.http.models import RequestObject
+from syntribos.clients.http.parser import RequestObject
 import syntribos.tests.fuzz.datagen as fuzz_datagen
 
 action_field = "ACTION_FIELD:"

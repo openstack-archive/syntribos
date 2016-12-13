@@ -13,4 +13,5 @@
 # limitations under the License.
 # flake8: noqa
 from syntribos.clients.http.parser import RequestCreator as parser
+from syntribos.clients.http.parser import VariableObject
 from syntribos.clients.http.client import SynHTTPClient as client

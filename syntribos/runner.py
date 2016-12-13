@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 import logging
 import os
 import pkgutil
 import sys
 import time
+import traceback
 import unittest
 
 from oslo_config import cfg
@@ -222,7 +224,21 @@ class Runner(object):
                 exit(1)
 
         print("\nPress Ctrl-C to pause or exit...\n")
+        # TODO(mdong): Make this handle inheritence and all that. For now, just
+        # pass the first meta file it sees to the parser. Also, find a better
+        # way to pass meta_vars
+        meta_vars = None
+        templates_dir = list(templates_dir)
         for file_path, req_str in templates_dir:
+            if "meta.json" not in file_path:
+                continue
+            else:
+                meta_vars = json.loads(req_str)
+                break
+
+        for file_path, req_str in templates_dir:
+            if "meta.json" in file_path:
+                continue
             LOG = cls.get_logger(file_path)
             CONF.log_opt_values(LOG, logging.DEBUG)
             if not file_path.endswith(".template"):
@@ -243,9 +259,11 @@ class Runner(object):
             print(syntribos.SEP)
 
             if CONF.sub_command.name == "run":
-                cls.run_given_tests(list_of_tests, file_path, req_str)
+                cls.run_given_tests(list_of_tests, file_path,
+                                    req_str, meta_vars)
             elif CONF.sub_command.name == "dry_run":
-                cls.dry_run(list_of_tests, file_path, req_str, dry_run_output)
+                cls.dry_run(list_of_tests, file_path,
+                            req_str, dry_run_output, meta_vars)
 
         if CONF.sub_command.name == "run":
             result.print_result(cls.start_time)
@@ -254,7 +272,8 @@ class Runner(object):
             cls.dry_run_report(dry_run_output)
 
     @classmethod
-    def dry_run(cls, list_of_tests, file_path, req_str, output):
+    def dry_run(cls, list_of_tests, file_path, req_str, output,
+                meta_vars=None):
         """Runs debug test to check all steps leading up to executing a test
 
         This method does not run any checks, but does parse the template files
@@ -272,10 +291,10 @@ class Runner(object):
         for _, test_class in list_of_tests:
             try:
                 print("\nParsing template file...")
-                test_class.create_init_request(file_path, req_str)
+                test_class.create_init_request(file_path, req_str, meta_vars)
             except Exception as e:
-                print("Error in parsing template:\n \t{0}: {1}\n".format(
-                    type(e).__name__, e))
+                print("Error in parsing template:\n \t{0}\n".format(
+                    traceback.format_exc()))
                 LOG.exception("Error in parsing template:")
                 output["failures"].append({
                     "file": file_path,
@@ -304,7 +323,8 @@ class Runner(object):
         print(syntribos.SEP)
 
     @classmethod
-    def run_given_tests(cls, list_of_tests, file_path, req_str):
+    def run_given_tests(cls, list_of_tests, file_path, req_str,
+                        meta_vars=None):
         """Loads all the templates and runs all the given tests
 
         This method calls run_test method to run each of the tests one
@@ -335,7 +355,13 @@ class Runner(object):
                 else:
                     result_string = result_string.ljust(60)
                 LOG.debug(log_string)
-                test_class.send_init_request(file_path, req_str)
+                try:
+                    test_class.send_init_request(file_path, req_str, meta_vars)
+                except Exception:
+                    print("Error in parsing template:\n \t{0}\n".format(
+                        traceback.format_exc()))
+                    LOG.exception("Error in parsing template:")
+                    break
                 test_cases = list(
                     test_class.get_test_cases(file_path, req_str))
                 if len(test_cases) > 0:

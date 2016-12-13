@@ -25,7 +25,7 @@ def fuzz_request(req, strings, fuzz_type, name_prefix):
     creates a RequestObject from the parameters of the model.
 
     :param req: The RequestObject to be fuzzed
-    :type req: :class:`syntribos.clients.http.models.RequestObject`
+    :type req: :class:`syntribos.clients.http.parser.RequestObject`
     :param list strings: List of strings to fuzz with
     :param str fuzz_type: What attribute of the RequestObject to fuzz
     :param name_prefix: (Used for ImpactedParameter)

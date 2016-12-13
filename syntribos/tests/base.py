@@ -122,7 +122,7 @@ class BaseTestCase(unittest.TestCase):
         yield cls
 
     @classmethod
-    def create_init_request(cls, filename, file_content):
+    def create_init_request(cls, filename, file_content, meta_vars):
         """Parses template and creates init request object
 
         This method does not send the initial request, instead, it only creates
@@ -132,13 +132,13 @@ class BaseTestCase(unittest.TestCase):
         :param str file_content: content of template file as string
         """
         request_obj = parser.create_request(
-            file_content, CONF.syntribos.endpoint)
+            file_content, CONF.syntribos.endpoint, meta_vars)
         cls.init_req = request_obj
         cls.init_resp = None
         cls.init_signals = None
 
     @classmethod
-    def send_init_request(cls, filename, file_content):
+    def send_init_request(cls, filename, file_content, meta_vars):
         """Parses template, creates init request object, and sends init request
 
         This method sends the initial request, which is the request created
@@ -149,7 +149,7 @@ class BaseTestCase(unittest.TestCase):
         :param str file_content: content of template file as string
         """
         cls.init_req = parser.create_request(
-            file_content, CONF.syntribos.endpoint)
+            file_content, CONF.syntribos.endpoint, meta_vars)
 
         prepared_copy = cls.init_req.get_prepared_copy()
         cls.init_resp, cls.init_signals = cls.client.send_request(
@@ -212,7 +212,7 @@ class BaseTestCase(unittest.TestCase):
                 self.test_case()
             except Exception as e:
                 self.errors += e
-                raise e
+                raise
             if self.failures:
                 raise AssertionError
 

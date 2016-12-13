@@ -46,8 +46,9 @@ class AuthTestCase(base.BaseTestCase):
             data=cls.request.data)
 
     @classmethod
-    def send_init_request(cls, filename, file_content):
-        super(AuthTestCase, cls).send_init_request(filename, file_content)
+    def send_init_request(cls, filename, file_content, meta_vars):
+        super(AuthTestCase, cls).send_init_request(filename,
+                                                   file_content, meta_vars)
         cls.request = cls.init_req.get_prepared_copy()
 
     @classmethod

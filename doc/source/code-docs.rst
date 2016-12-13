@@ -126,11 +126,6 @@ making HTTP requests.
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: syntribos.clients.http.models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 .. automodule:: syntribos.clients.http.parser
     :members:
     :undoc-members:
