@@ -277,9 +277,15 @@ def is_syntribos_initialized():
     """
     if not os.path.exists(get_syntribos_root()):
         return False
+    flat_list = []
+    for ele in [get_default_conf_file(), CONF.config_file, CONF.config_dir]:
+        if ele and isinstance(ele, str):
+            flat_list.append(ele)
+        elif ele and isinstance(ele, list):
+            for s in ele:
+                flat_list.append(s)
 
-    if any([os.path.exists(conf_file) for conf_file in
-            [get_default_conf_file(), CONF.config_file, CONF.config_dir]]):
+    if any([os.path.exists(conf_file) for conf_file in flat_list]):
         return True
 
     return False
