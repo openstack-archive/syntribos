@@ -731,31 +731,26 @@ in the config file to ``False``, it is not recommended.
 Anatomy of a request template
 =============================
 
-This section will give you a brief idea on writing templates
-and on how to run specific tests. Templates are input files which has
-raw http requests and may also be supplemented with variable
-data using extensions.
-
-Syntribos template files are ordinary text files containing raw http
-requests.
+This section describes how to write templates and how to run specific tests.
+Templates are input files which have raw HTTP requests and may be
+supplemented with variable data using extensions.
 
 Using external functions in templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These template files can also be supplemented with variable
-data, or data retrieved from external sources. This is handled
-using 'extensions.'
+Extensions can be used to supplement syntribos template files with variable
+data, or data retrieved from external sources.
 
-Extensions are found in ``syntribos/extensions/`` .
+Extensions are found in ``syntribos/extensions/``.
 
-Calls to extensions are made in this form:
+Calls to extensions are made in the form below:
 
 ::
 
-    CALL_EXTERNAL|{extension dot path}:{function}:{arguments}
+    CALL_EXTERNAL|{extension dot path}:{function name}:[arguments]
 
-One example packaged with syntribos enables the tester to obtain an auth
-token from keystone. The code is located in ``identity/client.py``
+One example packaged with syntribos enables the tester to obtain an AUTH
+token from keystone. The code is located in ``identity/client.py``.
 
 To use this extension, you can add the following to your template file:
 
@@ -763,25 +758,25 @@ To use this extension, you can add the following to your template file:
 
     X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
 
-The "user" string indicates the data from the configuration file we
-added in ``examples/configs/keystone.conf``
+The ``"user"`` string indicates the data from the configuration file we
+added in ``examples/configs/keystone.conf``.
 
-Another example is found in ``random_data/client.py`` . This returns a
-UUID when random but unique data is needed. This can be used in place of
+Another example is found in ``random_data/client.py``. This returns a
+UUID when random, but unique data is needed. The UUID can be used in place of
 usernames when fuzzing a create user call.
 
 ::
 
     "username": "CALL_EXTERNAL|syntribos.extensions.random_data.client:get_uuid:[]|"
 
-The extension function can return one value or be used as a generator if
+The extension function can return one value, or be used as a generator if
 you want it to change for each test.
 
 Built in functions
 ------------------
 
-Syntribos comes with a slew of utility functions/extensions, these functions can
-be used to dynamically inject data into templates.
+Syntribos comes with a slew of utility functions/extensions, these functions
+can be used to dynamically inject data into templates.
 
 .. list-table:: **Utility Functions**
    :widths: 15 35 40
@@ -809,7 +804,7 @@ be used to dynamically inject data into templates.
      - [url]
      - Returns encoded URL
 
-All these utility functions can be called using:
+All these utility functions can be called using the following syntax:
 
 ::
 
@@ -821,7 +816,7 @@ For example:
 
     "encoded_url": "CALL_EXTERNAL|common_utils.client:url_encode:['http://localhost:5000']|
 
-There are a few other functions that return random values as well, they are:
+Other functions that return random values can be seen below:
 
 .. list-table:: **Random Functions**
    :widths: 15 35 40
@@ -855,7 +850,7 @@ These can be called using:
 
     CALL_EXTERNAL|random_data.client.{method_name}:{comma separated parameters in square brackets}
 
-For example,
+For example:
 
 ::
 
@@ -879,60 +874,59 @@ Running a specific test
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 As mentioned above, some tests included with syntribos by default
-are LDAP injection, SQL injection, integer overflow, command injection,
+are: LDAP injection, SQL injection, integer overflow, command injection,
 XML external entity, reflected cross-site scripting,
-Cross Origin Resource Sharing (CORS) wildcard and SSL.
+Cross Origin Resource Sharing (CORS), SSL, Regex Denial of Service,
+JSON Parser Depth Limit, and User defined.
 
-In order to run a specific test, simply use the ``-t, --test-types``
-option and provide `syntribos` with a keyword or keywords to match from
+In order to run a specific test, use the :option:`-t, --test-types`
+option and provide ``syntribos`` with a keyword, or keywords, to match from
 the test files located in ``syntribos/tests/``.
 
-For SQL injection tests, use:
+For SQL injection tests, see below:
 
 ::
 
     $ syntribos --config-file keystone.conf -t SQL run
 
-Another example, to run SQL injection tests against the template body only,
-use:
+To run SQL injection tests against the template body only, see below:
 
 ::
 
     $ syntribos --config-file keystone.conf -t SQL_INJECTION_BODY run
 
-For all tests against HTTP headers only, use:
+For all tests against HTTP headers only, see below:
 
 ::
 
     $ syntribos --config-file keystone.conf -t HEADERS run
 
 
+============
+Unit testing
+============
 
-===================
-Executing unittests
-===================
-
-To execute unittests automatically, navigate to the ``syntribos`` root
+To execute unit tests automatically, navigate to the ``syntribos`` root
 directory and install the test requirements.
 
 ::
 
     $ pip install -r test-requirements.txt
 
-Now, run
+Now, run the ``unittest`` as below:
 
 ::
 
     $ python -m unittest discover tests/unit -p "test_*.py"
 
-If you have configured tox you could also do
+If you have configured tox you could also run the following:
 
 ::
 
     $ tox -e py27
     $ tox -e py35
 
-This will run all the unittests and give you a result output
+This will run all the unit tests and give you a result output
 containing the status and coverage details of each test.
 
 =======================
@@ -940,18 +934,18 @@ Contributing Guidelines
 =======================
 
 Syntribos is an open source project and contributions are always
-welcome, if you have any questions, we can be found in the
+welcome. If you have any questions, we can be found in the
 #openstack-security channel on Freenode IRC.
 
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
-2. All new classes/functions should have appropriate docstrings in
+2. Ensure all classes/functions have appropriate docstrings in
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
-3. All new code should have appropriate unittests (place them in the
+3. Include appropriate unit tests for all new code(place them in the
    ``tests/unit`` folder)
-4. Any change you make can be tested using tox:
+5. Test any change you make using tox:
 
-::
+  ::
 
     pip install tox
     tox -e pep8
@@ -962,20 +956,18 @@ welcome, if you have any questions, we can be found in the
 Anyone wanting to contribute to OpenStack must follow
 `the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
 
-All changes should be submitted through the code review process in Gerrit
+Submit all changes through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
 
-Bugs should be filed on the `syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
+File bugs on the `syntribos launchpad site <https://bugs.launchpad.net/syntribos>`__,
 and not on Github. All Github issues will be closed/ignored.
 
-Breaking changes, feature requests, and other unprioritized work should first be
-submitted as a blueprint `here <https://blueprints.launchpad.net/syntribos>`__
-for review.
+Submit blueprints `here <https://blueprints.launchpad.net/syntribos>`__ for all
+breaking changes, feature requests, and other unprioritized work.
 
 
-**Note:** README.rst is an auto generated file, from the rst files in the
-docs directory. The file can be generated by running ``python readme.py``
-from the ``syntribos/scripts`` directory. When the README needs to be
-updated; modify the corresponding rst file in ``syntribos/doc/source``
-and generate it by running the script.
+.. Note:: README.rst is a file that can be generated by running
+   ``python readme.py`` from the ``syntribos/scripts`` directory. When the
+   README file needs to be updated; modify the corresponding rst file in
+   ``syntribos/doc/source`` and have it generate by running the script.
 
