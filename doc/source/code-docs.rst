@@ -5,8 +5,8 @@ Syntribos Code Documentation
 Configuration
 ~~~~~~~~~~~~~
 
-This section describes the configuration specified in your configuration file
-(second argument to the runner).
+This section describes the configuration specified in the second argument to
+the runner, your configuration file.
 
 .. automodule:: syntribos.config
     :members:
@@ -27,7 +27,7 @@ Signals
 ~~~~~~~
 
 This section describes Signals (:class:`syntribos.signal.SynSignal`) and
-SignalHolders (:class:`syntribos.signal.SignalHolder`)
+SignalHolders (:class:`syntribos.signal.SignalHolder`).
 
 .. autoclass:: syntribos.signal.SynSignal
     :members:
@@ -39,8 +39,9 @@ SignalHolders (:class:`syntribos.signal.SignalHolder`)
 Checks
 ~~~~~~
 
-This section describes the checks, which analyze the HTTP response and returns a signal if it
-detects something that it knows about. It's intended to make it easier to inspect HTTP responses.
+This section describes the checks, which analyze the HTTP response and
+returns a signal if it detects something that it knows about. It's intended
+to make it easier to inspect HTTP responses.
 
 .. automodule:: syntribos.checks.content_validity
     :members:
@@ -77,10 +78,10 @@ This section describes the components involved with writing your own tests with
 syntribos.
 
 All syntribos tests inherit from :class:`syntribos.tests.base.BaseTestCase`,
-either directly, or through a subclass like
+either directly, or through a subclass such as
 :class:`syntribos.tests.fuzz.base_fuzz.BaseFuzzTestCase`.
 
-All tests are aggregated in the `syntribos.tests.base.test_table` variable
+All tests are aggregated in the ``syntribos.tests.base.test_table`` variable.
 
 .. automodule:: syntribos.tests.base
     :members:
@@ -117,8 +118,8 @@ from a given syntribos run.
 HTTP Requests
 ~~~~~~~~~~~~~
 
-This section describes the components related to generating, fuzzing, and making
-HTTP requests.
+This section describes the components related to generating, fuzzing, and
+making HTTP requests.
 
 .. automodule:: syntribos.clients.http.client
     :members:
@@ -138,8 +139,8 @@ HTTP requests.
 Extensions
 ~~~~~~~~~~
 
-This section describes syntribos' extensions, which are called by the
-CALL_EXTERNAL field in the request template.
+This section describes syntribos extensions, which are called by the
+``CALL_EXTERNAL`` field in the request template.
 
 .. automodule:: syntribos.extensions.identity.models.base
     :members:
