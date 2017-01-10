@@ -8,9 +8,10 @@ welcome. If you have any questions, we can be found in the
 
 1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
-2. Ensure all classes/functions have appropriate docstrings in
-   `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
-3. Include appropriate unit tests for all new code(place them in the
+2. Follow `secure coding guidelines <https://security.openstack.org/#secure-development-guidelines>`__
+3. Ensure all classes/functions have appropriate `docstrings <https://www.python.org/dev/peps/pep-0257/>`__
+   in  `RST format <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`__
+4. Include appropriate unit tests for all new code(place them in the
    ``tests/unit`` folder)
 5. Test any change you make using tox:
 
