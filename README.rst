@@ -726,6 +726,10 @@ This section describes how to write templates and how to run specific tests.
 Templates are input files which have raw HTTP requests and may be
 supplemented with variable data using extensions.
 
+Note: The name of a template file must end with the extension ``.template``
+Otherwise, syntribos will skip the file and will not attempt to parse any files
+that do not adhere to this naming scheme.
+
 Using external functions in templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

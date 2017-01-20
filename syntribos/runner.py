@@ -227,7 +227,9 @@ class Runner(object):
             LOG = cls.get_logger(file_path)
             CONF.log_opt_values(LOG, logging.DEBUG)
             if not file_path.endswith(".template"):
-                LOG.debug('file.......: {0} (SKIPPED)'.format(file_path))
+                LOG.debug(
+                    'file.......: {0} (SKIPPED - not a .template file)'.format(
+                        file_path))
                 continue
 
             test_names = [t for (t, _) in list_of_tests]
