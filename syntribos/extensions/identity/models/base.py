@@ -42,8 +42,8 @@ class BaseIdentityModel(object):
         except Exception as serialization_exception:
             self._log.error(
                 'Error occured during serialization of a data model into'
-                'the "{0}: \n{1}" format'.format(
-                    format_type, serialization_exception))
+                'the "%s: \n%s" format',
+                format_type, serialization_exception)
             self._log.exception(serialization_exception)
 
     @classmethod

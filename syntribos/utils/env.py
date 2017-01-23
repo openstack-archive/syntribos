@@ -48,7 +48,7 @@ def get_user_home_root():
         except OSError as e:
             # Refer https://mail.python.org/pipermail/python-bugs-list/
             # 2002-July/012691.html
-            LOG.error("Exception thrown in : {}".format(e))
+            LOG.error("Exception thrown in : %s", e)
             user = pwd.getpwuid(os.getuid())[0]
     home_path = "~{0}/{1}".format(user, FOLDER)
     return expand_path(home_path)

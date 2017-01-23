@@ -137,8 +137,8 @@ def get(uri, cache_dir=None):
             temp = tempfile.TemporaryFile(dir=os.path.abspath(user_base_dir))
             temp.close()
         except OSError:
-            LOG.error("Failed to write remote files to: {}".format(
-                os.path.abspath(user_base_dir)))
+            LOG.error("Failed to write remote files to: %s",
+                      os.path.abspath(user_base_dir))
             exit(1)
         abs_path = download(uri, os.path.abspath(user_base_dir))
     else:
