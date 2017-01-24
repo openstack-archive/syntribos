@@ -16,8 +16,7 @@ extension-pkg-whitelist=
 
 disable=all
 
-enable=bad-indentation,bad-builtin,pointless-statement,bad-continuation, unidiomatic-typecheck,method-hidden,lost-exception,attribute-defined-outside-init,expression-not-assigned,anomalous-backslash-in-string,wildcard-import,unreachable,unused-variable
-
+enable=bad-indentation,bad-builtin,pointless-statement,bad-continuation,unidiomatic-typecheck,method-hidden,lost-exception,attribute-defined-outside-init,expression-not-assigned,anomalous-backslash-in-string,wildcard-import,unreachable,unused-variable,blacklisted-name,logging-format-interpolation,cylic-import
 [REPORTS]
 output-format=text
 reports=yes

@@ -34,8 +34,7 @@ def hash_it(data, hash_type="sha256"):
         hash_obj.update(data.encode())
         return hash_obj.hexdigest()
     except (TypeError, AttributeError) as e:
-        LOG.error("Couldn't hash the data, exception raised, {},"
-                  " returning default hash".format(e))
+        LOG.error("Couldn't hash the data, exception raised: %s", e)
         return hash(data)
 
 
@@ -51,7 +50,7 @@ def hmac_it(data, key, hash_type="sha256"):
         h_digest = hmac.new(key.encode(), data.encode(), hash_obj)
         return h_digest.hexdigest()
     except (TypeError, AttributeError) as e:
-        LOG.error("Couldn't hash the data, exception raised, {}".format(e))
+        LOG.error("Couldn't hash the data, exception raised: %s", e)
 
 
 def epoch_time(offset=0):
@@ -59,8 +58,8 @@ def epoch_time(offset=0):
     try:
         return time.time() - offset
     except TypeError as e:
-        LOG.error("Couldn't reduce offset, {}, from epoch time, ex {}.".format(
-            offset, e))
+        LOG.error("Couldn't reduce offset, %s, from epoch time, ex %s.",
+                  offset, e)
         return time.time()
 
 
@@ -76,7 +75,7 @@ def base64_encode(data):
     try:
         data = base64.b64encode(data.encode())
     except TypeError as e:
-        LOG.error("Couldn't encode data to base64, {}".format(e))
+        LOG.error("Couldn't encode data to base64: %s", e)
     return data
 
 
@@ -85,5 +84,5 @@ def url_encode(url):
     try:
         return six.moves.urllib.parse.quote_plus(url)
     except TypeError as e:
-        LOG.error("Couldn't encode the URL, {}".format(e))
+        LOG.error("Couldn't encode the URL: %s", e)
         return url

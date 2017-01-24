@@ -228,8 +228,8 @@ class Runner(object):
             CONF.log_opt_values(LOG, logging.DEBUG)
             if not file_path.endswith(".template"):
                 LOG.debug(
-                    'file.......: {0} (SKIPPED - not a .template file)'.format(
-                        file_path))
+                    'file.......: %s (SKIPPED - not a .template file)',
+                    file_path)
                 continue
 
             test_names = [t for (t, _) in list_of_tests]
@@ -340,15 +340,15 @@ class Runner(object):
                 test_cases = list(
                     test_class.get_test_cases(file_path, req_str))
                 if len(test_cases) > 0:
-                    bar = cli.ProgressBar(
+                    p_bar = cli.ProgressBar(
                         message=result_string, total_len=len(test_cases))
                     last_failures = result.stats["failures"]
                     last_errors = result.stats["errors"]
                     for test in test_cases:
                         if test:
                             cls.run_test(test, result)
-                            bar.increment(1)
-                        bar.print_bar()
+                            p_bar.increment(1)
+                        p_bar.print_bar()
                         failures = result.stats["failures"] - last_failures
                         errors = result.stats["errors"] - last_errors
                         total_tests = len(test_cases)
