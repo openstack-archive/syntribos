@@ -8,4 +8,4 @@ oslo.utils>=3.18.0 # Apache-2.0
 python-cinderclient!=1.7.0,!=1.7.1,>=1.6.0 # Apache-2.0
 python-glanceclient>=2.5.0 # Apache-2.0
 python-neutronclient>=5.1.0 # Apache-2.0
-python-novaclient!=2.33.0,>=2.29.0 # Apache-2.0
+python-novaclient>=7.0.0 # Apache-2.0
