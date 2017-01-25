@@ -19,7 +19,6 @@ import time
 import unittest
 
 from oslo_config import cfg
-import six
 from six.moves import input
 
 import syntribos.config
@@ -92,7 +91,7 @@ class Runner(object):
         cls.load_modules(tests)
         test_types = test_types or [""]
         excluded_types = excluded_types or [""]
-        items = sorted(six.iteritems(syntribos.tests.base.test_table))
+        items = sorted((syntribos.tests.base.test_table).items())
         # If it's a dry run, only return the debug test
         if dry_run:
             return (x for x in items if "DEBUG" in x[0])

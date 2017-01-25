@@ -97,7 +97,7 @@ def _build_dict_combinations(fuzz_string, dic, skip_var):
     :param dic: A dictionary to fuzz
     :param skip_var: ACTION_FIELD UUID value to skip
     """
-    for key, val in six.iteritems(dic):
+    for key, val in dic.items():
         if skip_var in key:
             continue
         elif isinstance(val, dict):

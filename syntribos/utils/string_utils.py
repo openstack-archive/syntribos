@@ -43,7 +43,7 @@ def sanitize_secrets(content, mask="****"):
         """
         out = deepcopy(dictionary)
 
-        for k, v in list(six.iteritems(dictionary)):
+        for k, v in dictionary.items():
             if is_dict(v):
                 out[k] = mask_dict_password(v, secret=secret)
                 continue
