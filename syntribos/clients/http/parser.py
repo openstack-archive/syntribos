@@ -47,8 +47,7 @@ class RequestCreator(object):
 
         :param str string: HTTP request template
         :param str endpoint: URL of the target to be tested
-        :param dict meta_vars: default None, dict parsed from meta.json
-
+        :param dict meta_vars: Default None, dict parsed from meta.json
         :rtype: :class:`syntribos.clients.http.parser.RequestObject`
         :returns: RequestObject with method, url, params, etc. for use by
                   runner
@@ -67,7 +66,6 @@ class RequestCreator(object):
         method, url, params, _ = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
         data = cls._parse_data(lines[index + 1:])
-
         return RequestObject(
             method=method, url=url, headers=headers, params=params, data=data,
             action_field=action_field)
@@ -77,7 +75,6 @@ class RequestCreator(object):
         """Given the name of a variable, creates VariableObject
 
         :param str var: name of the variable in meta.json
-
         :rtype: :class:`syntribos.clients.http.parser.VariableObject`
         :returns: VariableObject holding the attributes defined in the JSON
                   object read in from meta.json
@@ -122,28 +119,22 @@ class RequestCreator(object):
                 print("Meta json file contains reference to the config option "
                       "{0}, which does not appear to exist.".format(
                           var_obj.val))
-
         elif var_obj.var_type == 'function':
             if var_obj.function_return_value:
                 return var_obj.function_return_value
-
             if not var_obj.val:
                 print("The type of variable {0} is function, but there is no "
                       "reference to the function.")
                 return
-
             var_obj.function_return_value = cls.call_one_external_function(
                 var_obj.val, var_obj.args)
             return var_obj.function_return_value
-
         elif var_obj.var_type == 'generator':
             if not var_obj.val:
                 print("The type of variable {0} is generator, but there is no "
                       "reference to the function.")
                 return
-
             return cls.call_one_external_function(var_obj.val, var_obj.args)
-
         else:
             return var_obj.val
 
@@ -196,13 +187,11 @@ class RequestCreator(object):
 
         :param str line: the first line of the HTTP request
         :param str endpoint: the full URL of the endpoint to test
-
         :rtype: tuple
         :returns: HTTP method, URL, request parameters, HTTP version
         """
         valid_methods = ["GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE",
                          "TRACE", "CONNECT", "PATCH"]
-
         params = {}
         method, url, version = line.split()
         url = url.split("?", 1)
@@ -215,10 +204,8 @@ class RequestCreator(object):
                     params[param[0]] = ""
         url = url[0]
         url = urlparse.urljoin(endpoint, url)
-
         if method not in valid_methods:
             raise ValueError("Invalid HTTP method: {0}".format(method))
-
         return (method, cls._replace_str_variables(url),
                 cls._replace_dict_variables(params), version)
 
@@ -227,7 +214,6 @@ class RequestCreator(object):
         """Find and return headers in HTTP request
 
         :param str lines:  All but the first line of the HTTP request (list)
-
         :rtype: dict
         :returns: headers as key:value pairs
         """
@@ -254,7 +240,6 @@ class RequestCreator(object):
             # TODO(cneill): Make this less hacky
             if isinstance(data, list):
                 data = json.dumps(data)
-
             if isinstance(data, dict):
                 return cls._replace_dict_variables(data)
             else:
@@ -272,14 +257,12 @@ class RequestCreator(object):
         """Parse external function calls in the body of request templates
 
         :param str string: full HTTP request template as a string
-
         :rtype: str
         :returns: the request, with EXTERNAL calls filled in with their values
                   or UUIDs
         """
         if not isinstance(string, six.string_types):
             return string
-
         while True:
             match = re.search(cls.EXTERNAL, string)
             if not match:
@@ -304,39 +287,31 @@ class RequestCreator(object):
         """Calls one function read in from templates and returns the result."""
         if not isinstance(string, six.string_types):
             return string
-
         match = re.search(cls.FUNC_NO_ARGS, string)
         func_string_has_args = False
-
         if not match:
             match = re.search(cls.FUNC_WITH_ARGS, string)
             func_string_has_args = True
-
         if not match:
             print("The reference to the function {0} failed to parse "
                   "correctly".format(string))
             return
-
         dot_path = match.group(1)
         func_name = match.group(2)
         mod = importlib.import_module(dot_path)
         func = getattr(mod, func_name)
-
         if func_string_has_args and not args:
             arg_list = match.group(3)
             args = json.loads(arg_list)
         else:
             args = ast.literal_eval(args)
-
         val = func(*args)
-
         if isinstance(val, types.GeneratorType):
             local_uuid = str(uuid.uuid4()).replace("-", "")
             string = local_uuid
             _iterators[local_uuid] = val
         else:
             string = str(val)
-
         return string
 
 
@@ -365,7 +340,6 @@ class VariableObject(object):
 
 class RequestHelperMixin(object):
     """Class that helps with fuzzing requests."""
-
     def __init__(self):
         self.data = ""
         self.headers = ""
