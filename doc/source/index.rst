@@ -50,7 +50,7 @@ Project information
 * `Bugs`_
 * `Source code`_
 
-.. _Documentation: http://docs.openstack.org/developer/syntribos/
+.. _Documentation: https://docs.openstack.org/developer/syntribos/
 .. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
 .. _Launchpad project: https://launchpad.net/syntribos
 .. _Blueprints: https://blueprints.launchpad.net/syntribos

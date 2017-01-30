@@ -159,7 +159,7 @@ Example signals captured::
 
 Debug logs are sanitized to prevent storing secrets to log files.
 Passwords and other sensitive information are marked with asterisks using a
-slightly modified version of `oslo_utils.strutils.mask_password <http://docs.openstack.org/developer/oslo.utils/api/strutils.html#oslo_utils.strutils.mask_password>`__.
+slightly modified version of `oslo_utils.strutils.mask_password <https://docs.openstack.org/developer/oslo.utils/api/strutils.html#oslo_utils.strutils.mask_password>`__.
 
 Debug logs also include string compression, wherein long fuzz strings are
 compressed before being written to the logs. The threshold to start data

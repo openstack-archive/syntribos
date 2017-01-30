@@ -198,7 +198,7 @@ Syntribos has been developed primarily in Linux and Mac environments and would
 work on most Unix and Linux based Operating Systems. At this point, we are not
 supporting Windows, but this may change in the future.
 
-.. _Documentation: http://docs.openstack.org/developer/syntribos/
+.. _Documentation: https://docs.openstack.org/developer/syntribos/
 .. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
 .. _Launchpad project: https://launchpad.net/syntribos
 .. _Blueprints: https://blueprints.launchpad.net/syntribos

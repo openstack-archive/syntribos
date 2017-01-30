@@ -223,7 +223,7 @@ Syntribos has been developed primarily in Linux and Mac environments and would
 work on most Unix and Linux based Operating Systems. At this point, we are not
 supporting Windows, but this may change in the future.
 
-.. _Documentation: http://docs.openstack.org/developer/syntribos/
+.. _Documentation: https://docs.openstack.org/developer/syntribos/
 .. _Apache license: https://github.com/openstack/syntribos/blob/master/LICENSE
 .. _Launchpad project: https://launchpad.net/syntribos
 .. _Blueprints: https://blueprints.launchpad.net/syntribos
@@ -708,7 +708,7 @@ Example signals captured::
 
 Debug logs are sanitized to prevent storing secrets to log files.
 Passwords and other sensitive information are marked with asterisks using a
-slightly modified version of `oslo_utils.strutils.mask_password <http://docs.openstack.org/developer/oslo.utils/api/strutils.html#oslo_utils.strutils.mask_password>`__.
+slightly modified version of `oslo_utils.strutils.mask_password <https://docs.openstack.org/developer/oslo.utils/api/strutils.html#oslo_utils.strutils.mask_password>`__.
 
 Debug logs also include string compression, wherein long fuzz strings are
 compressed before being written to the logs. The threshold to start data
@@ -976,7 +976,7 @@ Syntribos is an open source project and contributions are always
 welcome. If you have any questions, we can be found in the
 #openstack-security channel on Freenode IRC.
 
-1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
+1. Follow all the `OpenStack Style Guidelines <https://docs.openstack.org/developer/hacking/>`__
    (e.g. PEP8, Py3 compatibility)
 2. Follow `secure coding guidelines <https://security.openstack.org/#secure-development-guidelines>`__
 3. Ensure all classes/functions have appropriate `docstrings <https://www.python.org/dev/peps/pep-0257/>`__
@@ -994,7 +994,7 @@ welcome. If you have any questions, we can be found in the
     tox -e cover
 
 Anyone wanting to contribute to OpenStack must follow
-`the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
+`the OpenStack development workflow <https://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
 
 Submit all changes through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
