@@ -15,6 +15,7 @@
 from oslo_config import cfg
 
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks.header import cors
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
@@ -59,6 +60,6 @@ class CorsHeader(base.BaseTestCase):
                 severity=test_severity,
                 confidence=syntribos.HIGH,
                 description=(
-                    "CORS header vulnerability found.\n"
-                    "Make sure that the header is not assigned "
-                    "a wildcard character."))
+                    _("CORS header vulnerability found.\n"
+                      "Make sure that the header is not assigned "
+                      "a wildcard character.")))

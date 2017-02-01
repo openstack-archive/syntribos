@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
@@ -54,10 +55,10 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
                 defect_type="sql_timing",
                 severity=syntribos.MEDIUM,
                 confidence=syntribos.MEDIUM,
-                description=("A response to one of our payload requests has "
-                             "taken too long compared to the baseline "
-                             "request. This could indicate a vulnerability "
-                             "to time-based SQL injection attacks"))
+                description=(_("A response to one of our payload requests has "
+                               "taken too long compared to the baseline "
+                               "request. This could indicate a vulnerability "
+                               "to time-based SQL injection attacks")))
 
 
 class SQLInjectionParams(SQLInjectionBody):

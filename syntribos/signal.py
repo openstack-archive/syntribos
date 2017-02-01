@@ -13,6 +13,8 @@
 # limitations under the License.
 import six
 
+from syntribos._i18n import _, _LE, _LW     # noqa
+
 
 class SignalHolder(object):
     """SignalHolder represents a 'set' of SynSignals.
@@ -247,14 +249,14 @@ def from_generic_exception(exception):
     :returns: A signal describing the exception
     """
     if not isinstance(exception, Exception):
-        raise Exception("This function accepts only Exception objects")
+        raise Exception(_("This function accepts only Exception objects"))
 
     exc_text = str(exception)
-    text = "This request raised an exception: '{0}'".format(exc_text)
+    text = _("This request raised an exception: '%s'") % exc_text
     data = {
-        "exception_name": exception.__class__.__name__,
-        "exception_text": exc_text,
-        "exception": exception
+        _("exception_name"): exception.__class__.__name__,
+        _("exception_text"): exc_text,
+        _("exception"): exception
     }
     slug = "GENERIC_EXCEPTION_{name}".format(
         name=data["exception_name"].upper())

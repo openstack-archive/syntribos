@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks import https_check
 from syntribos.tests import base
 
@@ -28,8 +29,8 @@ class SSLTestCase(base.BaseTestCase):
 
         if "HTTP_LINKS_PRESENT" in self.init_signals:
             self.register_issue(
-                defect_type="SSL_ERROR",
+                defect_type=_("SSL_ERROR"),
                 severity=syntribos.MEDIUM,
                 confidence=syntribos.HIGH,
-                description=("Make sure that all the returned endpoint URIs"
-                             " use 'https://' and not 'http://'"))
+                description=(_("Make sure that all the returned endpoint URIs"
+                               " use 'https://' and not 'http://'")))

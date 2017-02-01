@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
@@ -51,11 +52,11 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
                 defect_type="command_injection",
                 severity=syntribos.HIGH,
                 confidence=syntribos.MEDIUM,
-                description=("The time elapsed between the sending of "
-                             "the request and the arrival of the res"
-                             "ponse exceeds the expected amount of time, "
-                             "suggesting a vulnerability to command "
-                             "injection attacks."))
+                description=(_("The time elapsed between the sending of "
+                               "the request and the arrival of the res"
+                               "ponse exceeds the expected amount of time, "
+                               "suggesting a vulnerability to command "
+                               "injection attacks.")))
 
 
 class CommandInjectionParams(CommandInjectionBody):

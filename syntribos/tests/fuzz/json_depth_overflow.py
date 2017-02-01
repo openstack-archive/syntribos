@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
@@ -56,7 +57,7 @@ class JSONDepthOverflowBody(base_fuzz.BaseFuzzTestCase):
                 defect_type="json_depth_timing",
                 severity=syntribos.MEDIUM,
                 confidence=syntribos.MEDIUM,
-                description=("The time it took to resolve a request "
-                             "was too long compared to the "
-                             "baseline request. This could indicate a "
-                             "vulnerability to denial of service attacks."))
+                description=(_("The time it took to resolve a request "
+                               "was too long compared to the "
+                               "baseline request. This could indicate a "
+                               "vulnerability to denial of service attacks.")))

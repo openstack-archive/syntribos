@@ -20,7 +20,7 @@ def delete_temps():
     """Deletes all temporary dirs used for saving cached files."""
     remote_dirs = set(syntribos.utils.remotes.remote_dirs)
     temp_dirs = set(syntribos.utils.remotes.temp_dirs)
-    [delete_dir(temp_dir) for temp_dir in temp_dirs]  # noqa
+    [delete_dir(temp_dir) for temp_dir in temp_dirs]    # noqa
     if remote_dirs - temp_dirs:
         print("All downloaded files have been saved to: {}".format(
             ",".join([ele for ele in (remote_dirs - temp_dirs)])))

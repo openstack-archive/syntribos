@@ -13,6 +13,7 @@
 # limitations under the License.
 import ast
 import copy
+from functools import reduce
 import importlib
 import json
 import re
@@ -26,6 +27,8 @@ from oslo_config import cfg
 import six
 from six.moves import html_parser
 from six.moves.urllib import parse as urlparse
+
+from syntribos._i18n import _, _LE, _LW   # noqa
 
 CONF = cfg.CONF
 _iterators = {}
@@ -114,23 +117,25 @@ class RequestCreator(object):
             try:
                 return reduce(getattr, var_obj.val.split("."), CONF)
             except AttributeError:
-                print("Meta json file contains reference to the config option "
-                      "{0}, which does not appear to exist.".format(
-                          var_obj.val))
+                print(_(
+                    "Meta json file contains reference to the config option "
+                    "%s, which does not appear to exist.") % var_obj.val)
         elif var_obj.var_type == 'function':
             if var_obj.function_return_value:
                 return var_obj.function_return_value
             if not var_obj.val:
-                print("The type of variable {0} is function, but there is no "
-                      "reference to the function.")
+                print(_(
+                    "The type of variable  is function, but there is no "
+                    "reference to the function."))
                 return
             var_obj.function_return_value = cls.call_one_external_function(
                 var_obj.val, var_obj.args)
             return var_obj.function_return_value
         elif var_obj.var_type == 'generator':
             if not var_obj.val:
-                print("The type of variable {0} is generator, but there is no "
-                      "reference to the function.")
+                print(_(
+                    "The type of variable {0} is generator, but there is no "
+                    "reference to the function."))
                 return
             return cls.call_one_external_function(var_obj.val, var_obj.args)
         else:
@@ -247,7 +252,7 @@ class RequestCreator(object):
                 data = ElementTree.fromstring(data)
             except Exception:
                 if not re.match(postdat_regex, data):
-                    raise TypeError("Unknown data format")
+                    raise TypeError(_("Unknown data format"))
         return data
 
     @classmethod
@@ -291,8 +296,8 @@ class RequestCreator(object):
             match = re.search(cls.FUNC_WITH_ARGS, string)
             func_string_has_args = True
         if not match:
-            print("The reference to the function {0} failed to parse "
-                  "correctly".format(string))
+            print(_("The reference to the function %s failed to parse "
+                    "correctly") % string)
             return
         dot_path = match.group(1)
         func_name = match.group(2)
@@ -320,8 +325,10 @@ class VariableObject(object):
     def __init__(self, name, var_type="", args=[], val="", fuzz=True,
                  fuzz_type="", min_length=0, max_length=sys.maxsize, **kwargs):
         if var_type and var_type.lower() not in self.VAR_TYPES:
-            print("The variable {0} has a type of {1} which syntribos does not"
-                  " recognize".format(name, var_type))
+            print(_(
+                "The variable %(name)s has a type of %(var)s which"
+                " syntribos does not"
+                " recognize") % {'name': name, 'var': var_type})
         self.name = name
         self.var_type = var_type.lower()
         self.val = val
@@ -338,6 +345,7 @@ class VariableObject(object):
 
 class RequestHelperMixin(object):
     """Class that helps with fuzzing requests."""
+
     def __init__(self):
         self.data = ""
         self.headers = ""

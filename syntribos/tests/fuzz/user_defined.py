@@ -16,6 +16,7 @@ import os
 from oslo_config import cfg
 
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks import has_string as has_string
 from syntribos.checks import time_diff as time_diff
 from syntribos.tests.fuzz import base_fuzz
@@ -66,11 +67,11 @@ class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
                 defect_type="user_defined_string_timing",
                 severity=syntribos.MEDIUM,
                 confidence=syntribos.MEDIUM,
-                description=("A response to one of the payload requests has "
-                             "taken too long compared to the baseline "
-                             "request. This could indicate a vulnerability "
-                             "to time-based injection attacks using the user "
-                             "provided strings."))
+                description=(_("A response to one of the payload requests has "
+                               "taken too long compared to the baseline "
+                               "request. This could indicate a vulnerability "
+                               "to time-based injection attacks using the user"
+                               " provided strings.")))
 
     @classmethod
     def get_test_cases(cls, filename, file_content):
