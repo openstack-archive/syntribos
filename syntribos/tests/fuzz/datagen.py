@@ -17,6 +17,10 @@ from xml.etree import ElementTree
 
 import six
 
+from syntribos.clients.http.parser import _string_var_objs
+from syntribos.clients.http.parser import RequestCreator
+from syntribos.clients.http import VariableObject
+
 
 def fuzz_request(req, strings, fuzz_type, name_prefix):
     """Creates the fuzzed RequestObject
@@ -85,9 +89,16 @@ def _build_str_combinations(fuzz_string, data):
         if match.group(1):
             # The string is of the format "{identifier:value}", so we just
             # want the identifier as the param_path
-            yield model, match.group(1)
+            param = match.group(1)
         else:
-            yield model, match.group(0)
+            param = match.group(0)
+
+        if param in _string_var_objs:
+            var_obj = _string_var_objs[param]
+            if not _check_var_obj_limits(var_obj, fuzz_string):
+                continue
+            param = RequestCreator.replace_one_variable(var_obj)
+        yield model, param
 
 
 def _build_dict_combinations(fuzz_string, dic, skip_var):
@@ -100,6 +111,11 @@ def _build_dict_combinations(fuzz_string, dic, skip_var):
     for key, val in dic.items():
         if skip_var in key:
             continue
+        elif isinstance(val, VariableObject):
+            if not _check_var_obj_limits(val, fuzz_string):
+                continue
+            else:
+                yield _merge_dictionaries(dic, {key: fuzz_string}), key
         elif isinstance(val, dict):
             for ret, param_path in _build_dict_combinations(fuzz_string, val,
                                                             skip_var):
@@ -116,6 +132,9 @@ def _build_dict_combinations(fuzz_string, dic, skip_var):
                         yield (_merge_dictionaries(dic, {
                             key: ret
                         }), "{0}[{1}]/{2}".format(key, i, param_path))
+                elif isinstance(v, VariableObject):
+                    if not _check_var_obj_limits(v, fuzz_string):
+                        continue
                 else:
                     list_[i] = fuzz_string
                     yield (_merge_dictionaries(dic, {
@@ -202,3 +221,40 @@ def _update_inner_xml_ele(ele, list_):
     for i, v in enumerate(list_):
         ret[i] = v
     return ret
+
+
+def _check_var_obj_limits(var_obj, fuzz_string):
+    if not var_obj.fuzz:
+        return False
+    if var_obj.fuzz_types:
+        ret = False
+        if "int" in var_obj.fuzz_types:
+            try:
+                int(fuzz_string)
+                ret = True
+            except ValueError:
+                pass
+        if "ascii" in var_obj.fuzz_types:
+            try:
+                fuzz_string.encode('ascii')
+                ret = True
+            except UnicodeEncodeError:
+                pass
+        if "url" in var_obj.fuzz_types:
+            url_re = r"^[A-Za-z0-9\-\._~:\/\?#[\]@!\$&'()*\+,;=%]+$"
+            if re.match(url_re, fuzz_string):
+                ret = True
+        if "str" in var_obj.fuzz_types:
+            try:
+                str(fuzz_string)
+                ret = True
+            except ValueError:
+                pass
+        if not ret:
+            return ret
+
+    if len(fuzz_string) > var_obj.max_length:
+        return False
+    if len(fuzz_string) < var_obj.min_length:
+        return False
+    return True

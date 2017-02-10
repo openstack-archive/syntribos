@@ -14,11 +14,32 @@
 import testtools
 
 from syntribos.clients.http import parser
+from syntribos.clients.http import VariableObject
+
 
 endpoint = "http://test.com"
 
 
 class HTTPParserUnittest(testtools.TestCase):
+    parser.meta_vars = {
+        "str_var": {"val": "test"},
+        "func_var": {
+            "type": "function",
+            "val":
+                "syntribos.extensions.common_utils.client:hmac_it",
+            "args": ["test", "key", "md5"]
+        },
+        "rand_func_var": {
+            "type": "function",
+            "val":
+                "syntribos.extensions.random_data.client:get_uuid"
+        },
+        "gen_var": {
+            "type": "generator",
+            "val":
+                "syntribos.extensions.random_data.client:get_uuid"
+        }
+    }
 
     def test_url_line_parser_vanilla(self):
         """Tests parsing a URL line with simple path."""
@@ -119,3 +140,60 @@ class HTTPParserUnittest(testtools.TestCase):
         string = 'GET /v1/CALL_EXTERNAL|uuid:asdfasdfasdf:[]|'
         self.assertRaises(
             AttributeError, parser.call_external_functions, string)
+
+    def test_create_var_obj_str(self):
+        var_obj = parser._create_var_obj("str_var")
+        self.assertIsInstance(var_obj, VariableObject)
+        self.assertEqual("test", var_obj.val)
+
+    def test_create_var_obj_func(self):
+        var_obj = parser._create_var_obj("func_var")
+        self.assertIsInstance(var_obj, VariableObject)
+        self.assertEqual("function", var_obj.var_type)
+        self.assertEqual(
+            "syntribos.extensions.common_utils.client:hmac_it",
+            var_obj.val)
+        self.assertEqual(["test", "key", "md5"], var_obj.args)
+
+    def test_create_var_obj_gen(self):
+        var_obj = parser._create_var_obj("gen_var")
+        self.assertIsInstance(var_obj, VariableObject)
+        self.assertEqual("generator", var_obj.var_type)
+        self.assertEqual(
+            "syntribos.extensions.random_data.client:get_uuid",
+            var_obj.val)
+
+    def test_replace_variable_str(self):
+        var_obj = parser._create_var_obj("str_var")
+        self.assertEqual("test", parser.replace_one_variable(var_obj))
+
+    def test_replace_variable_func(self):
+        var_obj = parser._create_var_obj("func_var")
+        self.assertEqual("1d4a2743c056e467ff3f09c9af31de7e",
+                         parser.replace_one_variable(var_obj))
+        self.assertEqual("1d4a2743c056e467ff3f09c9af31de7e",
+                         var_obj.function_return_value)
+
+    def test_replace_variable_rand_func(self):
+        var_obj = parser._create_var_obj("rand_func_var")
+        val_1 = parser.replace_one_variable(var_obj)
+        self.assertEqual(val_1, var_obj.function_return_value)
+        val_2 = parser.replace_one_variable(var_obj)
+        self.assertEqual(val_1, val_2)
+
+    def test_replace_variable_gen(self):
+        var_obj = parser._create_var_obj("gen_var")
+        val_1 = parser.replace_one_variable(var_obj)
+        val_2 = parser.replace_one_variable(var_obj)
+        self.assertNotEqual(val_1, val_2)
+
+    def test_replace_dict_variables(self):
+        dic = {
+            "|str_var|": "|func_var|"
+        }
+        replaced_dic = parser._replace_dict_variables(dic)
+        self.assertIn("test", replaced_dic)
+        self.assertIsInstance(dic["test"], VariableObject)
+        self.assertEqual(
+            dic["test"].val,
+            "syntribos.extensions.common_utils.client:hmac_it")

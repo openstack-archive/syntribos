@@ -194,13 +194,11 @@ class BaseFuzzTestCase(base.BaseTestCase):
             confidence=confidence,
             description=description)
 
-        # Still associating request and response objects with issue in event of
-        # debug log
         issue.request = self.test_req
         issue.response = self.test_resp
-
         issue.test_type = self.test_name
-        url_components = urlparse(self.init_req.url)
+        prepared_copy = self.init_req.get_prepared_copy()
+        url_components = urlparse(prepared_copy.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
         issue.init_signals = self.init_signals

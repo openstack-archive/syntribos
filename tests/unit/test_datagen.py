@@ -18,7 +18,9 @@ import six
 import testtools
 
 from syntribos.clients.http.parser import RequestObject
+from syntribos.clients.http import VariableObject
 import syntribos.tests.fuzz.datagen as fuzz_datagen
+
 
 action_field = "ACTION_FIELD:"
 test_dict = {"a": {"b": "c", "ACTION_FIELD:d": "e"}}
@@ -61,6 +63,7 @@ def post_req(path, *args, **kwargs):
 
 
 class FuzzDatagenUnittest(testtools.TestCase):
+
     def test_fuzz_data_dict(self):
         """Test _fuzz_data with a dict."""
         strings = ["test"]
@@ -259,3 +262,58 @@ class FuzzDatagenUnittest(testtools.TestCase):
             name, req, fuzz_string, name = d
             self.assertIn(req.params, expected_param_objs)
         self.assertEqual(i, 4)
+
+    def test_var_obj_limits_fuzz(self):
+        var_obj = VariableObject(name="no_fuzz_var", val="test", fuzz=False)
+        string = "test"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), False)
+
+    def test_var_obj_limits_int(self):
+        var_obj = VariableObject(name="int_var", val=1, fuzz_types=["int"])
+        string = "test"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), False)
+        string = "2"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), True)
+
+    def test_var_obj_limits_ascii(self):
+        var_obj = VariableObject(name="ascii_var", val="test",
+                                 fuzz_types=["ascii"])
+        string = u"\u0124\u0100\u0154\u0100\u004D\u00DF\u00EB"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), False)
+        string = "test"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), True)
+
+    def test_var_obj_limits_url(self):
+        var_obj = VariableObject(name="url_var", val="test",
+                                 fuzz_types=["url"])
+        string = "cd /etc; cat passwd"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), False)
+        string = "test"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), True)
+
+    def test_var_obj_limits_min_length(self):
+        var_obj = VariableObject(name="url_var", val="test",
+                                 min_length=5)
+        string = "abc"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), False)
+        string = "abcde"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), True)
+
+    def test_var_obj_limits_max_length(self):
+        var_obj = VariableObject(name="url_var", val="test",
+                                 max_length=3)
+        string = "abc"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), True)
+        string = "abcde"
+        self.assertEqual(
+            fuzz_datagen._check_var_obj_limits(var_obj, string), False)

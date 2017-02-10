@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import ast
 import copy
 from functools import reduce
 import importlib
@@ -128,9 +127,11 @@ class RequestCreator(object):
                     "The type of variable  is function, but there is no "
                     "reference to the function."))
                 return
-            var_obj.function_return_value = cls.call_one_external_function(
-                var_obj.val, var_obj.args)
-            return var_obj.function_return_value
+            else:
+                var_obj.function_return_value = cls.call_one_external_function(
+                    var_obj.val, var_obj.args)
+                return var_obj.function_return_value
+
         elif var_obj.var_type == 'generator':
             if not var_obj.val:
                 print(_(
@@ -139,24 +140,29 @@ class RequestCreator(object):
                 return
             return cls.call_one_external_function(var_obj.val, var_obj.args)
         else:
-            return var_obj.val
+            return str(var_obj.val)
 
     @classmethod
     def _replace_dict_variables(cls, dic):
         """Recursively evaluates all meta variables in a given dict."""
-        for (key, value) in six.iteritems(dic):
+        for (key, value) in dic.items():
             # Keys dont get fuzzed, so can handle them here
+            new_key = key.strip("|%s" % string.whitespace)
             if re.search(cls.METAVAR, key):
-                key = key.strip("|%s" % string.whitespace)
-                key_obj = cls._create_var_obj(key)
-                key = cls.replace_one_variable(key_obj)
+                key_obj = cls._create_var_obj(new_key)
+                new_key = cls.replace_one_variable(key_obj)
+                del dic[key]
+                dic[new_key] = value
             # Vals are fuzzed so they need to be passed to datagen as an object
-            if not isinstance(value, dict):
+            if isinstance(value, six.string_types):
                 if re.search(cls.METAVAR, value):
                     value = value.strip("|%s" % string.whitespace)
                     val_obj = cls._create_var_obj(value)
-                    dic[key] = val_obj
-            else:
+                    if key in dic:
+                        dic[key] = val_obj
+                    elif new_key in dic:
+                        dic[new_key] = val_obj
+            elif isinstance(value, dict):
                 cls._replace_dict_variables(value)
         return dic
 
@@ -306,24 +312,21 @@ class RequestCreator(object):
         if func_string_has_args and not args:
             arg_list = match.group(3)
             args = json.loads(arg_list)
-        else:
-            args = ast.literal_eval(args)
+
         val = func(*args)
         if isinstance(val, types.GeneratorType):
-            local_uuid = str(uuid.uuid4()).replace("-", "")
-            string = local_uuid
-            _iterators[local_uuid] = val
+            return str(six.next(val))
         else:
-            string = str(val)
-        return string
+            return str(val)
 
 
 class VariableObject(object):
     VAR_TYPES = ["function", "generator", "config"]
-    FUZZ_TYPES = ["int", "str", "uuid"]
+    FUZZ_TYPES = ["int", "ascii", "url"]
 
     def __init__(self, name, var_type="", args=[], val="", fuzz=True,
-                 fuzz_type="", min_length=0, max_length=sys.maxsize, **kwargs):
+                 fuzz_types=[], min_length=0, max_length=sys.maxsize,
+                 url_encode=False, **kwargs):
         if var_type and var_type.lower() not in self.VAR_TYPES:
             print(_(
                 "The variable %(name)s has a type of %(var)s which"
@@ -333,10 +336,11 @@ class VariableObject(object):
         self.var_type = var_type.lower()
         self.val = val
         self.args = args
-        self.fuzz_type = fuzz_type
+        self.fuzz_types = fuzz_types
         self.fuzz = fuzz
         self.min_length = min_length
         self.max_length = max_length
+        self.url_encode = url_encode
         self.function_return_value = None
 
     def __repr__(self):
@@ -378,7 +382,7 @@ class RequestHelperMixin(object):
     @classmethod
     def _run_iters_dict(cls, dic, action_field=""):
         """Run fuzz iterators for a dict type."""
-        for key, val in six.iteritems(dic):
+        for key, val in dic.items():
             dic[key] = val = cls._replace_iter(val)
             if isinstance(key, six.string_types):
                 new_key = cls._replace_iter(key).replace(action_field, "")
@@ -437,7 +441,7 @@ class RequestHelperMixin(object):
         """Fuzz a string."""
         if not isinstance(string, six.string_types):
             return string
-        for k, v in list(six.iteritems(_iterators)):
+        for k, v in list(_iterators.items()):
             if k in string:
                 string = string.replace(k, six.next(v))
         for k, v in _string_var_objs.items():
