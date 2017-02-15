@@ -246,8 +246,6 @@ class BaseTestCase(unittest.TestCase):
                                 confidence=confidence,
                                 description=description)
 
-        # Still associating request and response objects with issue in event of
-        # debug log
         issue.request = self.test_req
         issue.response = self.test_resp
 

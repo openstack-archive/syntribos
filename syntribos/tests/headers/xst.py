@@ -70,6 +70,4 @@ class XstHeader(base.BaseTestCase):
                 confidence=syntribos.HIGH,
                 description=(_("XST vulnerability found.\n"
                                "Make sure that response to a "
-                               "TRACE request is filtered."
-                               )
-                             ))
+                               "TRACE request is filtered.")))

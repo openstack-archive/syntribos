@@ -63,7 +63,7 @@ class RequestCreator(object):
                 break
         if lines[index] != "":
             index = index + 1
-        method, url, params, _ = cls._parse_url_line(lines[0], endpoint)
+        method, url, params, version = cls._parse_url_line(lines[0], endpoint)
         headers = cls._parse_headers(lines[1:index])
         data = cls._parse_data(lines[index + 1:])
         return RequestObject(
@@ -80,9 +80,9 @@ class RequestCreator(object):
                   object read in from meta.json
         """
         if var not in cls.meta_vars:
-            print("Expected to find {0} in meta.json, but didn't. "
-                  "Check your templates".format(var))
-            return
+            msg = _("Expected to find %s in meta.json, but didn't. "
+                    "Check your templates") % var
+            raise TemplateParseException(msg)
         var_dict = cls.meta_vars[var]
         if "type" in var_dict:
             var_dict["var_type"] = var_dict.pop("type")
@@ -116,17 +116,18 @@ class RequestCreator(object):
             try:
                 return reduce(getattr, var_obj.val.split("."), CONF)
             except AttributeError:
-                print(_(
-                    "Meta json file contains reference to the config option "
-                    "%s, which does not appear to exist.") % var_obj.val)
+                msg = _("Meta json file contains reference to the config "
+                        "option %s, which does not appear to"
+                        "exist.") % var_obj.val
+                raise TemplateParseException(msg)
+
         elif var_obj.var_type == 'function':
             if var_obj.function_return_value:
                 return var_obj.function_return_value
             if not var_obj.val:
-                print(_(
-                    "The type of variable  is function, but there is no "
-                    "reference to the function."))
-                return
+                msg = _("The type of variable %s is function, but there is no "
+                        "reference to the function.") % var_obj.name
+                raise TemplateParseException(msg)
             else:
                 var_obj.function_return_value = cls.call_one_external_function(
                     var_obj.val, var_obj.args)
@@ -134,10 +135,10 @@ class RequestCreator(object):
 
         elif var_obj.var_type == 'generator':
             if not var_obj.val:
-                print(_(
-                    "The type of variable {0} is generator, but there is no "
-                    "reference to the function."))
-                return
+                msg = _("The type of variable %s is generator, but there is no"
+                        " reference to the function.") % var_obj.name
+                raise TemplateParseException(msg)
+
             return cls.call_one_external_function(var_obj.val, var_obj.args)
         else:
             return str(var_obj.val)
@@ -147,17 +148,24 @@ class RequestCreator(object):
         """Recursively evaluates all meta variables in a given dict."""
         for (key, value) in dic.items():
             # Keys dont get fuzzed, so can handle them here
-            new_key = key.strip("|%s" % string.whitespace)
-            if re.search(cls.METAVAR, key):
-                key_obj = cls._create_var_obj(new_key)
-                new_key = cls.replace_one_variable(key_obj)
+            match = re.search(cls.METAVAR, key)
+            if match:
+                replaced_key = match.group(0).strip("|")
+                key_obj = cls._create_var_obj(replaced_key)
+                replaced_key = cls.replace_one_variable(key_obj)
+                new_key = re.sub(cls.METAVAR, replaced_key, key)
                 del dic[key]
                 dic[new_key] = value
             # Vals are fuzzed so they need to be passed to datagen as an object
             if isinstance(value, six.string_types):
-                if re.search(cls.METAVAR, value):
-                    value = value.strip("|%s" % string.whitespace)
-                    val_obj = cls._create_var_obj(value)
+                match = re.search(cls.METAVAR, value)
+                if match:
+                    var_str = match.group(0).strip("|")
+                    if var_str != value.strip("|%s" % string.whitespace):
+                        msg = _("Meta-variable references cannot come in the "
+                                "middle of the value %s") % value
+                        raise TemplateParseException(msg)
+                    val_obj = cls._create_var_obj(var_str)
                     if key in dic:
                         dic[key] = val_obj
                     elif new_key in dic:
@@ -214,7 +222,7 @@ class RequestCreator(object):
         url = url[0]
         url = urlparse.urljoin(endpoint, url)
         if method not in valid_methods:
-            raise ValueError("Invalid HTTP method: {0}".format(method))
+            raise ValueError(_("Invalid HTTP method: %s") % method)
         return (method, cls._replace_str_variables(url),
                 cls._replace_dict_variables(params), version)
 
@@ -253,12 +261,16 @@ class RequestCreator(object):
                 return cls._replace_dict_variables(data)
             else:
                 return cls._replace_str_variables(data)
-        except Exception:
+        except TemplateParseException:
+            raise
+        except (TypeError, ValueError):
             try:
                 data = ElementTree.fromstring(data)
             except Exception:
                 if not re.match(postdat_regex, data):
                     raise TypeError(_("Unknown data format"))
+        except Exception:
+            raise
         return data
 
     @classmethod
@@ -301,19 +313,44 @@ class RequestCreator(object):
         if not match:
             match = re.search(cls.FUNC_WITH_ARGS, string)
             func_string_has_args = True
-        if not match:
-            print(_("The reference to the function %s failed to parse "
-                    "correctly") % string)
-            return
-        dot_path = match.group(1)
-        func_name = match.group(2)
-        mod = importlib.import_module(dot_path)
-        func = getattr(mod, func_name)
-        if func_string_has_args and not args:
-            arg_list = match.group(3)
-            args = json.loads(arg_list)
 
-        val = func(*args)
+        if match:
+            try:
+                dot_path = match.group(1)
+                func_name = match.group(2)
+                mod = importlib.import_module(dot_path)
+                func = getattr(mod, func_name)
+
+                if func_string_has_args and not args:
+                    arg_list = match.group(3)
+                    args = json.loads(arg_list)
+
+                val = func(*args)
+            except Exception:
+                msg = _("The reference to the function %s failed to parse "
+                        "correctly, please check the documentation to ensure "
+                        "your function import string adheres to the proper "
+                        "format") % string
+                raise TemplateParseException(msg)
+
+        else:
+            try:
+                func_lst = string.split(":")
+                if len(func_lst) == 2:
+                    args = func_lst[1]
+                func_str = func_lst[0]
+                dot_path = ".".join(func_str.split(".")[:-1])
+                func_name = func_str.split(".")[-1]
+                mod = importlib.import_module(dot_path)
+                func = getattr(mod, func_name)
+                val = func(*args)
+            except Exception:
+                msg = _("The reference to the function %s failed to parse "
+                        "correctly, please check the documentation to ensure "
+                        "your function import string adheres to the proper "
+                        "format") % string
+                raise TemplateParseException(msg)
+
         if isinstance(val, types.GeneratorType):
             return str(six.next(val))
         else:
@@ -328,10 +365,11 @@ class VariableObject(object):
                  fuzz_types=[], min_length=0, max_length=sys.maxsize,
                  url_encode=False, **kwargs):
         if var_type and var_type.lower() not in self.VAR_TYPES:
-            print(_(
-                "The variable %(name)s has a type of %(var)s which"
-                " syntribos does not"
-                " recognize") % {'name': name, 'var': var_type})
+            msg = _("The meta variable %(name)s has a type of %(var)s which "
+                    "syntribos does not"
+                    "recognize") % {'name': name, 'var': var_type}
+            raise TemplateParseException(msg)
+
         self.name = name
         self.var_type = var_type.lower()
         self.val = val
@@ -345,6 +383,10 @@ class VariableObject(object):
 
     def __repr__(self):
         return str(vars(self))
+
+
+class TemplateParseException(Exception):
+    pass
 
 
 class RequestHelperMixin(object):
