@@ -15,7 +15,6 @@ import ast
 import copy
 import importlib
 import json
-import logging
 import re
 import string
 import sys
@@ -29,7 +28,6 @@ from six.moves import html_parser
 from six.moves.urllib import parse as urlparse
 
 CONF = cfg.CONF
-LOG = logging.getLogger(__name__)
 _iterators = {}
 _string_var_objs = {}
 
