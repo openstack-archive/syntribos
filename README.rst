@@ -872,9 +872,7 @@ Syntribos allows for templates to read in variables from a user-specified
 meta variable file. These files contain JSON objects that define variables
 to be used in one or more request templates.
 
-The file must be named `meta.json` and must be placed in the same
-directory as the template files that reference it. Meta variable files take
-the form:
+The file must be named `meta.json`, and they take the form:
 ::
 
     {
@@ -884,11 +882,13 @@ the form:
         "user_name": {
             "type": config,
             "val": "user.username"
+            "fuzz_types": ["ascii"]
         },
         "user_token": {
             "type": "function",
             "val": "syntribos.extensions.identity:get_scoped_token_v3",
-            "args": ["user"]
+            "args": ["user"],
+            "fuzz": false
         }
     }
 
@@ -899,8 +899,6 @@ variables is as follows:
 
     POST /user HTTP/1.1
     X-Auth-Token: |user_token|
-    Accept: */*
-    Content-type: application/json
 
     {
         "user": {
@@ -908,6 +906,53 @@ variables is as follows:
             "password": "|user_password|"
         }
     }
+
+Note: Meta-variable usage in templates should take the form `|user_name|`, not
+`user_|name|` or `|user|_|name|`. This is to avoid ambiguous behavior when the
+value is fuzzed.
+
+Meta Variable Attributes
+------------------------
+* val - All meta variable objects must define a value, which can be of any json
+  DataType. Unlike the other attributes, this attribute is not optional.
+* type - Defining a type instructs syntribos to interpret the variable in a
+  certain way. Any variables without a type defined will be read in directly
+  from the value. The following types are allowed:
+
+  * config - syntribos reads the config value specified by the "val"
+    attribute and returns that value.
+  * function - syntribos calls the function named in the "val" attribute
+    with any arguments given in the optional "args" attribute, and returns the
+    value from calling the function. This value is cached, and will be returned
+    on subsequent calls.
+  * generator - Works the same way as the function type, but its results are
+    not cached and the function will be called every time.
+
+* args - A list of function arguments (if any) which can be defined here if the
+  variable is a generator or a function
+* fuzz - A boolean value that, if set to false, instructs syntribos to
+  ignore this variable for any fuzz tests
+* fuzz_types - A list of strings which instructs syntribos to only use certain
+  fuzz strings when fuzzing this variable. More than one fuzz type can be
+  defined. The following fuzz types are allowed:
+
+  * ascii - strings that can be encoded as ascii
+  * url - strings that contain only url safe characters
+
+* min_length/max_length - An integer that instructs syntribos to only use fuzz
+  strings that meet certain length requirements
+
+Inheritence
+-----------
+
+Meta variable files inherit based on the directory it's in. That is, if you
+have `foo/meta.json` and `foo/bar/meta.json`, templates in `foo/bar/` will take
+their meta variable values from `foo/bar/meta.json`, but they can also
+reference meta variables that are defined only in `foo/meta.json`. This also
+means that templates in `foo/baz/` cannot reference variables defined only in
+`foo/bar/meta.json`.
+
+Each directory can have no more than one file named `meta.json`.
 
 Running a specific test
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -160,6 +160,26 @@ class Runner(object):
             cls.output = sys.stdout
 
     @classmethod
+    def get_meta_vars(cls, file_path):
+        """Creates the appropriate meta_var dict for the given file path
+
+        Meta variables are inherited according to directory. This function
+        builds a meta variable dict from the top down.
+
+        :param file_path: the path of the current template
+        :returns: `dict` of meta variables
+        """
+        path_segments = [""] + os.path.dirname(file_path).split(os.sep)
+        meta_vars = {}
+        current_path = ""
+        for seg in path_segments:
+            current_path = os.path.join(current_path, seg)
+            if current_path in cls.meta_dir_dict:
+                for k, v in cls.meta_dir_dict[current_path].items():
+                    meta_vars[k] = v
+        return meta_vars
+
+    @classmethod
     def run(cls):
         """Method sets up logger and decides on Syntribos control flow
 
@@ -228,21 +248,21 @@ class Runner(object):
                 exit(1)
 
         print(_("\nPress Ctrl-C to pause or exit...\n"))
-        # TODO(mdong): Make this handle inheritence and all that. For now, just
-        # pass the first meta file it sees to the parser. Also, find a better
-        # way to pass meta_vars
         meta_vars = None
         templates_dir = list(templates_dir)
-        for file_path, req_str in templates_dir:
-            if "meta.json" not in file_path:
-                continue
-            else:
-                meta_vars = json.loads(req_str)
-                break
+        cls.meta_dir_dict = {}
+        for file_path, file_content in templates_dir:
+            if os.path.basename(file_path) == "meta.json":
+                meta_path = os.path.dirname(file_path)
+                try:
+                    cls.meta_dir_dict[meta_path] = json.loads(file_content)
+                except Exception:
+                    print("Unable to parse %s, skipping..." % file_path)
 
         for file_path, req_str in templates_dir:
             if "meta.json" in file_path:
                 continue
+            meta_vars = cls.get_meta_vars(file_path)
             LOG = cls.get_logger(file_path)
             CONF.log_opt_values(LOG, logging.DEBUG)
             if not file_path.endswith(".template"):
@@ -294,10 +314,10 @@ class Runner(object):
         """
         for k, test_class in list_of_tests:  # noqa
             try:
-                print("\nParsing template file...")
+                print("\nParsing template file...\n")
                 test_class.create_init_request(file_path, req_str, meta_vars)
             except Exception as e:
-                print("Error in parsing template:\n \t{0}\n".format(
+                print("\nError in parsing template:\n \t{0}\n".format(
                     traceback.format_exc()))
                 LOG.error(_LE("Error in parsing template:"))
                 output["failures"].append({
@@ -305,7 +325,7 @@ class Runner(object):
                     "error": e.__str__()
                 })
             else:
-                print(_("Request sucessfully generated!\n"))
+                print(_("\nRequest sucessfully generated!\n"))
                 output["successes"].append(file_path)
 
             test_cases = list(test_class.get_test_cases(file_path, req_str))
