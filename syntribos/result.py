@@ -254,5 +254,5 @@ class IssueTestResult(unittest.TextTestResult):
             esuff="s" * bool(num_err - 1)))
         if test_log:
             print(syntribos.SEP)
-            print("LOG PATH...: {path}".format(path=test_log))
+            print(syntribos._("LOG PATH...: %s") % test_log)
             print(syntribos.SEP)

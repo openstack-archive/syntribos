@@ -23,6 +23,7 @@ import requests
 import six
 
 import syntribos.checks.http as http_checks
+from syntribos._i18n import _, _LC, _LI   # noqa
 import syntribos.signal
 from syntribos.utils import string_utils
 
@@ -69,8 +70,9 @@ def log_http_transaction(log, level=logging.DEBUG):
             except Exception as exception:
                 # Ignore all exceptions that happen in logging, then log them
                 log.info(
-                    'Exception occurred while logging signature of calling'
-                    'method in http client')
+                    _LI(
+                        'Exception occurred while logging signature of calling'
+                        'method in http client'))
                 log.exception(exception)
 
             # Make the request and time its execution
@@ -82,11 +84,12 @@ def log_http_transaction(log, level=logging.DEBUG):
                 response = func(*args, **kwargs)
             except requests.exceptions.RequestException as exc:
                 signals.register(http_checks.check_fail(exc))
-                log.log(level, "A call to request() failed.")
+                log.log(level, _("A call to request() failed."))
                 log.exception(exc)
                 log.log(level, "=" * 80)
             except Exception as exc:
-                log.critical('Call to Requests failed due to exception')
+                log.critical(_LC(
+                    'Call to Requests failed due to exception'))
                 log.exception(exc)
                 signals.register(syntribos.signal.from_generic_exception(exc))
                 raise exc
@@ -94,8 +97,9 @@ def log_http_transaction(log, level=logging.DEBUG):
             if len(signals) > 0 and response is None:
                 no_resp_time = time() - start
                 log.log(level,
-                        'Request failed, elapsed time....: {0:.5f} sec.\n'.
-                        format(no_resp_time))
+                        _(
+                            'Request failed, elapsed time....: %.6f sec.\n'
+                        ), no_resp_time)
                 return (response, signals)
 
             # requests lib 1.0.0 renamed body to data in the request object
@@ -106,8 +110,9 @@ def log_http_transaction(log, level=logging.DEBUG):
                 request_body = response.request.data
             else:
                 log.info(
-                    "Unable to log request body, neither a 'data' nor a "
-                    "'body' object could be found")
+                    _LI(
+                        "Unable to log request body, neither a 'data' nor a "
+                        "'body' object could be found"))
 
             # requests lib 1.0.4 removed params from response.request
             request_params = ''

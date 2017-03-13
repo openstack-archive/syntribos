@@ -15,6 +15,7 @@
 from oslo_config import cfg
 
 import syntribos
+from syntribos._i18n import _
 from syntribos.checks.header import xst
 from syntribos.clients.http import client
 from syntribos.clients.http import parser
@@ -61,13 +62,14 @@ class XstHeader(base.BaseTestCase):
         xst_slugs = [
             slugs for slugs in self.test_signals.all_slugs
             if "HEADER_XST" in slugs]
-        for _ in xst_slugs:
+        for i in xst_slugs:  # noqa
             test_severity = syntribos.LOW
             self.register_issue(
                 defect_type="XST_HEADER",
                 severity=test_severity,
                 confidence=syntribos.HIGH,
-                description=(
-                    "XST vulnerability found.\n"
-                    "Make sure that response to a TRACE request is filtered."
-                ))
+                description=(_("XST vulnerability found.\n"
+                               "Make sure that response to a "
+                               "TRACE request is filtered."
+                               )
+                             ))

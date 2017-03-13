@@ -23,6 +23,7 @@ import requests
 from six.moves import input
 
 import syntribos
+from syntribos._i18n import _, _LE, _LW   # noqa
 from syntribos.utils import remotes
 
 FOLDER = ".syntribos"
@@ -48,7 +49,7 @@ def get_user_home_root():
         except OSError as e:
             # Refer https://mail.python.org/pipermail/python-bugs-list/
             # 2002-July/012691.html
-            LOG.error("Exception thrown in : %s", e)
+            LOG.error(_LE("Exception thrown in : %s") % e)
             user = pwd.getpwuid(os.getuid())[0]
     home_path = "~{0}/{1}".format(user, FOLDER)
     return expand_path(home_path)
@@ -111,15 +112,17 @@ def safe_makedirs(path, force=False):
         try:
             os.makedirs(path)
         except (OSError, IOError):
-            LOG.exception("Error creating folder (%s).", path)
+            LOG.exception(_("Error creating folder (%s).") % path)
     elif os.path.exists(path) and force:
         try:
             shutil.rmtree(path)
             os.makedirs(path)
         except (OSError, IOError):
-            LOG.exception("Error overwriting existing folder (%s).", path)
+            LOG.exception(
+                _("Error overwriting existing folder (%s).") % path)
     else:
-        LOG.warning("Folder was already found (%s). Skipping.", path)
+        LOG.warning(
+            _LW("Folder was already found (%s). Skipping.") % path)
 
 
 def create_env_dirs(root_dir, force=False):
@@ -240,32 +243,37 @@ def initialize_syntribos_env():
 
     payloads_dir = folders_created[1]
     if not CONF.sub_command.no_downloads:
-        print("\nDownloading payload files to {0}...".format(payloads_dir))
+        print(
+            _("\nDownloading payload files to %s...") % payloads_dir)
         try:
             remote_path = remotes.get(CONF.remote.payloads_uri, payloads_dir)
             conf_file = create_conf_file(folders_created, remote_path)
-            print("Download successful!")
+            print(_("Download successful!"))
         except (requests.ConnectionError, IOError):
-            print("Download failed. If you would still like to download "
-                  "payload files, please consult our documentation about the"
-                  "'syntribos download' command or do so manually.")
+            print(_("Download failed. If you would still like to download"
+                    " payload files, please consult our documentation"
+                    " about the 'syntribos download' command or do so"
+                    " manually."))
             conf_file = create_conf_file(folders_created)
     else:
         conf_file = create_conf_file(folders_created)
 
     logging.disable(logging.NOTSET)
 
-    print("\nSyntribos has been initialized!")
-    print("Folders created:\n\t{0}".format("\n\t".join(folders_created)))
-    print("Configuration file:\n\t{0}".format(conf_file))
-    print("\nYou'll need to edit your configuration file to specify the "
-          "endpoint to test and any other configuration options you want.")
-    print("\nBy default, syntribos does not ship with any template files, "
-          "which are required for syntribos to run. However, we provide a\n "
-          "'syntribos download' command to fetch template files remotely. "
-          "Please see our documentation for this subcommand, or run\n "
-          "'syntribos download --templates' to download our default set of "
-          "OpenStack templates.")
+    print(_("\nSyntribos has been initialized!"))
+    print(
+        _("Folders created:\n\t%s") % "\n\t".join(folders_created))
+    print(_("Configuration file:\n\t%s") % conf_file)
+    print(_(
+        "\nYou'll need to edit your configuration file to specify the "
+        "endpoint to test and any other configuration options you want."))
+    print(_(
+        "\nBy default, syntribos does not ship with any template files, "
+        "which are required for syntribos to run. However, we provide a\n "
+        "'syntribos download' command to fetch template files remotely. "
+        "Please see our documentation for this subcommand, or run\n "
+        "'syntribos download --templates' to download our default set of "
+        "OpenStack templates."))
     print(syntribos.SEP)
 
 
@@ -302,29 +310,37 @@ def download_wrapper():
                     os.path.join(get_syntribos_root(), "payloads"))
 
     if not CONF.sub_command.templates and not CONF.sub_command.payloads:
-        print("Please specify the --templates flag and/or the --payloads flag "
-              "to this command.\nNo files have been downloaded.\n")
+        print(
+            _(
+                "Please specify the --templates flag and/or the --payloads"
+                "flag to this command.\nNo files have been downloaded.\n"))
 
     if CONF.sub_command.templates:
-        print("Downloading template files from {0} to {1}...".format(
-            templates_uri, templates_dir))
+        print(_(
+            "Downloading template files from %(uri)s to %(dir)s..."
+        ) % {"uri": templates_uri, "dir": templates_dir})
         try:
             remotes.get(templates_uri, templates_dir)
-            print("Download successful! To use these templates, edit your "
-                  "config file to update the location of templates.")
+            print(_(
+                "Download successful! To use these templates, edit your "
+                "config file to update the location of templates."))
         except Exception:
-            print("Template download failed. Our documentation contains "
-                  "instructions to provide templates manually.")
+            print(_(
+                "Template download failed. Our documentation contains "
+                "instructions to provide templates manually."))
             exit(1)
 
     if CONF.sub_command.payloads:
-        print("Downloading payload files from {0} to {1}...\n".format(
-            payloads_uri, payloads_dir))
+        print(_(
+            "Downloading payload files from %(uri)s to %(dir)s...\n") % {
+                "uri": payloads_uri, "dir": payloads_dir})
         try:
             remotes.get(payloads_uri, payloads_dir)
-            print("Download successful! To use these payloads, edit your "
-                  "config file to update the location of payloads.")
+            print(_(
+                "Download successful! To use these payloads, edit your "
+                "config file to update the location of payloads."))
         except Exception:
-            print("Payload download failed. Our documentation contains "
-                  "instructions to provide payloads manually.")
+            print(_(
+                "Payload download failed. Our documentation contains "
+                "instructions to provide payloads manually."))
             exit(1)
