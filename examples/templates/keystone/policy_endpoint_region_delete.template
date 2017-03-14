@@ -1,3 +1,0 @@
-DELETE /v3/policies/{c45412aa3cb74824a222c2f051bd62ac}/OS-ENDPOINT-POLICY/services/regions/{0ffd248c55b443eaac5253b4e9cbf9b5} HTTP/1.1
-Accept: application/json
-X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.identity.client:get_token_v3:["user"]|
