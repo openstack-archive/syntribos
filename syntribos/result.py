@@ -17,6 +17,7 @@ import unittest
 from oslo_config import cfg
 
 import syntribos
+from syntribos._i18n import _
 from syntribos.formatters.json_formatter import JSONFormatter
 from syntribos.runner import Runner
 import syntribos.utils.remotes
@@ -254,5 +255,5 @@ class IssueTestResult(unittest.TextTestResult):
             esuff="s" * bool(num_err - 1)))
         if test_log:
             print(syntribos.SEP)
-            print(syntribos._("LOG PATH...: %s") % test_log)
+            print(_("LOG PATH...: %s") % test_log)
             print(syntribos.SEP)
