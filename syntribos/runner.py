@@ -428,7 +428,7 @@ class Runner(object):
             LOG.info(_("Run time: %s sec."), run_time)
             if hasattr(result, "testsRun"):
                 num_tests = result.testsRun - result.testsRunSinceLastPrint
-                print(_("\nRan %(num)s test(s) in %.3(time)f s\n") %
+                print(_("\nRan %(num)s test(s) in %(time).3f s\n") %
                       {"num": num_tests, "time": run_time})
                 result.testsRunSinceLastPrint = result.testsRun
 
