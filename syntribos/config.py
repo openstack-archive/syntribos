@@ -310,8 +310,8 @@ def list_remote_opts():
             help=_("Remote URI to download payloads.")),
         cfg.StrOpt(
             "templates_uri",
-            default=("https://github.com/rahulunair/openstack-templates/"
-                     "archive/master.tar.gz"),
+            default=("https://github.com/openstack/"
+                     "syntribos-openstack-templates/archive/master.tar.gz"),
             help=_("Remote URI to download templates.")),
         cfg.BoolOpt("enable_cache", default=True,
                     help=_(
