@@ -416,7 +416,7 @@ class Runner(object):
                         last_errors = result.stats["errors"]
                         errors = cli.colorize(errors, "red")
                         print(_(
-                            "  :  %(fail)s Failure(s), %(err) Error(s)\r") % {
+                            "  :  %(fail)s Failure(s), %(err)s Error(s)\r") % {
                                 "fail": failures, "err": errors})
                     else:
                         last_failures = result.stats["failures"]
