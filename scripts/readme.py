@@ -41,6 +41,7 @@ Team and repository tags
 
 """
 
+
 def find_docs():
     """Yields files as per the whitelist."""
     loc = "../doc/source/{}.rst"
@@ -61,8 +62,7 @@ def concat_docs():
     """Concatinates files yielded by the generator `find_docs`."""
     file_path = os.path.dirname(os.path.realpath(__file__))
     head, tail = os.path.split(file_path)
-    outfile = head +"/README.rst"
-    
+    outfile = head + "/README.rst"
     if not os.path.isfile(outfile):
         print("../README.rst not found, exiting!")
         exit(1)
