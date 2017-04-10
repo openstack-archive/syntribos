@@ -99,3 +99,16 @@ def delete_file(path):
 
 def delete_dir(dir_path):
     return shutil.rmtree(dir_path)
+
+
+def file_type(path):
+    """Identifies what the type of file is."""
+    signature = {
+        "\x1f\x8b\x08": "gz",
+        "\x42\x5a\x68": "bz2",
+        "\x50\x4b\x03\x04": "zip"
+    }
+    with open(path, "r") as f:
+        for sig, f_type in signature.items():
+            if f.read(4).startswith(sig):
+                return f_type
