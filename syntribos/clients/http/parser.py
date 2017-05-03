@@ -16,7 +16,6 @@ from functools import reduce
 import importlib
 import json
 import re
-import string
 import sys
 import types
 import uuid
@@ -71,7 +70,7 @@ class RequestCreator(object):
             action_field=action_field)
 
     @classmethod
-    def _create_var_obj(cls, var):
+    def _create_var_obj(cls, var, prefix="", suffix=""):
         """Given the name of a variable, creates VariableObject
 
         :param str var: name of the variable in meta.json
@@ -86,7 +85,7 @@ class RequestCreator(object):
         var_dict = cls.meta_vars[var]
         if "type" in var_dict:
             var_dict["var_type"] = var_dict.pop("type")
-        var_obj = VariableObject(var, **var_dict)
+        var_obj = VariableObject(var, prefix=prefix, suffix=suffix, **var_dict)
         return var_obj
 
     @classmethod
@@ -160,12 +159,11 @@ class RequestCreator(object):
             if isinstance(value, six.string_types):
                 match = re.search(cls.METAVAR, value)
                 if match:
+                    start, end = match.span()
+                    prefix = value[:start]
+                    suffix = value[end:]
                     var_str = match.group(0).strip("|")
-                    if var_str != value.strip("|%s" % string.whitespace):
-                        msg = _("Meta-variable references cannot come in the "
-                                "middle of the value %s") % value
-                        raise TemplateParseException(msg)
-                    val_obj = cls._create_var_obj(var_str)
+                    val_obj = cls._create_var_obj(var_str, prefix, suffix)
                     if key in dic:
                         dic[key] = val_obj
                     elif new_key in dic:
@@ -363,7 +361,7 @@ class VariableObject(object):
 
     def __init__(self, name, var_type="", args=[], val="", fuzz=True,
                  fuzz_types=[], min_length=0, max_length=sys.maxsize,
-                 url_encode=False, **kwargs):
+                 url_encode=False, prefix="", suffix="", **kwargs):
         if var_type and var_type.lower() not in self.VAR_TYPES:
             msg = _("The meta variable %(name)s has a type of %(var)s which "
                     "syntribos does not"
@@ -379,6 +377,8 @@ class VariableObject(object):
         self.min_length = min_length
         self.max_length = max_length
         self.url_encode = url_encode
+        self.prefix = prefix
+        self.suffix = suffix
         self.function_return_value = None
 
     def __repr__(self):
@@ -433,9 +433,11 @@ class RequestHelperMixin(object):
                     dic[new_key] = val
             if isinstance(val, VariableObject):
                 if key in dic:
-                    dic[key] = RequestCreator.replace_one_variable(val)
+                    repl_val = RequestCreator.replace_one_variable(val)
+                    dic[key] = val.prefix + repl_val + val.suffix
                 elif new_key in dic:
-                    dic[new_key] = RequestCreator.replace_one_variable(val)
+                    repl_val = RequestCreator.replace_one_variable(val)
+                    dic[new_key] = val.prefix + repl_val + val.suffix
             if isinstance(val, dict):
                 cls._run_iters_dict(val, action_field)
             elif isinstance(val, list):
