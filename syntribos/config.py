@@ -18,7 +18,7 @@ import sys
 from oslo_config import cfg
 
 import syntribos
-from syntribos._i18n import _, _LE, _LW   # noqa
+from syntribos._i18n import _
 from syntribos.utils.file_utils import ContentType
 from syntribos.utils.file_utils import ExistingDirType
 

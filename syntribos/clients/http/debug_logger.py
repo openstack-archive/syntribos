@@ -22,8 +22,8 @@ from time import time
 import requests
 import six
 
+from syntribos._i18n import _
 import syntribos.checks.http as http_checks
-from syntribos._i18n import _, _LC, _LI   # noqa
 import syntribos.signal
 from syntribos.utils import string_utils
 
@@ -69,10 +69,8 @@ def log_http_transaction(log, level=logging.DEBUG):
                 log.debug(_safe_decode(logline))
             except Exception as exception:
                 # Ignore all exceptions that happen in logging, then log them
-                log.info(
-                    _LI(
-                        'Exception occurred while logging signature of calling'
-                        'method in http client'))
+                log.info('Exception occurred while logging signature of '
+                         'calling method in http client')
                 log.exception(exception)
 
             # Make the request and time its execution
@@ -88,8 +86,7 @@ def log_http_transaction(log, level=logging.DEBUG):
                 log.exception(exc)
                 log.log(level, "=" * 80)
             except Exception as exc:
-                log.critical(_LC(
-                    'Call to Requests failed due to exception'))
+                log.critical('Call to Requests failed due to exception')
                 log.exception(exc)
                 signals.register(syntribos.signal.from_generic_exception(exc))
                 raise exc
@@ -109,10 +106,8 @@ def log_http_transaction(log, level=logging.DEBUG):
             elif 'data' in dir(response.request):
                 request_body = response.request.data
             else:
-                log.info(
-                    _LI(
-                        "Unable to log request body, neither a 'data' nor a "
-                        "'body' object could be found"))
+                log.info("Unable to log request body, neither a 'data' nor a "
+                         "'body' object could be found")
 
             # requests lib 1.0.4 removed params from response.request
             request_params = ''

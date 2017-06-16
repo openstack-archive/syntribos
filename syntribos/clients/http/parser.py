@@ -27,7 +27,7 @@ import six
 from six.moves import html_parser
 from six.moves.urllib import parse as urlparse
 
-from syntribos._i18n import _, _LE, _LW   # noqa
+from syntribos._i18n import _
 
 CONF = cfg.CONF
 _iterators = {}

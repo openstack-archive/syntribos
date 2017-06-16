@@ -13,7 +13,7 @@
 # limitations under the License.
 import six
 
-from syntribos._i18n import _, _LE, _LW     # noqa
+from syntribos._i18n import _
 
 
 class SignalHolder(object):

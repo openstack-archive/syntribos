@@ -23,9 +23,9 @@ import unittest
 from oslo_config import cfg
 from six.moves import input
 
+from syntribos._i18n import _
 import syntribos.config
 from syntribos.formatters.json_formatter import JSONFormatter
-from syntribos._i18n import _, _LW, _LE   # noqa
 import syntribos.result
 import syntribos.tests as tests
 import syntribos.tests.base
@@ -266,9 +266,8 @@ class Runner(object):
             LOG = cls.get_logger(file_path)
             CONF.log_opt_values(LOG, logging.DEBUG)
             if not file_path.endswith(".template"):
-                LOG.warning(
-                    _LW('file.....:%s (SKIPPED - not a .template file)'),
-                    file_path)
+                LOG.warning('file.....:%s (SKIPPED - not a .template file)',
+                            file_path)
                 continue
 
             test_names = [t for (t, i) in list_of_tests]  # noqa
@@ -319,7 +318,7 @@ class Runner(object):
             except Exception as e:
                 print("\nError in parsing template:\n \t{0}\n".format(
                     traceback.format_exc()))
-                LOG.error(_LE("Error in parsing template:"))
+                LOG.error("Error in parsing template:")
                 output["failures"].append({
                     "file": file_path,
                     "error": e.__str__()
@@ -385,7 +384,7 @@ class Runner(object):
                     print(_(
                         "Error in parsing template:\n %s\n"
                     ) % traceback.format_exc())
-                    LOG.error(_LE("Error in parsing template:"))
+                    LOG.error("Error in parsing template:")
                     break
                 test_cases = list(
                     test_class.get_test_cases(file_path, req_str))

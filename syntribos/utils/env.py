@@ -23,7 +23,7 @@ import requests
 from six.moves import input
 
 import syntribos
-from syntribos._i18n import _, _LE, _LW   # noqa
+from syntribos._i18n import _
 from syntribos.utils import remotes
 
 FOLDER = ".syntribos"
@@ -49,7 +49,7 @@ def get_user_home_root():
         except OSError as e:
             # Refer https://mail.python.org/pipermail/python-bugs-list/
             # 2002-July/012691.html
-            LOG.error(_LE("Exception thrown in : %s") % e)
+            LOG.error("Exception thrown in : %s", e)
             user = pwd.getpwuid(os.getuid())[0]
     home_path = "~{0}/{1}".format(user, FOLDER)
     return expand_path(home_path)
@@ -121,8 +121,7 @@ def safe_makedirs(path, force=False):
             LOG.exception(
                 _("Error overwriting existing folder (%s).") % path)
     else:
-        LOG.warning(
-            _LW("Folder was already found (%s). Skipping.") % path)
+        LOG.warning("Folder was already found (%s). Skipping.", path)
 
 
 def create_env_dirs(root_dir, force=False):
