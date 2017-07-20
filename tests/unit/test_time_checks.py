@@ -60,8 +60,8 @@ class TimeCheckUnittest(testtools.TestCase):
         signal_0 = time_checks.percentage_difference(self.test_0)
         signal_1 = time_checks.percentage_difference(self.test_1)
         self.assertIsNone(signal_0)
-        self.assertTrue(isinstance(signal_1, syntribos.signal.SynSignal))
+        self.assertIsInstance(signal_1, syntribos.signal.SynSignal)
 
     def test_absolute_time(self):
         signal_0 = time_checks.absolute_time(self.test_0)
-        self.assertTrue(isinstance(signal_0, syntribos.signal.SynSignal))
+        self.assertIsInstance(signal_0, syntribos.signal.SynSignal)
