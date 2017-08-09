@@ -2,8 +2,14 @@
 Running syntribos
 =================
 
+By default, syntribos looks in the syntribos home directory (the directory
+specified when running the ``syntribos init`` command on install) for config
+files, payloads, and templates. This can all be overridden through command
+line options. For a full list of command line options available, run
+``syntribos --help`` from the command line.
+
 To run syntribos against all the available tests, specify the
-command ``syntribos`` with the configuration file without
+command ``syntribos``, with the configuration file (if needed), without
 specifying any test type.
 
 ::

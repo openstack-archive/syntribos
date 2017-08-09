@@ -6,6 +6,25 @@ This section describes how to write templates and how to run specific tests.
 Templates are input files which have raw HTTP requests and may be
 supplemented with variable data using extensions.
 
+In general, a request template is a marked-up raw HTTP request. It's possible
+for you to test your application by using raw HTTP requests as your request
+templates, but syntribos allows you to mark-up your request templates for
+further functionality.
+
+A request template looks something like this:
+
+::
+
+    POST /users/{user1} HTTP/1.1
+    Content-Type: application/json
+    X-Auth-Token: CALL_EXTERNAL|syntribos.extensions.vAPI.client:get_token:[]|
+
+    {"newpassword": "qwerty123"}
+
+For fuzz tests, syntribos will automatically detect URL parameters, headers,
+and body content as fields to fuzz. It will not automatically detect URL path
+elements as fuzz fields, but they can be specified with curly braces ``{}``.
+
 Note: The name of a template file must end with the extension ``.template``
 Otherwise, syntribos will skip the file and will not attempt to parse any files
 that do not adhere to this naming scheme.

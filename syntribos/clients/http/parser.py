@@ -51,8 +51,7 @@ class RequestCreator(object):
         :returns: RequestObject with method, url, params, etc. for use by
                   runner
         """
-        if meta_vars:
-            cls.meta_vars = meta_vars
+        cls.meta_vars = meta_vars
         string = cls.call_external_functions(string)
         action_field = str(uuid.uuid4()).replace("-", "")
         string = string.replace(cls.ACTION_FIELD, action_field)
@@ -78,6 +77,13 @@ class RequestCreator(object):
         :returns: VariableObject holding the attributes defined in the JSON
                   object read in from meta.json
         """
+        if not cls.meta_vars:
+            msg = ("Template contains reference to meta variable of the form "
+                   "\'|variable|\', but no meta.json file is found in the"
+                   "templates directory. Check your templates and the "
+                   "documentation on how to resolve this")
+            raise TemplateParseException(msg)
+
         if var not in cls.meta_vars:
             msg = _("Expected to find %s in meta.json, but didn't. "
                     "Check your templates") % var
@@ -266,7 +272,8 @@ class RequestCreator(object):
                 data = ElementTree.fromstring(data)
             except Exception:
                 if not re.match(postdat_regex, data):
-                    raise TypeError(_("Unknown data format"))
+                    raise TypeError(_("Template request data does not contain "
+                                      "valid JSON or XML data"))
         except Exception:
             raise
         return data
