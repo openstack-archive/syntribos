@@ -26,22 +26,6 @@ CONF = cfg.CONF
 def print_symbol():
     """Syntribos radiation symbol."""
     symbol = """               Syntribos
-                xxxxxxx
-           x xxxxxxxxxxxxx x
-        x     xxxxxxxxxxx     x
-               xxxxxxxxx
-     x          xxxxxxx          x
-                 xxxxx
-    x             xxx             x
-                   x
-   xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
-    xxxxxxxxxxxxx     xxxxxxxxxxxxx
-     xxxxxxxxxxx       xxxxxxxxxxx
-      xxxxxxxxx         xxxxxxxxx
-        xxxxxx           xxxxxx
-          xxx             xxx
-              x         x
-                   x
       === Automated API Scanning  ==="""
     print(syntribos.SEP)
     print(symbol)
@@ -55,15 +39,24 @@ def colorize(string, color="nocolor"):
     colors = dict(list(zip(color_names, list(range(31, 35)))))
     colors["nocolor"] = 0  # No Color
 
-    if not CONF.colorize:
+    if CONF.no_colorize:
         return string
     return "\033[0;{color}m{string}\033[0;m".format(string=string,
                                                     color=colors.setdefault(
                                                         color, 0))
 
 
+def colorize_by_percent(amount, total, high=0.5, medium=0):
+    if amount > total * high:
+        return colorize(amount, "red")
+    elif amount > total * medium:
+        return colorize(amount, "yellow")
+    else:
+        return str(amount)
+
+
 class ProgressBar(object):
-    """A simple progressBar.
+    """A simple progressBar. Written as a singleton.
 
     A simple generic progress bar like many others.
     :param int total_len: total_len value, when progress is 100 %

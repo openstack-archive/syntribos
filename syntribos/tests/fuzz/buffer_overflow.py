@@ -34,7 +34,6 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
         return [
             "A" * (2 ** 16 + 1),
             "a" * 10 ** 5,
-            "a" * 10 ** 6,
             '\x00' * (2 ** 16 + 1),
             "%%s" * 513,
         ]

@@ -157,7 +157,8 @@ def list_cli_opts():
                         default=[""], sample_default=["SQL", "XSS"],
                         help=_("Test types to be excluded from "
                                "current run against the target API")),
-        cfg.BoolOpt("colorize", dest="colorize", short="cl", default=False,
+        cfg.BoolOpt("no_colorize", dest="no_colorize", short="ncl",
+                    default=False,
                     help=_("Enable color in syntribos terminal output")),
         cfg.StrOpt("outfile", short="o",
                    sample_default="out.json", help=_("File to print "
@@ -194,6 +195,10 @@ def list_syntribos_opts():
         cfg.StrOpt("endpoint", default="",
                    sample_default="http://localhost/app",
                    help=_("The target host to be tested")),
+        cfg.IntOpt("threads", default=16,
+                   sample_default="16",
+                   help=_("Maximum number of threads syntribos spawns "
+                          "(experimental)")),
         cfg.Opt("templates", type=ContentType("r", 0),
                 default="",
                 sample_default="~/.syntribos/templates",
