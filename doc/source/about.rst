@@ -2,29 +2,6 @@
 Syntribos, An Automated API Security Testing Tool
 =================================================
 
-::
-
-                      syntribos
-                       xxxxxxx
-                  x xxxxxxxxxxxxx x
-               x     xxxxxxxxxxx     x
-                      xxxxxxxxx
-            x          xxxxxxx          x
-                        xxxxx
-           x             xxx             x
-                          x
-          xxxxxxxxxxxxxxx   xxxxxxxxxxxxxxx
-           xxxxxxxxxxxxx     xxxxxxxxxxxxx
-            xxxxxxxxxxx       xxxxxxxxxxx
-             xxxxxxxxx         xxxxxxxxx
-               xxxxxx           xxxxxx
-                 xxx             xxx
-                     x         x
-                          x
-             === Automated API Scanning  ===
-
-
-
 Syntribos is an open source automated API security testing tool that is
 maintained by members of the `OpenStack Security Project <https://wiki.openstack.org/wiki/Security>`_.
 

@@ -49,6 +49,9 @@ environment, you can specify the ``--force`` flag to overwrite existing files.
 The ``--custom_install_root`` and ``--force`` flags can be combined to
 overwrite files in a custom install root.
 
+Note: if you install syntribos to a custom install root, you must supply the
+``--custom_install_root`` flag when running syntribos.
+
 **Example:**
 
 ::
