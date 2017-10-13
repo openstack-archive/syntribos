@@ -67,6 +67,9 @@ class BaseFuzzTestCase(base.BaseTestCase):
             headers=cls.request.headers,
             params=cls.request.params,
             data=cls.request.data)
+
+        if not hasattr(cls.request, 'body'):
+            cls.request.body = cls.request.data
         cls.test_req = cls.request
 
         if cls.test_resp is None or "EXCEPTION_RAISED" in cls.test_signals:
@@ -88,7 +91,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
         self.run_default_checks() in order to test for the Issues
         defined here
         """
-
         if "HTTP_STATUS_CODE_5XX" in self.test_signals:
             self.register_issue(
                 defect_type="500_errors",
@@ -124,9 +126,6 @@ class BaseFuzzTestCase(base.BaseTestCase):
     @classmethod
     def get_test_cases(cls, filename, file_content):
         """Generates new TestCases for each fuzz string
-
-        First, sends a baseline (non-fuzzed) request, storing it in
-        cls.init_resp.
 
         For each string returned by cls._get_strings(), yield a TestCase class
         for the string as an extension to the current TestCase class. Every
@@ -197,8 +196,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         issue.request = self.test_req
         issue.response = self.test_resp
         issue.test_type = self.test_name
-        prepared_copy = self.init_req.get_prepared_copy()
-        url_components = urlparse(prepared_copy.url)
+        url_components = urlparse(self.prepared_init_req.url)
         issue.target = url_components.netloc
         issue.path = url_components.path
         issue.init_signals = self.init_signals

@@ -52,7 +52,7 @@ class TestIssueTestResult(testtools.TestCase):
     def test_addFailure(self):
         test = FakeTest("failure")
         self.issue_result.addFailure(test, ())
-        self.assertEqual(self.issue_result.stats["failures"], 2)
+        self.assertEqual(self.issue_result.stats["unique_failures"], 2)
 
     def test_addSuccess(self):
         test = FakeTest("success")

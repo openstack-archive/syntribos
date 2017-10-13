@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import threading
 import time
 import unittest
 
@@ -23,6 +24,7 @@ from syntribos.runner import Runner
 import syntribos.utils.remotes
 
 CONF = cfg.CONF
+lock = threading.Lock()
 
 
 class IssueTestResult(unittest.TextTestResult):
@@ -38,7 +40,7 @@ class IssueTestResult(unittest.TextTestResult):
         "MEDIUM": 0,
         "HIGH": 0
     }
-    stats = {"errors": 0, "failures": 0, "successes": 0}
+    stats = {"errors": 0, "unique_failures": 0, "successes": 0}
     severity_counter_dict = {}
     testsRunSinceLastPrint = 0
     failure_id = 0
@@ -84,6 +86,7 @@ class IssueTestResult(unittest.TextTestResult):
         :type test: :class:`syntribos.tests.base.BaseTestCase`
         :param tuple err: Tuple of format ``(type, value, traceback)``
         """
+        lock.acquire()
         for issue in test.failures:
             defect_type = issue.defect_type
             if any([
@@ -174,7 +177,7 @@ class IssueTestResult(unittest.TextTestResult):
                         "signals": signals
                     }
                     failure_obj["instances"].append(instance_obj)
-                    self.stats["failures"] += 1
+                    self.stats["unique_failures"] += 1
                     self.output["stats"]["severity"][sev_rating] += 1
             else:
                 instance_obj = None
@@ -196,8 +199,9 @@ class IssueTestResult(unittest.TextTestResult):
                         "signals": signals
                     }
                     failure_obj["instances"].append(instance_obj)
-                    self.stats["failures"] += 1
+                    self.stats["unique_failures"] += 1
                     self.output["stats"]["severity"][sev_rating] += 1
+        lock.release()
 
     def addError(self, test, err):
         """Duplicates parent class addError functionality.
@@ -207,11 +211,19 @@ class IssueTestResult(unittest.TextTestResult):
         :param err:
         :type tuple: Tuple of format ``(type, value, traceback)``
         """
-        self.errors.append({
-            "test": self.getDescription(test),
-            "error": self._exc_info_to_string(err, test)
-        })
-        self.stats["errors"] += 1
+        with lock:
+            for e in self.errors:
+                if e['error'] == self._exc_info_to_string(err, test):
+                    if self.getDescription(test) in e['test']:
+                        return
+                    e['test'].append(self.getDescription(test))
+                    self.stats["errors"] += 1
+                    return
+            self.errors.append({
+                "test": [self.getDescription(test)],
+                "error": self._exc_info_to_string(err, test)
+            })
+            self.stats["errors"] += 1
 
     def addSuccess(self, test):
         """Duplicates parent class addSuccess functionality.
@@ -219,7 +231,8 @@ class IssueTestResult(unittest.TextTestResult):
         :param test: The test that was run
         :type test: :class:`syntribos.tests.base.BaseTestCase`
         """
-        self.stats["successes"] += 1
+        with lock:
+            self.stats["successes"] += 1
 
     def printErrors(self, output_format):
         """Print out each :class:`syntribos.issue.Issue` that was encountered
@@ -241,18 +254,19 @@ class IssueTestResult(unittest.TextTestResult):
         """Print the path to the log folder for this run."""
         test_log = Runner.log_path
         run_time = time.time() - start_time
-        num_fail = self.stats["failures"]
+        num_fail = self.stats["unique_failures"]
         num_err = self.stats["errors"]
         print("\n{sep}\nTotal: Ran {num} test{suff} in {time:.3f}s".format(
             sep=syntribos.SEP,
             num=self.testsRun,
             suff="s" * bool(self.testsRun - 1),
             time=run_time))
-        print("Total: {f} failure{fsuff} and {e} error{esuff}".format(
-            f=num_fail,
-            e=num_err,
-            fsuff="s" * bool(num_fail - 1),
-            esuff="s" * bool(num_err - 1)))
+        print("Total: {f} unique failure{fsuff} "
+              "and {e} unique error{esuff}".format(
+                  f=num_fail,
+                  e=num_err,
+                  fsuff="s" * bool(num_fail - 1),
+                  esuff="s" * bool(num_err - 1)))
         if test_log:
             print(syntribos.SEP)
             print(_("LOG PATH...: %s") % test_log)

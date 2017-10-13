@@ -17,6 +17,7 @@
 # limitations under the License.
 from copy import deepcopy
 import logging
+import threading
 from time import time
 
 import requests
@@ -26,6 +27,8 @@ from syntribos._i18n import _
 import syntribos.checks.http as http_checks
 import syntribos.signal
 from syntribos.utils import string_utils
+
+lock = threading.Lock()
 
 
 def log_http_transaction(log, level=logging.DEBUG):
@@ -59,19 +62,12 @@ def log_http_transaction(log, level=logging.DEBUG):
             sent to the request() method, to the provided log at the provided
             log level.
             """
+
             kwargs_copy = deepcopy(kwargs)
             if kwargs_copy.get("sanitize"):
                 kwargs_copy = string_utils.sanitize_secrets(kwargs_copy)
-            logline = '{0} {1}'.format(args, string_utils.compress(
+            logline_obj = '{0} {1}'.format(args, string_utils.compress(
                 kwargs_copy))
-
-            try:
-                log.debug(_safe_decode(logline))
-            except Exception as exception:
-                # Ignore all exceptions that happen in logging, then log them
-                log.info('Exception occurred while logging signature of '
-                         'calling method in http client')
-                log.exception(exception)
 
             # Make the request and time its execution
             response = None
@@ -132,7 +128,7 @@ def log_http_transaction(log, level=logging.DEBUG):
                 request_headers = string_utils.sanitize_secrets(
                     request_headers)
                 request_body = string_utils.sanitize_secrets(request_body)
-            logline = ''.join([
+            logline_req = ''.join([
                 '\n{0}\nREQUEST SENT\n{0}\n'.format('-' * 12),
                 'request method.......: {0}\n'.format(response.request.method),
                 'request url..........: {0}\n'.format(string_utils.compress(
@@ -145,15 +141,7 @@ def log_http_transaction(log, level=logging.DEBUG):
                 'request body size....: {0}\n'.format(req_body_len),
                 'request body.........: {0}\n'.format(string_utils.compress
                                                       (request_body))])
-
-            try:
-                log.log(level, _safe_decode(logline))
-            except Exception as exception:
-                # Ignore all exceptions that happen in logging, then log them
-                log.log(level, '\n{0}\nREQUEST INFO\n{0}\n'.format('-' * 12))
-                log.exception(exception)
-
-            logline = ''.join([
+            logline_rsp = ''.join([
                 '\n{0}\nRESPONSE RECEIVED\n{0}\n'.format('-' * 17),
                 'response status..: {0}\n'.format(response),
                 'response headers.: {0}\n'.format(response.headers),
@@ -162,12 +150,27 @@ def log_http_transaction(log, level=logging.DEBUG):
                 'response size....: {0}\n'.format(len(response.content)),
                 'response body....: {0}\n'.format(response_content),
                 '-' * 79])
+            lock.acquire()
             try:
-                log.log(level, _safe_decode(logline))
+                log.log(level, _safe_decode(logline_req))
+            except Exception as exception:
+                # Ignore all exceptions that happen in logging, then log them
+                log.log(level, '\n{0}\nREQUEST INFO\n{0}\n'.format('-' * 12))
+                log.exception(exception)
+            try:
+                log.log(level, _safe_decode(logline_rsp))
             except Exception as exception:
                 # Ignore all exceptions that happen in logging, then log them
                 log.log(level, '\n{0}\nRESPONSE INFO\n{0}\n'.format('-' * 13))
                 log.exception(exception)
+            try:
+                log.debug(_safe_decode(logline_obj))
+            except Exception as exception:
+                # Ignore all exceptions that happen in logging, then log them
+                log.info('Exception occurred while logging signature of '
+                         'calling method in http client')
+                log.exception(exception)
+            lock.release()
             return (response, signals)
         return _wrapper
     return _decorator

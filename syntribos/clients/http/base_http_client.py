@@ -80,4 +80,5 @@ class HTTPClient(object):
              'data': data}, **requestslib_kwargs)
 
         # Make the request
-        return requests.request(method, url, **requestslib_kwargs)
+        return requests.request(method, url, allow_redirects=False,
+                                **requestslib_kwargs)

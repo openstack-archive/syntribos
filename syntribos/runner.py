@@ -13,9 +13,11 @@
 # limitations under the License.
 import json
 import logging
+from multiprocessing.dummy import Pool as ThreadPool
 import os
 import pkgutil
 import sys
+import threading
 import time
 import traceback
 import unittest
@@ -39,6 +41,7 @@ result = None
 user_base_dir = None
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
+lock = threading.Lock()
 
 
 class Runner(object):
@@ -125,6 +128,7 @@ class Runner(object):
         LOG = logging.getLogger()
         LOG.handlers = [log_handle]
         LOG.setLevel(logging.DEBUG)
+        logging.getLogger("urllib3").setLevel(logging.WARNING)
         return LOG
 
     @classmethod
@@ -258,7 +262,6 @@ class Runner(object):
                     cls.meta_dir_dict[meta_path] = json.loads(file_content)
                 except Exception:
                     print("Unable to parse %s, skipping..." % file_path)
-
         for file_path, req_str in templates_dir:
             if "meta.json" in file_path:
                 continue
@@ -331,7 +334,7 @@ class Runner(object):
             if len(test_cases) > 0:
                 for test in test_cases:
                     if test:
-                        cls.run_test(test, result)
+                        cls.run_test(test)
 
     @classmethod
     def dry_run_report(cls, output):
@@ -359,6 +362,7 @@ class Runner(object):
 
         :return: None
         """
+        pool = ThreadPool(CONF.syntribos.threads)
         try:
             template_start_time = time.time()
             failures = 0
@@ -367,19 +371,18 @@ class Runner(object):
             for test_name, test_class in list_of_tests:
                 test_class.test_id = cls.current_test_id
                 cls.current_test_id += 5
-                log_string = "[{test_id}]  :  {name}".format(
-                    test_id=test_class.test_id, name=test_name)
+
                 result_string = "[{test_id}]  :  {name}".format(
                     test_id=cli.colorize(
                         test_class.test_id, color="green"),
                     name=test_name.replace("_", " ").capitalize())
-                if not CONF.colorize:
+                if CONF.no_colorize:
                     result_string = result_string.ljust(55)
                 else:
                     result_string = result_string.ljust(60)
-                LOG.debug(log_string)
                 try:
-                    test_class.send_init_request(file_path, req_str, meta_vars)
+                    test_class.create_init_request(file_path, req_str,
+                                                   meta_vars)
                 except Exception:
                     print(_(
                         "Error in parsing template:\n %s\n"
@@ -388,40 +391,33 @@ class Runner(object):
                     break
                 test_cases = list(
                     test_class.get_test_cases(file_path, req_str))
-                if len(test_cases) > 0:
+                total_tests = len(test_cases)
+                if total_tests > 0:
+                    log_string = "[{test_id}]  :  {name}".format(
+                        test_id=test_class.test_id, name=test_name)
+                    LOG.debug(log_string)
+                    last_failures = result.stats['unique_failures']
+                    last_errors = result.stats['errors']
                     p_bar = cli.ProgressBar(
-                        message=result_string, total_len=len(test_cases))
-                    last_failures = result.stats["failures"]
-                    last_errors = result.stats["errors"]
-                    for test in test_cases:
-                        if test:
-                            cls.run_test(test, result)
-                            p_bar.increment(1)
-                        p_bar.print_bar()
-                        failures = result.stats["failures"] - last_failures
-                        errors = result.stats["errors"] - last_errors
-                        total_tests = len(test_cases)
-                        if failures > total_tests * 0.90:
-                            # More than 90 percent failure
-                            failures = cli.colorize(failures, "red")
-                        elif failures > total_tests * 0.45:
-                            # More than 45 percent failure
-                            failures = cli.colorize(failures, "yellow")
-                        elif failures > total_tests * 0.15:
-                            # More than 15 percent failure
-                            failures = cli.colorize(failures, "blue")
+                        message=result_string, total_len=total_tests)
+                    test_class.send_init_request(file_path, req_str, meta_vars)
+
+                    # This line runs the tests
+                    pool.map(lambda t: cls.run_test(t, p_bar), test_cases)
+
+                    failures = result.stats['unique_failures'] - last_failures
+                    errors = result.stats['errors'] - last_errors
+                    failures_str = cli.colorize_by_percent(
+                        failures, total_tests, "red")
+
                     if errors:
-                        last_failures = result.stats["failures"]
-                        last_errors = result.stats["errors"]
-                        errors = cli.colorize(errors, "red")
+                        errors_str = cli.colorize(errors, "red")
                         print(_(
                             "  :  %(fail)s Failure(s), %(err)s Error(s)\r") % {
-                                "fail": failures, "err": errors})
+                                "fail": failures_str, "err": errors_str})
                     else:
-                        last_failures = result.stats["failures"]
-                        print(
-                            _(
-                                "  : %s Failure(s), 0 Error(s)\r") % failures)
+                        print(_(
+                            "  : %s Failure(s), 0 Error(s)\r") % failures_str)
 
             run_time = time.time() - template_start_time
             LOG.info(_("Run time: %s sec."), run_time)
@@ -440,26 +436,34 @@ class Runner(object):
                     result.print_result(cls.start_time)
                     cleanup.delete_temps()
                     print(_("Exiting..."))
+                    pool.close()
+                    pool.join()
                     exit(0)
                 print(_('Resuming...'))
             except KeyboardInterrupt:
                 result.print_result(cls.start_time)
                 cleanup.delete_temps()
                 print(_("Exiting..."))
+                pool.close()
+                pool.join()
                 exit(0)
 
     @classmethod
-    def run_test(cls, test, result):
+    def run_test(cls, test, p_bar=None):
         """Create a new test suite, add a test, and run it
 
         :param test: The test to add to the suite
         :param result: The result object to append to
         :type result: :class:`syntribos.result.IssueTestResult`
-        :param bool dry_run: (OPTIONAL) Only print out test names
         """
-        suite = unittest.TestSuite()
-        suite.addTest(test("run_test_case"))
-        suite.run(result)
+        if test:
+            suite = unittest.TestSuite()
+            suite.addTest(test("run_test_case"))
+            suite.run(result)
+            if p_bar:
+                with lock:
+                    p_bar.increment(1)
+                    p_bar.print_bar()
 
 
 def entry_point():
