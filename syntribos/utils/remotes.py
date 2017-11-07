@@ -62,7 +62,8 @@ def download(uri, cache_dir=None):
         temp_dirs.append(cache_dir)
     remote_dirs.append(cache_dir)
     LOG.debug("Remote file location: %s", remote_dirs)
-    resp, _ = SynHTTPClient().request("GET", uri)
+    _kwargs = {'allow_redirects': True}
+    resp, _ = SynHTTPClient().request("GET", uri, requestslib_kwargs=_kwargs)
     os.chdir(cache_dir)
     saved_umask = os.umask(0o77)
     fname = uri.split("/")[-1]

@@ -77,8 +77,7 @@ class HTTPClient(object):
         # the requests_lib kwargs dictionary, requestslib_kwargs "wins"
         requestslib_kwargs = dict(
             {'headers': headers, 'params': params, 'verify': verify,
-             'data': data}, **requestslib_kwargs)
+             'data': data, 'allow_redirects': False}, **requestslib_kwargs)
 
         # Make the request
-        return requests.request(method, url, allow_redirects=False,
-                                **requestslib_kwargs)
+        return requests.request(method, url, **requestslib_kwargs)
