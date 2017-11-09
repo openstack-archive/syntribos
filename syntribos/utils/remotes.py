@@ -24,6 +24,7 @@ from syntribos.clients.http.client import SynHTTPClient
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
+LOG.addHandler(logging.StreamHandler())
 temp_dirs = []
 remote_dirs = []
 
@@ -88,7 +89,7 @@ def extract_tar(abs_path):
     try:
         os.mkdir("remote")
     except OSError:
-        LOG.error("path exists already, not creating remote directory.")
+        LOG.error("Path exists already, not creating remote directory.")
     remote_path = os.path.abspath("remote")
 
     def safe_paths(tar_meta):
