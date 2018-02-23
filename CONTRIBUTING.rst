@@ -6,7 +6,7 @@ Syntribos is an open source project and contributions are always
 welcome, if you have any questions, we can be found in the
 #openstack-security channel on Freenode IRC.
 
-1. Follow all the `OpenStack Style Guidelines <http://docs.openstack.org/developer/hacking/>`__
+1. Follow all the `OpenStack Style Guidelines <https://docs.openstack.org/hacking/latest/>`__
    (e.g. PEP8, Py3 compatibility)
 2. All new classes/functions should have appropriate docstrings in
    `RST format <https://pythonhosted.org/an_example_pypi_project/sphinx.html>`__
@@ -23,7 +23,7 @@ welcome, if you have any questions, we can be found in the
     tox -e cover
 
 Anyone wanting to contribute to OpenStack must follow
-`the OpenStack development workflow <http://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
+`the OpenStack development workflow <https://docs.openstack.org/infra/manual/developers.html#development-workflow>`__
 
 All changes should be submitted through the code review process in Gerrit
 described above. All pull requests on Github will be closed/ignored.
