@@ -19,24 +19,24 @@ repository_tags = """
 Team and repository tags
 ========================
 
-.. image:: http://governance.openstack.org/badges/syntribos.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
+.. image:: https://governance.openstack.org/tc/badges/syntribos.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
 
 
-.. image:: http://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
-    :target: http://docs.openstack.org/developer/syntribos/
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+    :target: https://docs.openstack.org/syntribos/latest/
 
-.. image:: http://img.shields.io/pypi/v/syntribos.svg
-    :target: http://pypi.python.org/pypi/syntribos/
+.. image:: https://img.shields.io/pypi/v/syntribos.svg
+    :target: https://pypi.python.org/pypi/syntribos/
 
-.. image:: http://img.shields.io/pypi/pyversions/syntribos.svg
-        :target: http://pypi.python.org/pypi/syntribos/
+.. image:: https://img.shields.io/pypi/pyversions/syntribos.svg
+        :target: https://pypi.python.org/pypi/syntribos/
 
-.. image:: http://img.shields.io/pypi/wheel/syntribos.svg
-        :target: http://pypi.python.org/pypi/syntribos/
+.. image:: https://img.shields.io/pypi/wheel/syntribos.svg
+        :target: https://pypi.python.org/pypi/syntribos/
 
-.. image:: http://img.shields.io/irc/%23openstack-security.png
-        :target: http://webchat.freenode.net/?channels=openstack-security
+.. image:: https://img.shields.io/irc/%23openstack-security.png
+        :target: https://webchat.freenode.net/?channels=openstack-security
 
 
 """
