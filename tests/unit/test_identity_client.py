@@ -22,9 +22,9 @@ from syntribos.utils.config_fixture import ConfFixture
 class TestIdentityClient(testtools.TestCase):
     """Tests get_token v2 and v3 methods of the identity client."""
 
-    class _FakeRequest():
+    class _FakeRequest(object):
         """Fake request class used to mock request method of SynHTTPClient."""
-        class _FakeResponse():
+        class _FakeResponse(object):
             def __init__(self):
                 self.content = {"access": {"token": {"id": 1234}}}
                 self.headers = {"X-Subject-Token": 12345}

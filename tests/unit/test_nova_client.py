@@ -18,11 +18,11 @@ from syntribos.extensions.nova import client
 from syntribos.utils.config_fixture import ConfFixture
 
 
-class Content():
+class Content(object):
     id = 1234
 
 
-class _Fakeserver():
+class _Fakeserver(object):
     """Fake nova client object."""
 
     def create(*args, **kwargs):
@@ -32,12 +32,12 @@ class _Fakeserver():
         return []
 
 
-class _FakeHypervisor():
+class _FakeHypervisor(object):
     def list(data):
         return [Content()]
 
 
-class _FakeAggregates():
+class _FakeAggregates(object):
     def create(*args, **kwargs):
         return Content()
 
@@ -45,7 +45,7 @@ class _FakeAggregates():
         return []
 
 
-class _FakeStorage():
+class _FakeStorage(object):
     """Fake storage client."""
     servers = _Fakeserver()  # noqa
     hypervisors = _FakeHypervisor()  # noqa

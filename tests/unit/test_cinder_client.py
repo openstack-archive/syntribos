@@ -17,11 +17,11 @@ import testtools
 from syntribos.extensions.cinder import client
 
 
-class Content():
+class Content(object):
     id = 1234
 
 
-class _FakeVolume():
+class _FakeVolume(object):
     """Fake cinder client object."""
 
     def create(*args, **kwargs):
@@ -31,7 +31,7 @@ class _FakeVolume():
         return []
 
 
-class _FakeVolumeType():
+class _FakeVolumeType(object):
     def create(*args, **kwargs):
         return Content()
 
@@ -39,7 +39,7 @@ class _FakeVolumeType():
         return []
 
 
-class _FakeSnapshot():
+class _FakeSnapshot(object):
     def create(*args, **kwargs):
         return Content()
 
@@ -47,7 +47,7 @@ class _FakeSnapshot():
         return []
 
 
-class _FakeStorage():
+class _FakeStorage(object):
     """Fake storage client."""
     volumes = _FakeVolume()  # noqa
     volume_types = _FakeVolumeType()  # noqa

@@ -17,12 +17,12 @@ import testtools
 from syntribos.extensions.glance import client
 
 
-class _Image_meta_data():
+class _Image_meta_data(object):
     def __init__(self):
         self.id = 1234
 
 
-class _Images():
+class _Images(object):
 
     def create(self, name):
         return _Image_meta_data()
@@ -31,7 +31,7 @@ class _Images():
         return []
 
 
-class _FakeGlance():
+class _FakeGlance(object):
     """Fake glance client object."""
     images = _Images()
 

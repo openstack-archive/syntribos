@@ -17,7 +17,7 @@ import testtools
 from syntribos.extensions.neutron import client
 
 
-class _FakeNetwork():
+class _FakeNetwork(object):
     """Fake neutron client object."""
 
     def create_network(self, data):
