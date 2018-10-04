@@ -173,8 +173,15 @@ class Runner(object):
         :param file_path: the path of the current template
         :returns: `dict` of meta variables
         """
-        path_segments = [""] + os.path.dirname(file_path).split(os.sep)
         meta_vars = {}
+        if CONF.syntribos.meta_vars:
+            with open(CONF.syntribos.meta_vars, "r") as f:
+                conf_meta_vars = json.loads(f.read())
+                for k, v in conf_meta_vars.items():
+                    meta_vars[k] = v
+            return meta_vars
+
+        path_segments = [""] + os.path.dirname(file_path).split(os.sep)
         current_path = ""
         for seg in path_segments:
             current_path = os.path.join(current_path, seg)

@@ -30,7 +30,7 @@ class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
             self.register_issue(
                 defect_type="int_timing",
                 severity=syntribos.MEDIUM,
-                confidence=syntribos.MEDIUM,
+                confidence=syntribos.LOW,
                 description=(_("The time it took to resolve a request with an "
                                "invalid integer was too long compared to the "
                                "baseline request. This could indicate a "

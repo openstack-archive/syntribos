@@ -25,7 +25,7 @@ class ConfigUnittest(testtools.TestCase):
     ept = utils.ExistingPathType()
     edt = utils.ExistingDirType()
     eft = utils.ExistingFileType()
-    tt = utils.ContentType('r', 0)
+    tt = utils.ContentType('r')
 
     def test_invalid_path_raises_ioerror(self):
         """Test that a random, invalid path raises IOError for each type."""

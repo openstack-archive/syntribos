@@ -54,7 +54,7 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
             self.register_issue(
                 defect_type="sql_timing",
                 severity=syntribos.MEDIUM,
-                confidence=syntribos.MEDIUM,
+                confidence=syntribos.LOW,
                 description=(_("A response to one of our payload requests has "
                                "taken too long compared to the baseline "
                                "request. This could indicate a vulnerability "

@@ -81,7 +81,7 @@ class HTTPModelsUnittest(testtools.TestCase):
     def test_string_dat_valid_dict(self):
         """Tests RHM._string_data() with a valid dict."""
         _dict = {"a": "val", "b": "val2"}
-        res = rhm._string_data(_dict)
+        res = rhm._string_data(_dict, 'json')
         j_dat = json.loads(res)
         self.assertEqual(_dict, j_dat)
 
@@ -96,7 +96,7 @@ class HTTPModelsUnittest(testtools.TestCase):
         b = ElementTree.Element("b")
         b.text = "hey"
         a.append(b)
-        res = rhm._string_data(a)
+        res = rhm._string_data(a, 'xml')
         self.assertEqual("<a><b>hey</b></a>", res)
 
     def test_string_dat_valid_xml_w_attrs(self):
@@ -106,7 +106,7 @@ class HTTPModelsUnittest(testtools.TestCase):
         b = ElementTree.Element("b")
         b.text = "hey"
         a.append(b)
-        res = rhm._string_data(a)
+        res = rhm._string_data(a, 'xml')
         self.assertEqual('<a key="val"><b>hey</b></a>', res)
 
     def test_run_iters_dict_w_multiple_list(self):
@@ -147,6 +147,7 @@ class HTTPModelsUnittest(testtools.TestCase):
     def test_prepare_req_action_field_dat(self):
         """Tests RHM.prepare_request() with an ACTION_FIELD var in body."""
         r = get_req("/", data={"ACTION_FIELD:var": 1234})
+        r.data_type = 'json'
         prep = r.get_prepared_copy()
         j_dat = json.loads(prep.data)
         self.assertEqual(1234, j_dat.get("var"))

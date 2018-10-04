@@ -102,7 +102,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
             self.register_issue(
                 defect_type="xml_timing",
                 severity=syntribos.MEDIUM,
-                confidence=syntribos.MEDIUM,
+                confidence=syntribos.LOW,
                 description=("The time it took to resolve a request with an "
                              "invalid URL in the DTD takes too long compared "
                              "to the baseline request. This could reflect a "

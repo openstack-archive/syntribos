@@ -22,6 +22,7 @@ from syntribos._i18n import _
 from syntribos.utils.file_utils import ContentType
 from syntribos.utils.file_utils import ExistingDirType
 
+
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 OPTS_REGISTERED = False
@@ -199,7 +200,7 @@ def list_syntribos_opts():
                    sample_default="16",
                    help=_("Maximum number of threads syntribos spawns "
                           "(experimental)")),
-        cfg.Opt("templates", type=ContentType("r", 0),
+        cfg.Opt("templates", type=ContentType("r"),
                 default="",
                 sample_default="~/.syntribos/templates",
                 help=_("A directory of template files, or a single "
@@ -222,6 +223,10 @@ def list_syntribos_opts():
                     "The root directory where the subfolders that make up"
                     " syntribos' environment (logs, templates, payloads, "
                     "configuration files, etc.)")),
+        cfg.StrOpt("meta_vars", sample_default="/path/to/meta.json",
+                   help=_(
+                       "The path to a meta variable definitions file, which "
+                       "will be used when parsing your templates")),
     ]
 
 

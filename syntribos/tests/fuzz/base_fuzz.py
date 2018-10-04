@@ -38,7 +38,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         payloads = CONF.syntribos.payloads
         if not payloads:
             payloads = remotes.get(CONF.remote.payloads_uri)
-        content = ContentType('r', 0)(payloads)
+        content = ContentType('r')(payloads)
         for file_path, _ in content:
             if file_path.endswith(".txt"):
                 file_dir = os.path.split(file_path)[0]

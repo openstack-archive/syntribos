@@ -224,6 +224,7 @@ class FuzzDatagenUnittest(testtools.TestCase):
         """Test fuzz_request with a JSON-like dict."""
         req = post_req(
             "/api/v1/{key:val}/path/{otherkey:val2}", data=test_dict)
+        req.data_type = 'json'
         strings = ["test"]
         results = [
             d for d in fuzz_datagen.fuzz_request(req, strings, "data", "ut")

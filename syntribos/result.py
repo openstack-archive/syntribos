@@ -242,7 +242,7 @@ class IssueTestResult(unittest.TextTestResult):
         self.output["errors"] = self.errors
         self.output["failures"] = self.failures
         formatter_types = {"json": JSONFormatter(self)}
-        formatter = formatter_types[output_format]
+        formatter = formatter_types[output_format.lower()]
         formatter.report(self.output)
 
     def print_result(self, start_time):

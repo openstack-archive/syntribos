@@ -47,7 +47,7 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
             self.register_issue(
                 defect_type="bof_strings",
                 severity=syntribos.MEDIUM,
-                confidence=syntribos.LOW,
+                confidence=syntribos.MEDIUM,
                 description=("The string(s): '{0}', known to be commonly "
                              "returned after a successful buffer overflow "
                              "attack, have been found in the response. This "
@@ -59,7 +59,7 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
             self.register_issue(
                 defect_type="bof_timing",
                 severity=syntribos.MEDIUM,
-                confidence=syntribos.MEDIUM,
+                confidence=syntribos.LOW,
                 description=(_("The time it took to resolve a request with a "
                                "long string was too long compared to the "
                                "baseline request. This could indicate a "
