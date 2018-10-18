@@ -39,7 +39,7 @@ class ConfFixture(config_fixture.Config):
         self.conf.set_default("version", "v2.0", group="user")
 
     def v3_identity_fixture(self):
-        """config values only applicable to keysotne v3."""
+        """config values only applicable to keystone v3."""
         self.conf.set_default("project_name", "demo", group="user")
         self.conf.set_default("project_id", "1234", group="user")
         self.conf.set_default("domain_name", "default", group="user")
