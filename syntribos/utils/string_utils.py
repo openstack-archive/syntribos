@@ -87,7 +87,7 @@ def compress(content, threshold=512):
             compressed_data = base64.b64encode(
                 zlib.compress(bytes(content.encode("utf-8"))))
             if not six.PY2:
-                compressed_data = compressed_data.decode("utf-8")
+                compressed_data = str(compressed_data.decode("utf-8"))
             return pprint.pformat(
                 "\n***Content compressed by Syntribos.***"
                 "\nFirst fifty characters of content:\n"

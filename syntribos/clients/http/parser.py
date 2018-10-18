@@ -36,7 +36,7 @@ _string_var_objs = {}
 
 class RequestCreator(object):
     ACTION_FIELD = "ACTION_FIELD:"
-    EXTERNAL = r"CALL_EXTERNAL\|([^:]+?):([^:]+?):([^|]+?)\|"
+    EXTERNAL = r"CALL_EXTERNAL\|([^:]+?):([^:]+?)(?::([^|]+?))?\|"
     METAVAR = r"(\|[^\|]*\|)"
     FUNC_WITH_ARGS = r"([^:]+):([^:]+):(\[.+\])"
     FUNC_NO_ARGS = r"([^:]+):([^:]+)"
@@ -85,9 +85,9 @@ class RequestCreator(object):
         """
         if not cls.meta_vars:
             msg = ("Template contains reference to meta variable of the form "
-                   "\'|variable|\', but no meta.json file is found in the"
+                   "'|{}|', but no meta.json file is found in the"
                    "templates directory. Check your templates and the "
-                   "documentation on how to resolve this")
+                   "documentation on how to resolve this".format(var))
             raise TemplateParseException(msg)
 
         if var not in cls.meta_vars:
@@ -326,7 +326,7 @@ class RequestCreator(object):
                 break
             dot_path = match.group(1)
             func_name = match.group(2)
-            arg_list = match.group(3)
+            arg_list = match.group(3) or "[]"
             mod = importlib.import_module(dot_path)
             func = getattr(mod, func_name)
             args = json.loads(arg_list)

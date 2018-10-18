@@ -50,7 +50,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
             else:
                 path = os.path.join(payloads, file_name or cls.data_key)
             with open(path, "rb") as fp:
-                return fp.read().splitlines()
+                return str(fp.read()).splitlines()
         except (IOError, AttributeError, TypeError) as e:
             LOG.error("Exception raised: {}".format(e))
             print("\nPayload file for test '{}' not readable, "

@@ -415,7 +415,7 @@ class Runner(object):
                     failures = result.stats['unique_failures'] - last_failures
                     errors = result.stats['errors'] - last_errors
                     failures_str = cli.colorize_by_percent(
-                        failures, total_tests, "red")
+                        failures, total_tests)
 
                     if errors:
                         errors_str = cli.colorize(errors, "red")
