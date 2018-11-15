@@ -59,7 +59,8 @@ def check_fail(exception):
             desc="An unknown exception was raised. Please report this.")
 
     # CONNECTION FAILURES
-    if isinstance(exception, (rex.ProxyError, rex.SSLError)):
+    if isinstance(exception, (rex.ProxyError, rex.SSLError,
+                              rex.ChunkedEncodingError, rex.ConnectionError)):
         tags.update(["CONNECTION_FAIL"])
     # TIMEOUTS
     elif isinstance(exception, (rex.ConnectTimeout, rex.ReadTimeout)):

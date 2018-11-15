@@ -41,7 +41,7 @@ class TestValidContent(testtools.TestCase):
     """Tests valid_content check for both valid and invalid json/xml."""
 
     def test_valid_json(self, m):
-        text = u'{"text": "Sample json"}'
+        text = '{"text": "Sample json"}'
         headers = {"Content-type": "application/json"}
         m.register_uri("GET", "http://example.com", text=text, headers=headers)
         resp = requests.get("http://example.com")
@@ -50,7 +50,7 @@ class TestValidContent(testtools.TestCase):
         self.assertEqual("VALID_JSON", signal.slug)
 
     def test_invalid_json(self, m):
-        text = u'{"text""" "Sample json"}'
+        text = '{"text""" "Sample json"}'
         headers = {"Content-type": "application/json"}
         m.register_uri("GET", "http://example.com", text=text, headers=headers)
         resp = requests.get("http://example.com")
@@ -60,7 +60,7 @@ class TestValidContent(testtools.TestCase):
         self.assertIn("APPLICATION_FAIL", signal.tags)
 
     def test_valid_xml(self, m):
-        text = u"""<note>\n
+        text = """<note>\n
                      <to>Tove</to>\n
                      <from>Jani</from>\n
                      <heading>Reminder</heading>\n
@@ -78,7 +78,7 @@ class TestValidContent(testtools.TestCase):
         self.assertEqual("VALID_XML", signal.slug)
 
     def test_invalid_xml(self, m):
-        text = u"""<xml version=='1.0' encoding==UTF-8'?>
+        text = """<xml version=='1.0' encoding==UTF-8'?>
                      <!DOCTYPE note SYSTEM 'Note.dtd'>
                      <note>
                      <to>Tove</to>

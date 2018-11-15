@@ -20,7 +20,7 @@ class ReDosBody(base_fuzz.BaseFuzzTestCase):
     """Test for Regex DoS vulnerabilities in HTTP body."""
 
     test_name = "REDOS_BODY"
-    test_type = "data"
+    parameter_location = "data"
     data_key = "redos.txt"
 
     def test_case(self):
@@ -41,19 +41,19 @@ class ReDosParams(ReDosBody):
     """Test for Regex DoS vulnerabilities in HTTP params."""
 
     test_name = "REDOS_PARAMS"
-    test_type = "params"
+    parameter_location = "params"
 
 
 class ReDosHeaders(ReDosBody):
     """Test for Regex DoS vulnerabilities in HTTP header."""
 
     test_name = "REDOS_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
 
 
 class ReDosURL(ReDosBody):
     """Test for Regex DoS vulnerabilities in HTTP URL."""
 
     test_name = "REDOS_URL"
-    test_type = "url"
+    parameter_location = "url"
     url_var = "FUZZ"

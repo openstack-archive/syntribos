@@ -20,7 +20,7 @@ from syntribos.utils.cli import CONF
 class TestColorize(testtools.TestCase):
 
     def test_colorize(self):
-        CONF.no_colorize = False
+        CONF.colorize = True
         string = "color this string"
         colors = {"red": 31,
                   "green": 32,
@@ -34,6 +34,6 @@ class TestColorize(testtools.TestCase):
                 colorize(string, color))
 
     def test_no_colorize(self):
-        CONF.no_colorize = True
+        CONF.colorize = False
         string = "No color"
         self.assertEqual(string, colorize(string))

@@ -20,7 +20,7 @@ class XSSBody(base_fuzz.BaseFuzzTestCase):
     """Test for cross-site-scripting vulnerabilities in HTTP body."""
 
     test_name = "XSS_BODY"
-    test_type = "data"
+    parameter_location = "data"
     data_key = "xss.txt"
 
     def test_case(self):

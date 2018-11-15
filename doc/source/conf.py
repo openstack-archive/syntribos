@@ -33,8 +33,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"syntribos"
-copyright = u"2015-present, OpenStack Foundation"
+project = "syntribos"
+copyright = "2015-present, OpenStack Foundation"
 
 # If true, "()" will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -52,8 +52,8 @@ pygments_style = "sphinx"
 # List of tuples "sourcefile", "target", u"title", u"Authors name", "manual"
 
 man_pages = [("man/syntribos", "syntribos",
-              u"Automated API security testing tool",
-              [u"OpenStack Security Group"], 1)]
+              "Automated API security testing tool",
+              ["OpenStack Security Group"], 1)]
 
 # -- Options for HTML output --------------------------------------------------
 
@@ -70,8 +70,8 @@ htmlhelp_basename = "%sdoc" % project
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
-latex_documents = [("index", "%s.tex" % project, u"%s Documentation" % project,
-                    u"OpenStack Foundation", "manual"), ]
+latex_documents = [("index", "%s.tex" % project, "%s Documentation" % project,
+                    "OpenStack Foundation", "manual"), ]
 
 # Example configuration for intersphinx: refer to the Python standard library.
 # intersphinx_mapping = {"http://docs.python.org/": None}

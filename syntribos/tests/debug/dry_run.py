@@ -19,7 +19,7 @@ class DryRunTestCase(base.BaseTestCase):
     """Debug dry run test to run no logic and return no results."""
 
     test_name = "DEBUG_DRY_RUN"
-    test_type = "debug"
+    parameter_location = "debug"
 
     def test_case(self):
         pass

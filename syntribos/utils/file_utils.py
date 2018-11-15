@@ -54,12 +54,16 @@ class ContentType(ExistingPathType):
     def _fetch_from_dir(self, string):
         for path, _, files in os.walk(string):
             for file_ in files:
-                file_path = os.path.join(path, file_)
-                if path is not self._root:
-                    subdir = os.path.relpath(path, self._root)
-                    yield self._fetch_from_file(file_path, subdir)
-                else:
-                    yield self._fetch_from_file(file_path)
+                try:
+                    file_path = os.path.join(path, file_)
+                    if path is not self._root:
+                        subdir = os.path.relpath(path, self._root)
+                        yield self._fetch_from_file(file_path, subdir)
+
+                    else:
+                        yield self._fetch_from_file(file_path)
+                except Exception:
+                    print("Skipped %s" % string)
 
     def _fetch_from_file(self, string, subdir=None):
         # Get the filename here

@@ -23,7 +23,7 @@ class CommandInjectionBody(base_fuzz.BaseFuzzTestCase):
     """Test for command injection vulnerabilities in HTTP body."""
 
     test_name = "COMMAND_INJECTION_BODY"
-    test_type = "data"
+    parameter_location = "data"
     data_key = "command_injection.txt"
     failure_keys = [
         'uid=',
@@ -63,19 +63,19 @@ class CommandInjectionParams(CommandInjectionBody):
     """Test for command injection vulnerabilities in HTTP params."""
 
     test_name = "COMMAND_INJECTION_PARAMS"
-    test_type = "params"
+    parameter_location = "params"
 
 
 class CommandInjectionHeaders(CommandInjectionBody):
     """Test for command injection vulnerabilities in HTTP header."""
 
     test_name = "COMMAND_INJECTION_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
 
 
 class CommandInjectionURL(CommandInjectionBody):
     """Test for command injection vulnerabilities in HTTP URL."""
 
     test_name = "COMMAND_INJECTION_URL"
-    test_type = "url"
+    parameter_location = "url"
     url_var = "FUZZ"

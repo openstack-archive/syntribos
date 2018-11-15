@@ -71,10 +71,12 @@ def get_venv_root():
 def get_syntribos_root():
     """This determines the proper path to use as syntribos' root directory."""
     path = ""
-    custom_root = CONF.syntribos.custom_root
-
-    if custom_root:
-        return expand_path(custom_root)
+    try:
+        custom_root = CONF.syntribos.custom_root
+        if custom_root:
+            return expand_path(custom_root)
+    except Exception:
+        pass
 
     home_root = get_user_home_root()
 
@@ -156,10 +158,10 @@ def create_conf_file(created_folders=None, remote_path=None):
             "# syntribos barebones configuration file\n"
             "# You should update this with your desired options!\n"
             "[syntribos]\n"
-            "endpoint=http://127.0.0.1:80\n"
+            "endpoint=http://127.0.0.1:8080\n"
             "payloads={payloads}\n"
             "templates={templates}\n"
-            "{custom_root}\n"
+            "{custom_root}\n\n"
             "[logging]\n"
             "log_dir={logs}\n"
         ).format(

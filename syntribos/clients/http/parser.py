@@ -85,9 +85,9 @@ class RequestCreator(object):
         """
         if not cls.meta_vars:
             msg = ("Template contains reference to meta variable of the form "
-                   "'|{}|', but no meta.json file is found in the"
-                   "templates directory. Check your templates and the "
-                   "documentation on how to resolve this".format(var))
+                   "'|{}|', but no valid meta.json file was found in the "
+                   "templates directory. Check that your templates reference "
+                   "a meta.json file that is correctly formatted.".format(var))
             raise TemplateParseException(msg)
 
         if var not in cls.meta_vars:
@@ -431,7 +431,6 @@ class RequestHelperMixin(object):
         self.params = ""
         self.data = ""
         self.url = ""
-        self.url = ""
 
     @classmethod
     def _run_iters(cls, data, action_field):
@@ -506,6 +505,8 @@ class RequestHelperMixin(object):
         if data_type == 'json':
             return json.dumps(data)
         elif data_type == 'xml':
+            if isinstance(data, str):
+                return data
             str_data = ElementTree.tostring(data)
             # No way to stop tostring from HTML escaping even if we wanted
             h = html_parser.HTMLParser()

@@ -41,7 +41,7 @@ class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
     """Test for user defined vulnerabilities in HTTP body."""
 
     test_name = "USER_DEFINED_VULN_BODY"
-    test_type = "data"
+    parameter_location = "data"
     user_defined_config()
     data_key = CONF.user_defined.payload
     failure_keys = CONF.user_defined.failure_keys
@@ -74,7 +74,7 @@ class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
                                " provided strings.")))
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
+    def get_test_cases(cls, filename, file_content, meta_vars):
         """Generates test cases if a payload file is provided."""
         conf_var = CONF.user_defined.payload
         if conf_var is None or not os.path.isfile(conf_var):
@@ -85,7 +85,8 @@ class UserDefinedVulnBody(base_fuzz.BaseFuzzTestCase):
             test_name=cls.test_name,
             fuzz_file=cls.data_key)
         fr = syntribos.tests.fuzz.datagen.fuzz_request(
-            cls.init_req, cls._get_strings(), cls.test_type, prefix_name)
+            cls.init_req, cls._get_strings(), cls.parameter_location,
+            prefix_name)
         for fuzz_name, request, fuzz_string, param_path in fr:
             yield cls.extend_class(fuzz_name, fuzz_string, param_path,
                                    {"request": request})
@@ -95,19 +96,19 @@ class UserDefinedVulnParams(UserDefinedVulnBody):
     """Test for user defined vulnerabilities in HTTP params."""
 
     test_name = "USER_DEFINED_VULN_PARAMS"
-    test_type = "params"
+    parameter_location = "params"
 
 
 class UserDefinedVulnHeaders(UserDefinedVulnBody):
     """Test for user defined vulnerabilities in HTTP header."""
 
     test_name = "USER_DEFINED_VULN_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
 
 
 class UserDefinedVulnURL(UserDefinedVulnBody):
     """Test for user defined vulnerabilities in HTTP URL."""
 
     test_name = "USER_DEFINED_VULN_URL"
-    test_type = "url"
+    parameter_location = "url"
     url_var = "FUZZ"

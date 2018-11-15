@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # pylint: skip-file
-from syntribos.issue import Issue  # flake8: noqa
-from syntribos.constants import *
-from syntribos.result import IssueTestResult  # flake8: noqa
+from syntribos.issue import Issue  # noqa
+from syntribos.constants import *  # noqa
+from syntribos.result import IssueTestResult  # noqa

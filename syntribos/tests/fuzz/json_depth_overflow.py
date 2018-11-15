@@ -22,7 +22,7 @@ class JSONDepthOverflowBody(base_fuzz.BaseFuzzTestCase):
     """Test for json depth overflow in HTTP body."""
 
     test_name = "JSON_DEPTH_OVERFLOW_BODY"
-    test_type = "data"
+    parameter_location = "data"
     failure_keys = [
         "maximum recursion depth exceeded",
         "RuntimeError",

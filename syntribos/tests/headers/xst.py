@@ -40,15 +40,15 @@ class XstHeader(base.BaseTestCase):
     """
 
     test_name = "XST_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
     client = client()
     failures = []
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
+    def get_test_cases(cls, filename, file_content, meta_vars):
         xst_header = {"TRACE_THIS": "XST_Vuln"}
         request_obj = parser.create_request(
-            file_content, CONF.syntribos.endpoint, meta_vars=None)
+            file_content, CONF.syntribos.endpoint, meta_vars)
         prepared_copy = request_obj.get_prepared_copy()
         prepared_copy.method = "TRACE"
         prepared_copy.headers.update(xst_header)

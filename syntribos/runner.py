@@ -13,7 +13,6 @@
 # limitations under the License.
 import json
 import logging
-from multiprocessing.dummy import Pool as ThreadPool
 import os
 import pkgutil
 import sys
@@ -21,21 +20,22 @@ import threading
 import time
 import traceback
 import unittest
+from multiprocessing.dummy import Pool as ThreadPool
 
 from oslo_config import cfg
 from six.moves import input
 
-from syntribos._i18n import _
 import syntribos.config
-from syntribos.formatters.json_formatter import JSONFormatter
 import syntribos.result
 import syntribos.tests as tests
 import syntribos.tests.base
+from syntribos._i18n import _
+from syntribos.formatters.json_formatter import JSONFormatter
 from syntribos.utils import cleanup
 from syntribos.utils import cli as cli
 from syntribos.utils import env as ENV
-from syntribos.utils.file_utils import ContentType
 from syntribos.utils import remotes
+from syntribos.utils.file_utils import ContentType
 
 result = None
 user_base_dir = None
@@ -144,6 +144,10 @@ class Runner(object):
                 CONF(argv, default_config_files=[])
         except Exception as exc:
             syntribos.config.handle_config_exception(exc)
+            if cls.worker:
+                raise exc
+            else:
+                sys.exit(1)
 
     @classmethod
     def setup_runtime_env(cls):
@@ -191,7 +195,7 @@ class Runner(object):
         return meta_vars
 
     @classmethod
-    def run(cls):
+    def run(cls, argv=sys.argv[1:], worker=False):
         """Method sets up logger and decides on Syntribos control flow
 
         This is the method where control flow of Syntribos is decided
@@ -199,26 +203,32 @@ class Runner(object):
         as ```list_tests``` or ```run``` the respective method is called.
         """
         global result
-
-        cli.print_symbol()
-
+        cls.worker = worker
         # If we are initializing, don't look for a default config file
         if "init" in sys.argv:
             cls.setup_config()
         else:
-            cls.setup_config(use_file=True)
+            cls.setup_config(use_file=True, argv=argv)
         try:
             if CONF.sub_command.name == "init":
+                cli.print_symbol()
                 ENV.initialize_syntribos_env()
                 exit(0)
 
             elif CONF.sub_command.name == "list_tests":
+                cli.print_symbol()
                 cls.list_tests()
                 exit(0)
 
             elif CONF.sub_command.name == "download":
+                cli.print_symbol()
                 ENV.download_wrapper()
                 exit(0)
+
+            elif CONF.sub_command.name == "root":
+                print(ENV.get_syntribos_root())
+                exit(0)
+
         except AttributeError:
             print(
                 _(
@@ -248,15 +258,19 @@ class Runner(object):
         print(_("\nRunning Tests...:"))
         templates_dir = CONF.syntribos.templates
         if templates_dir is None:
-            print(_("Attempting to download templates from {}").format(
-                CONF.remote.templates_uri))
-            templates_path = remotes.get(CONF.remote.templates_uri)
-            try:
-                templates_dir = ContentType("r", 0)(templates_path)
-            except IOError:
-                print(_("Not able to open `%s`; please verify path, "
-                        "exiting...") % templates_path)
-                exit(1)
+            if cls.worker:
+                raise Exception("No templates directory was found in the "
+                                "config file.")
+            else:
+                print(_("Attempting to download templates from {}").format(
+                    CONF.remote.templates_uri))
+                templates_path = remotes.get(CONF.remote.templates_uri)
+                try:
+                    templates_dir = ContentType("r")(templates_path)
+                except IOError:
+                    print(_("Not able to open `%s`; please verify path, "
+                            "exiting...") % templates_path)
+                    exit(1)
 
         print(_("\nPress Ctrl-C to pause or exit...\n"))
         meta_vars = None
@@ -267,8 +281,15 @@ class Runner(object):
                 meta_path = os.path.dirname(file_path)
                 try:
                     cls.meta_dir_dict[meta_path] = json.loads(file_content)
-                except Exception:
-                    print("Unable to parse %s, skipping..." % file_path)
+                except json.decoder.JSONDecodeError:
+                    _full_path = os.path.abspath(file_path)
+                    print(syntribos.SEP)
+                    print(
+                        "\n"
+                        "*** The JSON parser raised an exception when parsing "
+                        "{}. Check that the file contains correctly formatted "
+                        "JSON data. *** \n".format(_full_path)
+                    )
         for file_path, req_str in templates_dir:
             if "meta.json" in file_path:
                 continue
@@ -299,7 +320,8 @@ class Runner(object):
                             req_str, dry_run_output, meta_vars)
 
         if CONF.sub_command.name == "run":
-            result.print_result(cls.start_time)
+            result.print_result(cls.start_time, cls.log_path)
+            cls.result = result
             cleanup.delete_temps()
         elif CONF.sub_command.name == "dry_run":
             cls.dry_run_report(dry_run_output)
@@ -337,7 +359,9 @@ class Runner(object):
                 print(_("\nRequest sucessfully generated!\n"))
                 output["successes"].append(file_path)
 
-            test_cases = list(test_class.get_test_cases(file_path, req_str))
+            test_cases = list(
+                test_class.get_test_cases(file_path, req_str, meta_vars)
+            )
             if len(test_cases) > 0:
                 for test in test_cases:
                     if test:
@@ -346,7 +370,9 @@ class Runner(object):
     @classmethod
     def dry_run_report(cls, output):
         """Reports the dry run through a formatter."""
-        formatter_types = {"json": JSONFormatter(result)}
+        formatter_types = {
+            "json": JSONFormatter(result),
+        }
         formatter = formatter_types[CONF.output_format]
         formatter.report(output)
 
@@ -383,7 +409,7 @@ class Runner(object):
                     test_id=cli.colorize(
                         test_class.test_id, color="green"),
                     name=test_name.replace("_", " ").capitalize())
-                if CONF.no_colorize:
+                if not CONF.colorize:
                     result_string = result_string.ljust(55)
                 else:
                     result_string = result_string.ljust(60)
@@ -397,7 +423,7 @@ class Runner(object):
                     LOG.error("Error in parsing template:")
                     break
                 test_cases = list(
-                    test_class.get_test_cases(file_path, req_str))
+                    test_class.get_test_cases(file_path, req_str, meta_vars))
                 total_tests = len(test_cases)
                 if total_tests > 0:
                     log_string = "[{test_id}]  :  {name}".format(

@@ -24,7 +24,7 @@ CONF = cfg.CONF
 class AuthTestCase(base.BaseTestCase):
     """Test for possible token misuse in keystone."""
     test_name = "AUTH"
-    test_type = "headers"
+    parameter_location = "headers"
 
     @classmethod
     def setUpClass(cls):
@@ -69,7 +69,7 @@ class AuthTestCase(base.BaseTestCase):
             )
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
+    def get_test_cases(cls, filename, file_content, meta_vars):
         """Generates the test cases
 
         For this particular test, only a single test

@@ -1,0 +1,13 @@
+POST /examples HTTP/1.1
+Accept: application/json
+Content-type: application/json
+
+{   
+    "id": 24601,
+    "name": "myname",
+    "password": "letmein",
+    "params": {
+        "string": "aaa",
+        "array": [1,2,3,4,5]
+    }
+}

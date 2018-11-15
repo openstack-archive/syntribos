@@ -46,7 +46,7 @@ class HTTPCheckUnittest(testtools.TestCase):
     def _assert_has_tags(self, tags, signals):
         signal = self._get_one_signal(signals, tags=tags)
         self.assertEqual(len(tags), len(signal.tags))
-        list(map(lambda t: self.assertIn(t, signal.tags), tags))
+        list([self.assertIn(t, signal.tags) for t in tags])
 
 
 class HTTPFailureUnittest(HTTPCheckUnittest):
@@ -66,7 +66,7 @@ class HTTPFailureUnittest(HTTPCheckUnittest):
 
     def test_connect_timeout(self):
         signal = http_checks.check_fail(rex.ConnectTimeout())
-        self._assert_has_tags(self.timeout_tags, signal)
+        self._assert_has_tags(self.conn_fail_tags, signal)
         self._assert_has_slug("HTTP_FAIL_CONNECT_TIMEOUT", signal)
 
     def test_invalid_url(self):

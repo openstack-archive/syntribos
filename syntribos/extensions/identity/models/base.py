@@ -19,8 +19,6 @@ import xml.etree.ElementTree as ET
 class Namespaces(object):
     XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance"
     XMLNS = "http://docs.openstack.org/identity/api/v2.0"
-    XMLNS_KSKEY = "http://docs.rackspace.com/identity/api/ext/RAX-KSKEY/v1.0"
-    XMLNS_RAX_AUTH = "http://docs.rackspace.com/identity/api/ext/RAX-AUTH/v1.0"
 
 
 class BaseIdentityModel(object):

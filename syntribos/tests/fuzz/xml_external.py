@@ -27,7 +27,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
     """Test for XML-external-entity injection vulnerabilities in HTTP body."""
 
     test_name = "XML_EXTERNAL_ENTITY_BODY"
-    test_type = "data"
+    parameter_location = "data"
     dtds_data_key = "xml-external.txt"
     failure_keys = [
         'root:',
@@ -41,7 +41,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         'partition']
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
+    def get_test_cases(cls, filename, file_content, meta_vars):
         """Makes sure API call supports XML
 
         Overrides parent fuzz test generation, if API method does not support
@@ -49,7 +49,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
         """
         # Send request for different content-types
         request_obj = parser.create_request(
-            file_content, CONF.syntribos.endpoint)
+            file_content, CONF.syntribos.endpoint, meta_vars)
 
         prepared_copy = request_obj.get_prepared_copy()
         prepared_copy.headers['content-type'] = "application/json"
@@ -75,7 +75,7 @@ class XMLExternalEntityBody(base_fuzz.BaseFuzzTestCase):
                 filename=filename, test_name=cls.test_name,
                 fuzz_file=cls.dtds_data_key, d_index=d_num)
             fr = syntribos.tests.fuzz.datagen.fuzz_request(
-                request_obj, ["&xxe;"], cls.test_type, prefix_name)
+                request_obj, ["&xxe;"], cls.parameter_location, prefix_name)
             for fuzz_name, request, fuzz_string, param_path in fr:
                 request.data = "{0}\n{1}".format(dtd, request.data)
                 yield cls.extend_class(fuzz_name, fuzz_string, param_path,

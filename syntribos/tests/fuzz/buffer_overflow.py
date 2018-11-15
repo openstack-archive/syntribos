@@ -22,7 +22,7 @@ class BufferOverflowBody(base_fuzz.BaseFuzzTestCase):
     """Test for buffer overflow vulnerabilities in HTTP body."""
 
     test_name = "BUFFER_OVERFLOW_BODY"
-    test_type = "data"
+    parameter_location = "data"
     failure_keys = [
         '*** stack smashing detected ***:',
         'Backtrace:',
@@ -70,19 +70,19 @@ class BufferOverflowParams(BufferOverflowBody):
     """Test for buffer overflow vulnerabilities in HTTP params."""
 
     test_name = "BUFFER_OVERFLOW_PARAMS"
-    test_type = "params"
+    parameter_location = "params"
 
 
 class BufferOverflowHeaders(BufferOverflowBody):
     """Test for buffer overflow vulnerabilities in HTTP header."""
 
     test_name = "BUFFER_OVERFLOW_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
 
 
 class BufferOverflowURL(BufferOverflowBody):
     """Test for buffer overflow vulnerabilities in HTTP URL."""
 
     test_name = "BUFFER_OVERFLOW_URL"
-    test_type = "url"
+    parameter_location = "url"
     url_var = "FUZZ"

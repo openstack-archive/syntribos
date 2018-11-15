@@ -49,8 +49,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 path = cls.data_key
             else:
                 path = os.path.join(payloads, file_name or cls.data_key)
-            with open(path, "rb") as fp:
-                return str(fp.read()).splitlines()
+            with open(path, "r") as fp:
+                return fp.read().splitlines()
         except (IOError, AttributeError, TypeError) as e:
             LOG.error("Exception raised: {}".format(e))
             print("\nPayload file for test '{}' not readable, "
@@ -124,7 +124,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
         self.run_default_checks()
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
+    def get_test_cases(cls, filename, file_content, meta_vars):
         """Generates new TestCases for each fuzz string
 
         For each string returned by cls._get_strings(), yield a TestCase class
@@ -143,7 +143,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
                 filename=filename, test_name=cls.test_name)
 
         fr = syntribos.tests.fuzz.datagen.fuzz_request(
-            cls.init_req, cls._get_strings(), cls.test_type, prefix_name)
+            cls.init_req, cls._get_strings(), cls.parameter_location,
+            prefix_name)
         for fuzz_name, request, fuzz_string, param_path in fr:
             yield cls.extend_class(fuzz_name, fuzz_string, param_path,
                                    {"request": request})
@@ -195,6 +196,8 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
         issue.request = self.test_req
         issue.response = self.test_resp
+        issue.template_path = self.template_path
+
         issue.test_type = self.test_name
         url_components = urlparse(self.prepared_init_req.url)
         issue.target = url_components.netloc
@@ -209,7 +212,7 @@ class BaseFuzzTestCase(base.BaseTestCase):
 
         issue.impacted_parameter = ImpactedParameter(
             method=issue.request.method,
-            location=self.test_type,
+            location=self.parameter_location,
             name=self.param_path,
             value=self.fuzz_string)
 

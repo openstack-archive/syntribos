@@ -21,7 +21,7 @@ class IntOverflowBody(base_fuzz.BaseFuzzTestCase):
     """Test for integer overflow vulnerabilities in HTTP body."""
 
     test_name = "INTEGER_OVERFLOW_BODY"
-    test_type = "data"
+    parameter_location = "data"
     data_key = "integer-overflow.txt"
 
     def test_case(self):
@@ -41,19 +41,19 @@ class IntOverflowParams(IntOverflowBody):
     """Test for integer overflow vulnerabilities in HTTP params."""
 
     test_name = "INTEGER_OVERFLOW_PARAMS"
-    test_type = "params"
+    parameter_location = "params"
 
 
 class IntOverflowHeaders(IntOverflowBody):
     """Test for integer overflow vulnerabilities in HTTP header."""
 
     test_name = "INTEGER_OVERFLOW_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
 
 
 class IntOverflowURL(IntOverflowBody):
     """Test for integer overflow vulnerabilities in HTTP URL."""
 
     test_name = "INTEGER_OVERFLOW_URL"
-    test_type = "url"
+    parameter_location = "url"
     url_var = "FUZZ"

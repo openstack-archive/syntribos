@@ -35,7 +35,7 @@ class TestProgressBar(testtools.TestCase):
     def test_format_bar(self):
         pb = ProgressBar(total_len=5, width=5, fill_char="#", message="Test")
         pb.increment()  # increments progress bar by 1
-        self.assertEqual(u"Test\t\t|#----|  20 %", pb.format_bar())
+        self.assertEqual("Test\t\t|#----|  20 %", pb.format_bar())
 
     def test_print_bar(self):
         pb = ProgressBar(total_len=5, width=5, fill_char="#", message="Test")

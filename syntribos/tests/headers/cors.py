@@ -29,19 +29,19 @@ class CorsHeader(base.BaseTestCase):
     """Test for CORS wild character vulnerabilities in HTTP header."""
 
     test_name = "CORS_WILDCARD_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
     client = client()
     failures = []
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
-
+    def get_test_cases(cls, filename, file_content, meta_vars):
         request_obj = parser.create_request(
-            file_content, CONF.syntribos.endpoint
+            file_content, CONF.syntribos.endpoint, meta_vars
         )
         prepared_copy = request_obj.get_prepared_copy()
         cls.test_resp, cls.test_signals = cls.client.send_request(
             prepared_copy)
+        cls.test_req = request_obj.get_prepared_copy()
         yield cls
 
     def test_case(self):

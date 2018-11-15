@@ -22,5 +22,6 @@ CONF = cfg.CONF
 def basic_auth(user_section='user'):
     password = CONF.get(user_section).password or CONF.user.password
     username = CONF.get(user_section).username or CONF.user.username
-    encoded_creds = base64.b64encode("{}:{}".format(username, password))
-    return "Basic %s" % encoded_creds
+    encoded_creds = base64.b64encode(
+        "{}:{}".format(username, password).encode())
+    return "Basic %s" % encoded_creds.decode()

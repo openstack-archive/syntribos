@@ -22,7 +22,7 @@ class SQLInjectionBody(base_fuzz.BaseFuzzTestCase):
     """Test for SQL injection vulnerabilities in HTTP body."""
 
     test_name = "SQL_INJECTION_BODY"
-    test_type = "data"
+    parameter_location = "data"
     data_key = "sql-injection.txt"
     failure_keys = [
         "SQL syntax", "mysql", "MySqlException (0x", "valid MySQL result",
@@ -65,19 +65,19 @@ class SQLInjectionParams(SQLInjectionBody):
     """Test for SQL injection vulnerabilities in HTTP params."""
 
     test_name = "SQL_INJECTION_PARAMS"
-    test_type = "params"
+    parameter_location = "params"
 
 
 class SQLInjectionHeaders(SQLInjectionBody):
     """Test for SQL injection vulnerabilities in HTTP header."""
 
     test_name = "SQL_INJECTION_HEADERS"
-    test_type = "headers"
+    parameter_location = "headers"
 
 
 class SQLInjectionURL(SQLInjectionBody):
     """Test for SQL injection vulnerabilities in HTTP URL."""
 
     test_name = "SQL_INJECTION_URL"
-    test_type = "url"
+    parameter_location = "url"
     url_var = "FUZZ"

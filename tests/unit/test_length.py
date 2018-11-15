@@ -39,7 +39,7 @@ class FakeTestObject(object):
 class TestLength(testtools.TestCase):
     @requests_mock.Mocker()
     def test_percentage_difference(self, m):
-        content = u"""'Traceback (most recent call last):\n',
+        content = """'Traceback (most recent call last):\n',
                 File "<doctest...>", line 10, in <module>\n
                 lumberjack()\n',
                 File "<doctest...>", line 4, in lumberjack\n

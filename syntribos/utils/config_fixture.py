@@ -64,7 +64,7 @@ class ConfFixture(config_fixture.Config):
         """config values for CLI options(default group)."""
         # TODO(unrahul): Add mock file path for outfile
         self.conf.set_default("test_types", [""])
-        self.conf.set_default("no_colorize", True)
+        self.conf.set_default("colorize", False)
         self.conf.set_default("output_format", "json")
         self.conf.set_default("min_severity", "LOW")
         self.conf.set_default("min_confidence", "LOW")

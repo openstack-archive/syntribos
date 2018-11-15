@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import division
-from __future__ import unicode_literals
+
+
 from math import ceil
 import sys
 
@@ -39,7 +39,7 @@ def colorize(string, color="nocolor"):
     colors = dict(list(zip(color_names, list(range(31, 35)))))
     colors["nocolor"] = 0  # No Color
 
-    if CONF.no_colorize:
+    if not CONF.colorize:
         return string
     return "\033[0;{color}m{string}\033[0;m".format(string=string,
                                                     color=colors.setdefault(
@@ -95,10 +95,11 @@ class ProgressBar(object):
 
         :returns: formatted progress bar string
         """
-        bar_width = int(ceil(self.present_level / self.total_len * self.width))
+        bar_width = int(
+            ceil(self.present_level / float(self.total_len) * self.width))
         empty_char = self.empty_char * (self.width - bar_width)
         fill_char = self.fill_char * bar_width
-        percentage = int(self.present_level / self.total_len * 100)
+        percentage = int(self.present_level / float(self.total_len) * 100)
         return "{message}\t\t|{fill_char}{empty_char}|  {percentage} %".format(
             message=self.message, fill_char=fill_char,
             empty_char=empty_char, percentage=percentage)

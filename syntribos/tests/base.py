@@ -117,7 +117,7 @@ class BaseTestCase(unittest.TestCase):
         pass
 
     @classmethod
-    def get_test_cases(cls, filename, file_content):
+    def get_test_cases(cls, filename, file_content, meta_vars):
         """Returns tests for given TestCase class (overwritten by children)."""
         yield cls
 
@@ -136,6 +136,7 @@ class BaseTestCase(unittest.TestCase):
         cls.init_req = request_obj
         cls.init_resp = None
         cls.init_signals = None
+        cls.template_path = filename
 
     @classmethod
     def send_init_request(cls, filename, file_content, meta_vars):
@@ -189,7 +190,16 @@ class BaseTestCase(unittest.TestCase):
             if "EXCEPTION_RAISED" in cls.test_signals:
                 sig = cls.test_signals.find(
                     tags="EXCEPTION_RAISED")[0]
-                raise sig.data["exception"]
+                exc_name = type(sig.data["exception"]).__name__
+                if ("CONNECTION_FAIL" in sig.tags):
+                    six.raise_from(FatalHTTPError(
+                        "The remote target has forcibly closed the connection "
+                        "with Syntribos and resulted in exception '{}'. This "
+                        "could potentially mean that a fatal error was "
+                        "encountered within the target application or server"
+                        " itself.".format(exc_name)), sig.data["exception"])
+                else:
+                    raise sig.data["exception"]
 
     @classmethod
     def tearDown(cls):
@@ -249,7 +259,8 @@ class BaseTestCase(unittest.TestCase):
 
         issue.request = self.test_req
         issue.response = self.test_resp
-
+        issue.template_path = self.template_path
+        issue.parameter_location = self.parameter_location
         issue.test_type = self.test_name
         url_components = urlparse(self.init_resp.url)
         issue.target = url_components.netloc
@@ -261,3 +272,7 @@ class BaseTestCase(unittest.TestCase):
         self.failures.append(issue)
 
         return issue
+
+
+class FatalHTTPError(Exception):
+    pass

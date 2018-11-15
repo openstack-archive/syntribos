@@ -13,8 +13,6 @@
 # limitations under the License.
 # pylint: skip-file
 import logging
-import sys
-
 from oslo_config import cfg
 
 import syntribos
@@ -51,7 +49,6 @@ def handle_config_exception(exc):
     if msg:
         LOG.warning(msg)
         print(syntribos.SEP)
-        sys.exit(0)
     else:
         LOG.exception(exc)
 
@@ -108,6 +105,8 @@ def sub_commands(sub_parser):
     sub_parser.add_parser("dry_run",
                           help=_("Dry run syntribos with given config"
                                  "options"))
+    sub_parser.add_parser("root",
+                          help=_("Print syntribos root directory"))
 
 
 def list_opts():
@@ -144,6 +143,13 @@ def register_opts():
         OPTS_REGISTERED = True
 
 
+def list_payment_system_opts():
+    return [
+        cfg.StrOpt('ran', default='', help='Rackspace Account Number'),
+        cfg.StrOpt('alt_ran', default='', help='Alternate RAN')
+    ]
+
+
 def list_cli_opts():
     return [
         cfg.SubCommandOpt(name="sub_command",
@@ -158,8 +164,8 @@ def list_cli_opts():
                         default=[""], sample_default=["SQL", "XSS"],
                         help=_("Test types to be excluded from "
                                "current run against the target API")),
-        cfg.BoolOpt("no_colorize", dest="no_colorize", short="ncl",
-                    default=False,
+        cfg.BoolOpt("colorize", dest="colorize", short="cl",
+                    default=True,
                     help=_("Enable color in syntribos terminal output")),
         cfg.StrOpt("outfile", short="o",
                    sample_default="out.json", help=_("File to print "
@@ -174,7 +180,10 @@ def list_cli_opts():
         cfg.StrOpt("min-confidence", dest="min_confidence", short="C",
                    default="LOW", choices=syntribos.RANKING,
                    help=_("Select a minimum confidence for reported "
-                          "defects"))
+                          "defects")),
+        cfg.BoolOpt("stacktrace", dest="stacktrace", default=True,
+                    help=_("Select if Syntribos outputs a stacktrace "
+                           " if an exception is raised")),
     ]
 
 
