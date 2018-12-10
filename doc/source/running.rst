@@ -34,7 +34,7 @@ Specifying a custom root directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you set up the syntribos environment with a custom root (i.e. with
-``syntribos init --custom_install_root``), you can point to it with the
-``--syntribos-custom_root`` configuration option. Syntribos will look for a
+``syntribos --custom_root init``), you can point to it with the
+``--custom_root`` configuration option. Syntribos will look for a
 ``syntribos.conf`` file inside this directory, and will read further
 configuration information from there.

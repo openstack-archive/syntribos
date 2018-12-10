@@ -72,12 +72,13 @@ def get_syntribos_root():
     """This determines the proper path to use as syntribos' root directory."""
     path = ""
     try:
-        custom_root = CONF.syntribos.custom_root
+        custom_root = (
+            CONF.syntribos.custom_root or CONF.custom_root or ""
+        )
         if custom_root:
             return expand_path(custom_root)
     except Exception:
-        pass
-
+        raise
     home_root = get_user_home_root()
 
     # Virtualenv detection
@@ -110,6 +111,7 @@ def get_log_dir_name(log_path=""):
 
 
 def safe_makedirs(path, force=False):
+    path = os.path.abspath(path)
     if not os.path.exists(path):
         try:
             os.makedirs(path)
@@ -142,7 +144,8 @@ def create_env_dirs(root_dir, force=False):
     log_dir = os.path.join(root_dir, "logs")
     safe_makedirs(log_dir, force)
 
-    return (root_dir, payloads, templates, log_dir)
+    return tuple(os.path.abspath(x)
+                 for x in (root_dir, payloads, templates, log_dir))
 
 
 def create_conf_file(created_folders=None, remote_path=None):
@@ -151,17 +154,25 @@ def create_conf_file(created_folders=None, remote_path=None):
     conf_file = os.path.join(root, FILE)
     # Create default configuration file
     with open(conf_file, "w") as f:
-        custom_root = CONF.sub_command.custom_install_root or ""
+        custom_root = (
+            CONF.syntribos.custom_root or CONF.custom_root or ""
+        )
         if custom_root:
-            custom_root = "custom_root={0}".format(custom_root)
+            custom_root = (
+                "# Any changes in the [DEFAULT] section will overwrite all "
+                "command line options\n"
+                "# [DEFAULT]\n"
+                "# custom_root={0}"
+                "# force=true\n\n"
+            ).format(custom_root)
         template = (
             "# syntribos barebones configuration file\n"
-            "# You should update this with your desired options!\n"
+            "# You should update this with your desired options!\n\n"
+            "{custom_root}"
             "[syntribos]\n"
             "endpoint=http://127.0.0.1:8080\n"
             "payloads={payloads}\n"
-            "templates={templates}\n"
-            "{custom_root}\n\n"
+            "templates={templates}\n\n"
             "[logging]\n"
             "log_dir={logs}\n"
         ).format(
@@ -196,7 +207,7 @@ def initialize_syntribos_env():
     root_dir = get_venv_root() if is_venv() else get_user_home_root()
 
     force = CONF.sub_command.force
-    custom_root = CONF.sub_command.custom_install_root or ""
+    custom_root = CONF.syntribos.custom_root or CONF.custom_root or ""
     if custom_root:
         root_dir = custom_root
     elif CONF.sub_command.force:

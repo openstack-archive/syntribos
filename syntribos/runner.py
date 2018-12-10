@@ -139,6 +139,9 @@ class Runner(object):
         try:
             syntribos.config.register_opts()
             if use_file:
+                # Parsing the args first in case a custom_install_root
+                # was specified.
+                CONF(argv, default_config_files=[])
                 CONF(argv, default_config_files=[ENV.get_default_conf_file()])
             else:
                 CONF(argv, default_config_files=[])
@@ -287,8 +290,9 @@ class Runner(object):
                     print(
                         "\n"
                         "*** The JSON parser raised an exception when parsing "
-                        "{}. Check that the file contains correctly formatted "
-                        "JSON data. *** \n".format(_full_path)
+                        "{}. Check that the file contains "
+                        "correctly formatted JSON data. ***\n".format(
+                            _full_path)
                     )
         for file_path, req_str in templates_dir:
             if "meta.json" in file_path:
